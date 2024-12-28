@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EasySort: Recycling made easy</title>
+  <style>
+    body {
+      font-family:'Lucida Console', monospace;
+      font-size: 18px;
+      color: #111;
+      background-color: white;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 100px;
+      box-sizing: border-box;
+    }    
+    a {
+      color: #111;
+    }
+    .landing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height:100vh; min-height:20dvh;
+      text-align: center;
+    }
+    .separator { letter-spacing: -4px; }
+    hr { border: none; height: 4px; background-color: #444; width: 20%; margin: 30px auto; border-radius: 2px;}
+    li { margin-bottom: 10px;}
+    td {
+      padding: 5px 20px;
+      border: 1px solid #dddddd;
+    }
+    .faqtable dt { margin-bottom: 0.4em; font-weight: bold;}
+    .faqtable dd { margin-left: 0; margin-bottom: 1.5em; }
+
+  </style>
+</head>
+<body>
+  <div class="landing">
+    <h1 style="font-size: 124px; margin: 50px; margin-bottom: 20px;">Easysort</h1>
+    <div class="links-container">
+        <a href="#easysort">Easysort</a><span class="separator">|</span>
+        <a href="https://github.com/easysort/easysort">Github</a><span class="separator">|</span>
+        <a href="#faq">FAQ</a>
+    </div>
+  </div>
+  <hr>
+  <h2 id="easysort">Easysort</h2>
+  <p> <a href="https://github.com/easysort/easysort">Easysort</a> is going to be complete sorting software to sort recyclables 
+    from a stream of residual waste.</p>
+
+  <p>Place a camera of at least 1080p above a conveyor belt, connect it to a computer, raspberry PI or esp32, and run Easysort on it.
+    Easysort will automatically detect objects in the feed. </p>
+  <p>A standard mapping from item to sorting bin is provided,
+    but this can be modified to fit any sorting system. This is most likely needed if you are not in Denmark.
+    Out comes pickup positions with deticated bins attached. We provide a default connector to connect to an arduino/esp32 like controller, which most robots use.
+
+  <hr>
+  <h2>Why</h2>
+  <p>In 2024, Denmark has incinerated over 3 million tons of residual waste, resulting in 1.8 million tons of CO₂ emissions. 
+    This marks an 8% increase over the past five years and a 34% rise over the last fifteen years. 
+    These increases persist despite multiple European Union regulations and the Danish government's ambitions to reduce emissions. 
+    The Danish target is to decrease CO₂ emissions from 1.7 million tons to 0.5 million tons over the next ten years.</p>
+  <p>Some countries (including Denmark) have chosen to entirely rely on humans to sort waste themselves. This is frustrating for the population and extremely ineffective.</p>
+  <p><b>Main Issues in the Sector</b></p>
+  <ul>
+    <li><b>Low Sorting Purity:</b> It is extremely challenging to ensure that everyone sorts their trash with the purity necessary for effective recycling.</li>
+    <li><b>Unsorted Residual Waste:</b> Residual waste in Denmark, regardless of its source, is not sorted. When waste purity is insufficient or residual waste remains unsorted, it is burned, releasing CO₂.</li>
+  </ul>
+
+  <p>Easysort aims to solve this problem by maintaining a complete software for sorting recyclables from residual waste and providing it freely for everyone.</p>
+  <p>Building the robots themselves are secondary and only relevant once the software has proven itself to work effectively.</p>
+  <hr>
+  <h2 id="demo">Demo:</h2>
+  <p>Here is a video of Easysort in action:</p>
+  <video width="500" height="315" controls>
+    <source src="../demo1.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <video width="500" height="315" controls>
+    <source src="../demo2.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <hr>
+  <h2 id="faq">FAQ</h2>
+  <dl class="faqtable">
+    <dt>How good is easysort?</dt>
+    <dd> - Easysort should be stable to run and accurate. It's not yet ready for production, but it's getting there. Investigate our <a href="https://github.com/easysort/easysort">github</a> if you want to know more.</dd>
+
+    <dt>How does easysort make money?</dt>
+    <dd> - We run a service where we sort waste for companies and sell the sorted waste to recycling companies.</dd>
+
+    <dt>I can find the software, but I can't find the hardware?</dt>
+    <dd> - The software of Easysort is freely available. Our retired robots will be open-source. Building the robots is secondary, and we therefore have nothing to share yet.</dd> 
+
+    <dt>When will EasySort leave alpha?</dt>
+    <dd> - When Easysort can correctly categorize >90% of the waste items shown to it with a minimum speed of 2 s/iteration.</dd>
+
+    <dt>Where is easysort development happening?</dt>
+    <dd> - On Github.</dd>
+
+    <dt>What's the goal of easysort?</dt>
+    <dd> - To decrease the amount of reusable waste burned towards 0 by making sorting software easy to implement and free to use.</dd>
+
+    <dt>Can you help me sort our waste?</dt>
+    <dd> - Yes! We are looking for companies to sort waste for. Contact me at lucas@easysort.org.</dd>
+  </dl>
+</body>
