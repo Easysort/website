@@ -34,7 +34,23 @@
     }
     .faqtable dt { margin-bottom: 0.4em; font-weight: bold;}
     .faqtable dd { margin-left: 0; margin-bottom: 1.5em; }
-
+    .video-container {
+      display: inline-block;
+      margin: 10px;
+      vertical-align: top;
+      width: calc(48% - 20px); /* Slightly under 50% to account for padding */
+    }
+    .video-container video {
+      width: 100%;
+      height: auto;
+    }
+    .video-caption {
+      text-align: center;
+      color: #444;
+      margin-top: 10px;
+      font-style: italic;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -69,14 +85,31 @@
   <hr>
   <h2 id="demo">Demo:</h2>
   <p>Here is a video of Easysort in action:</p>
-  <video width="500" height="315" controls>
-    <source src="demo1.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <video width="500" height="315" controls>
-    <source src="demo2.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+  <div class="video-container">
+    <video width="600" height="375" controls>
+      <source src="demo1.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <p class="video-caption">Static object detection test - November 2024</p>
+  </div>
+
+  <div class="video-container">
+    <video width="600" height="375" controls>
+      <source src="demo2.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <p class="video-caption">Moving object detection test - November 2024</p>
+  </div>
+
+  <div class="video-container">
+    <video width="600" height="375" controls>
+      <source src="manual-overwrite.mp4" type="video/mp4">
+      <p>Your browser doesn't support HTML5 video. Here is a 
+        <a href="manual-overwrite.mp4">link to the video</a> instead.
+      </p>
+    </video>
+    <p class="video-caption">Remote manual overwrite demonstration - Robot v2, March 2024</p>
+  </div>
   <hr>
   <h2 id="join">Interested in joining the team?</h2>
   <p>We always need people in Mechanical, Electrical, General Software and AI. But our main focus is keeping the team small.</p>
