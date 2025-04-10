@@ -51,6 +51,47 @@
       font-style: italic;
       font-size: 14px;
     }
+    .video-showcase {
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .video-showcase-left {
+      flex: 3; /* Increased from 2 to 3 to make left side larger */
+      min-width: 0;
+    }
+    .video-showcase-right {
+      flex: 1; /* Decreased from 1 to 0.8 to make right side smaller */
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 0;
+    }
+    .video-showcase video, .video-showcase img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+    .small-video-container {
+      flex: 1;
+    }
+    .small-video-container:nth-child(2) {
+      margin-bottom: 10px;
+    }
+    .small-video-container:last-child {
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    .small-video-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-showcase-left h2,
+    .video-showcase-right h2 {
+      margin: 0 0 10px 0;  /* Only keep bottom margin for spacing between heading and image */
+    }
   </style>
 </head>
 <body>
@@ -63,6 +104,27 @@
         <a href="#faq">FAQ</a>
     </div>
   </div>
+
+  <div class="video-showcase">
+    <div class="video-showcase-left">
+      <h2>Easysort Pipeline</h2>
+      <img src="pipeline.gif" alt="Easysort Pipeline Demo - Real-time object detection and classification">
+    </div>
+    
+    <div class="video-showcase-right">
+      <h2>Robot Sorting</h2>
+      <div class="small-video-container">
+        <img src="robot1.gif" alt="Robot sorting plastic bottles">
+      </div>
+      <div class="small-video-container">
+        <img src="robot1.gif" alt="Robot sorting metal cans">
+      </div>
+      <div class="small-video-container">
+        <img src="robot1.gif" alt="Robot sorting cardboard">
+      </div>
+    </div>
+  </div>
+
   <h2 id="easysort">Easysort</h2>
   <p> <a href="https://github.com/easysort/easysort">Easysort</a> is going to be a complete sorting software to sort recyclables 
     from a stream of residual waste.</p>
@@ -75,7 +137,7 @@
 
   <hr>
   <h2>Why</h2>
-  <p>Go <a href="solution.html">here</a> for a detailed explanation of why and what our solution is. Summed to a few sentences: </p>
+  <p><a href="solution.html">Go here for a detailed explanation</a> of why and what our solution is. Summed to a few sentences: </p>
   <p>In 2024, Denmark has incinerated over 3 million tons of residual waste, resulting in 1.8 million tons of CO₂ emissions. 
     This marks an 8% increase over the past five years and a 34% rise over the last fifteen years. 
     The Danish target is to decrease CO₂ emissions from 1.7 million tons to 0.5 million tons over the next ten years. But how?</p>
@@ -84,37 +146,9 @@
   <p>Easysort aims to solve this problem by maintaining a complete software for sorting recyclables from residual waste and providing it freely for everyone.</p>
   <p>We then build robots and sort waste for companies. This is a highly scalable solution; both robotic and AI capabilities will grow exponentially over time, and our solutions scales with it.</p>
   <hr>
-  <h2 id="demo">Demo:</h2>
-  <p>Here is a video of Easysort in action:</p>
-  <div class="video-container">
-    <video width="600" height="375" controls>
-      <source src="demo1.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <p class="video-caption">Static object detection test - November 2024</p>
-  </div>
-
-  <div class="video-container">
-    <video width="600" height="375" controls>
-      <source src="demo2.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <p class="video-caption">Moving object detection test - November 2024</p>
-  </div>
-
-  <div class="video-container">
-    <video width="600" height="375" controls>
-      <source src="manual-overwrite.mp4" type="video/mp4">
-      <p>Your browser doesn't support HTML5 video. Here is a 
-        <a href="manual-overwrite.mp4">link to the video</a> instead.
-      </p>
-    </video>
-    <p class="video-caption">Remote manual overwrite demonstration - Robot v2, March 2024</p>
-  </div>
-  <hr>
   <h2 id="join">Interested in joining the team?</h2>
   <p>We always need people in Mechanical, Electrical, General Software and AI. But our main focus is keeping the team small.</p>
-  <p>First, read the <a href="plan.html">plan</a> to understand what we are doing. If you are still interested, there are two ways to join the team:</p>
+  <p><a href="plan.html">First, read the plan</a> to understand what we are doing. If you are still interested, there are two ways to join the team:</p>
   <p>1. You are extremely talented, the best at what you do and want to join the core team. Contact me at lucas@easysort.org with hard proof.</p>
   <p>2. You are pretty good at what you do. See our <a href="https://thehub.io/startups/easysort">thehub</a> page for more information, and if you really want to stand out, make meaningful PRs to one of our repositories.</p>
   <hr>
@@ -128,6 +162,9 @@
 
     <dt>I can find the software, but I can't find the hardware?</dt>
     <dd> - The software of Easysort is freely available. Our retired robots will be open-source. Building the robots is secondary, and we therefore have nothing to share yet.</dd> 
+
+    <dt>So you're only using a camera?</dt>
+    <dd> - Yes. The aim is to base most detection on a single camera. This makes the system cheaper and easier to deploy. We might add additional cameras on the sides and NIR cameras to improve detection on our own systems, but Easysort should be able to run on a single camera.</dd>
 
     <dt>When will EasySort leave alpha?</dt>
     <dd> - When Easysort can correctly categorize >90% of the waste items shown to it with a minimum speed of 2 s/iteration.</dd>
