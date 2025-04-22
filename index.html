@@ -1,148 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>EasySort: Recycling made easy</title>
-  <style>
-    body {
-      font-family:'Lucida Console', monospace;
-      font-size: 18px;
-      color: #111;
-      background-color: white;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 100px;
-      box-sizing: border-box;
-    }    
-    a {
-      color: #111;
-    }
-    .landing {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height:100vh; min-height:20dvh;
-      text-align: center;
-    }
-    .separator { letter-spacing: -4px; }
-    hr { border: none; height: 4px; background-color: #444; width: 20%; margin: 30px auto; border-radius: 2px;}
-    li { margin-bottom: 10px;}
-    td {
-      padding: 5px 20px;
-      border: 1px solid #dddddd;
-    }
-    .faqtable dt { margin-bottom: 0.4em; font-weight: bold;}
-    .faqtable dd { margin-left: 0; margin-bottom: 1.5em; }
-    .video-container {
-      display: inline-block;
-      margin: 10px;
-      vertical-align: top;
-      width: calc(48% - 20px); /* Slightly under 50% to account for padding */
-    }
-    .video-container video {
-      width: 100%;
-      height: auto;
-    }
-    .video-caption {
-      text-align: center;
-      color: #444;
-      margin-top: 10px;
-      font-style: italic;
-      font-size: 14px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easysort - Automated Waste Sorting</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="landing">
-    <h1 style="font-size: 124px; margin: 50px; margin-bottom: 20px;">Easysort</h1>
-    <div class="links-container">
-        <a href="#easysort">Easysort</a><span class="separator">|</span>
-        <a href="https://forms.gle/5piDFQdJZUVZACXS7">Join the team!</a><span class="separator">|</span>
-        <a href="https://discord.gg/2Bh3SBFbdP">Discord</a><span class="separator">|</span>
-        <a href="#faq">FAQ</a>
-    </div>
-  </div>
-  <h2 id="easysort">Easysort</h2>
-  <p> <a href="https://github.com/easysort/easysort">Easysort</a> is going to be a complete sorting software to sort recyclables 
-    from a stream of residual waste.</p>
 
-  <p>Place a camera of at least 1080p above a conveyor belt, connect it to a computer, raspberry PI or esp32, and run Easysort on it.
-    Easysort will automatically detect objects in the feed. </p>
-  <p>A standard mapping from item to sorting bin is provided,
-    but this can be modified to fit any sorting system. This is most likely needed if you are not in Denmark.
-    Out comes pickup positions with deticated bins attached. We provide a default connector to connect to an arduino/esp32 like controller, which most robots use.
+    <header id="main-header">
+        <nav>
+            <a href="#" class="logo-link">
+                <img src="logo.png" alt="Easysort Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            </a>
+            <ul>
+              <!-- <li><a href="#">Product</a></li> -->
+              <li><a href="/plan">Masterplan</a></li>
+              <li><a href="https://track.easysort.org">EasyTrack</a></li>
+              <li><a href="/join">Join us</a></li>
+            </ul>
+            <a href="https://calendly.com/lucas-easysort" class="cta-button">Get started.</a>
+        </nav>
+    </header>
 
-  <hr>
-  <h2>Why</h2>
-  <p>Go <a href="solution.html">here</a> for a detailed explanation of why and what our solution is. Summed to a few sentences: </p>
-  <p>In 2024, Denmark has incinerated over 3 million tons of residual waste, resulting in 1.8 million tons of CO₂ emissions. 
-    This marks an 8% increase over the past five years and a 34% rise over the last fifteen years. 
-    The Danish target is to decrease CO₂ emissions from 1.7 million tons to 0.5 million tons over the next ten years. But how?</p>
-  <p>Some countries (including Denmark) have chosen to entirely rely on humans to sort waste themselves. This is frustrating for the population and extremely ineffective.</p>
+    <main>
+        <h1 class="main-heading">
+            Your Residual Waste<br>
+            Sorted Automatically.
+        </h1>
 
-  <p>Easysort aims to solve this problem by maintaining a complete software for sorting recyclables from residual waste and providing it freely for everyone.</p>
-  <p>We then build robots and sort waste for companies. This is a highly scalable solution; both robotic and AI capabilities will grow exponentially over time, and our solutions scales with it.</p>
-  <hr>
-  <h2 id="demo">Demo:</h2>
-  <p>Here is a video of Easysort in action:</p>
-  <div class="video-container">
-    <video width="600" height="375" controls>
-      <source src="demo1.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <p class="video-caption">Static object detection test - November 2024</p>
-  </div>
+        <div class="intro-image-container">
+             <img src="pipeline.gif" alt="Automated waste sorting illustration" class="intro-image">
+        </div>
+    </main>
 
-  <div class="video-container">
-    <video width="600" height="375" controls>
-      <source src="demo2.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <p class="video-caption">Moving object detection test - November 2024</p>
-  </div>
+    <div class="section-divider"></div>
 
-  <div class="video-container">
-    <video width="600" height="375" controls>
-      <source src="manual-overwrite.mp4" type="video/mp4">
-      <p>Your browser doesn't support HTML5 video. Here is a 
-        <a href="manual-overwrite.mp4">link to the video</a> instead.
-      </p>
-    </video>
-    <p class="video-caption">Remote manual overwrite demonstration - Robot v2, March 2024</p>
-  </div>
-  <hr>
-  <h2 id="join">Interested in joining the team?</h2>
-  <p>We always need people in Mechanical, Electrical, General Software and AI. But our main focus is keeping the team small.</p>
-  <p>First, read the <a href="plan.html">plan</a> to understand what we are doing. If you are still interested, there are two ways to join the team:</p>
-  <p>1. You are extremely talented, the best at what you do and want to join the core team. Contact me at lucas@easysort.org with hard proof.</p>
-  <p>2. You are pretty good at what you do. See our <a href="https://thehub.io/startups/easysort">thehub</a> page for more information, and if you really want to stand out, make meaningful PRs to one of our repositories.</p>
-  <hr>
-  <h2 id="faq">FAQ</h2>
-  <dl class="faqtable">
-    <dt>How good is easysort?</dt>
-    <dd> - Easysort should be stable to run and accurate. It's not yet ready for production, but it's getting there. Investigate our <a href="https://github.com/easysort/easysort">github</a> if you want to know more.</dd>
+    <section class="reimagined-section">
+        <div class="content-wrapper">
+            <h2>Waste Sorting, Reimagined.</h2>
+            <p><strong>Over 40 %</strong> of the residual stream is still recyclable.<br>
+              We rescue it before it is burned.</p>
+            <img src="reimagined_image.png" alt="Waste sorting process diagram" class="image-placeholder reimagined-placeholder">
+            <a href="https://www.eea.europa.eu/publications/many-eu-member-states/denmark/" class="source-link">Source: European Environment Agency</a>
+        </div>
+    </section>
 
-    <dt>How does easysort make money?</dt>
-    <dd> - We run a service where we sort waste for companies and sell the sorted waste to recycling companies.</dd>
+    <div class="section-divider"></div>
 
-    <dt>I can find the software, but I can't find the hardware?</dt>
-    <dd> - The software of Easysort is freely available. Our retired robots will be open-source. Building the robots is secondary, and we therefore have nothing to share yet.</dd> 
+    <section class="transparency-section">
+        <div class="content-wrapper">
+            <h2>Full Transparency.</h2>
+            <p>EasyTrack gives you key metrics, always available and update every 6 hours.</p>
+            <div class="transparency-image-container">
+                <img src="track-dashboard.png" alt="Transparency illustration" class="transparency-image">
+            </div>
+        </div>
+    </section>
 
-    <dt>When will EasySort leave alpha?</dt>
-    <dd> - When Easysort can correctly categorize >90% of the waste items shown to it with a minimum speed of 2 s/iteration.</dd>
+    <div class="section-divider"></div>
 
-    <dt>Where is easysort development happening?</dt>
-    <dd> - On Github.</dd>
+    <section class="cta-section">
+        <div class="content-wrapper">
+            <h2>Ready to Stop Burning Waste?</h2>
+            <p>
+                See the difference in a 7-day test.<br>
+                No extra work. No commitment. Just results.
+            </p>
+            <a href="https://calendly.com/lucas-easysort" class="cta-button large-cta-button">Get In Contact.</a>
+        </div>
+    </section>
 
-    <dt>What's the goal of easysort?</dt>
-    <dd> - To decrease the amount of reusable waste burned towards 0 by making sorting software easy to implement and free to use.</dd>
-
-    <dt>Can I work for Easysort?</dt>
-    <dd> - We are looking for people to join. Contact me at lucas@easysort.org, and show me something you've made.</dd>
-    <!-- <dd> - Check out our <a href="challenges.html">challenges for potentiel hires and bounties for contributors</a>.</dd> -->
-
-    <dt>Can you help me sort our waste?</dt>
-    <dd> - Yes! We are looking for companies to sort waste for. Contact me at lucas@easysort.org.</dd>
-  </dl>
+    <footer>
+        <div class="content-wrapper footer-content">
+            <span class="footer-brand">Easysort</span>
+            <div class="footer-links-group">
+                <a href="https://github.com/easysort" class="footer-link">Github.</a>
+                <a href="/contact" class="footer-link">Contact.</a>
+                <a href="/join" class="footer-link">Join us.</a>
+            </div>
+        </div>
+    </footer>
 </body>
+</html>
