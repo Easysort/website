@@ -120,8 +120,28 @@ function hideFrozenFrame() {
     canvas.classList.remove('show');
 }
 
+async function testBackendConnection() {
+    try {
+        console.log('Testing backend connection...');
+        const testResponse = await fetch(BACKEND_API_URL, {
+            method: 'OPTIONS'
+        });
+        console.log('OPTIONS request status:', testResponse.status);
+        return true;
+    } catch (error) {
+        console.error('Backend connection test failed:', error);
+        return false;
+    }
+}
+
 async function analyzeImage(imageBase64) {
     try {
+        // Test connection first
+        const isConnected = await testBackendConnection();
+        if (!isConnected) {
+            throw new Error('Backend server is not reachable');
+        }
+
         const prompt = `Based on the following description return the following information in a json format: {fraction: str, purity: int, subfraction: str}
 
 purity has to be an int between 1 and 10, where 10 is extremely pure with no abnomalies, and 1 is extremely dirty with nothing that can 
@@ -132,20 +152,25 @@ Subfraction has to be 1 word describing what the item is.`;
 
         console.log('Sending request to:', BACKEND_API_URL);
         console.log('Current origin:', window.location.origin);
+        console.log('Image data length:', imageBase64.length);
+
+        const requestBody = JSON.stringify({
+            image: imageBase64,
+            text: prompt
+        });
+        
+        console.log('Request body size:', requestBody.length);
 
         const response = await fetch(BACKEND_API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                image: imageBase64,
-                text: prompt
-            })
+            body: requestBody
         });
 
         console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
+        console.log('Response headers:', [...response.headers.entries()]);
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -170,7 +195,9 @@ Subfraction has to be 1 word describing what the item is.`;
         console.error('Backend API error:', error);
         
         if (error.message.includes('Failed to fetch')) {
-            throw new Error('Network error - check CORS or connection');
+            throw new Error('Network connection failed - backend may be down');
+        } else if (error.message.includes('not reachable')) {
+            throw new Error('Backend server is offline');
         } else {
             throw new Error('AI could not run in your browser');
         }
