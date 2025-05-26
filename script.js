@@ -134,75 +134,39 @@ async function testBackendConnection() {
     }
 }
 
-async function analyzeImage(imageBase64) {
-    try {
-        // Test connection first
-        const isConnected = await testBackendConnection();
-        if (!isConnected) {
-            throw new Error('Backend server is not reachable');
-        }
-
-        const prompt = `Based on the following description return the following information in a json format: {fraction: str, purity: int, subfraction: str}
-
-purity has to be an int between 1 and 10, where 10 is extremely pure with no abnomalies, and 1 is extremely dirty with nothing that can 
-
-fraction has to be one of: Madaffald, glas, papir, metal, blød plast, hård plast, farligt affald, mad- og drikkekartoner, pap, tekstiler, restaffald.
-
-Subfraction has to be 1 word describing what the item is.`;
-
-        console.log('Sending request to:', BACKEND_API_URL);
-        console.log('Current origin:', window.location.origin);
-        console.log('Image data length:', imageBase64.length);
-
-        const requestBody = JSON.stringify({
-            image: imageBase64,
-            text: prompt
-        });
-        
-        console.log('Request body size:', requestBody.length);
-
-        const response = await fetch(BACKEND_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: requestBody
-        });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', [...response.headers.entries()]);
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.log('Error response:', errorText);
-            throw new Error(`Backend API error: ${response.status} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log('Backend response:', data);
-        
-        const aiResponse = data.response;
-        
-        // Parse JSON response from the AI
-        const jsonMatch = aiResponse.match(/\{[^}]+\}/);
-        if (jsonMatch) {
-            return JSON.parse(jsonMatch[0]);
-        } else {
-            throw new Error('Invalid JSON response from AI');
-        }
-        
-    } catch (error) {
-        console.error('Backend API error:', error);
-        
-        if (error.message.includes('Failed to fetch')) {
-            throw new Error('Network connection failed - backend may be down');
-        } else if (error.message.includes('not reachable')) {
-            throw new Error('Backend server is offline');
-        } else {
-            throw new Error('AI could not run in your browser');
-        }
+async function postToWorker(imageBase64, prompt) {
+    const res = await fetch(BACKEND_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageBase64, text: prompt })
+    });
+  
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error(`Worker error ${res.status}: ${msg}`);
     }
-}
+    return res.json();        // { response: "…” }
+  }
+
+async function analyzeImage(imageBase64) {
+    const prompt = `Based on the following description return the following information in a json format: {fraction: str, purity: int, subfraction: str}
+  
+  purity has to be an int between 1 and 10, where 10 is extremely pure with no abnomalies, and 1 is extremely dirty with nothing that can 
+  
+  fraction has to be one of: Madaffald, glas, papir, metal, blød plast, hård plast, farligt affald, mad- og drikkekartoner, pap, tekstiler, restaffald.
+  
+  Subfraction has to be 1 word describing what the item is.`;
+  
+    /* talk to the Worker */
+    const { response } = await postToWorker(imageBase64, prompt);
+  
+    /* pull the JSON snippet out of the model’s reply */
+    const match = response.match(/\{[^}]+\}/);
+    if (!match) throw new Error('AI returned no JSON');
+  
+    return JSON.parse(match[0]);     // { fraction, purity, subfraction }
+  }
+
 
 function showResults(results) {
     const resultsArea = document.getElementById('results-area');
