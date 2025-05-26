@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easysort - Automated Waste Sorting</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <header id="main-header">
+        <nav>
+            <a href="#" class="logo-link">
+                <img src="logo.png" alt="Easysort Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+            </a>
+        </nav>
+        <div class="social-links">
+            <a href="https://github.com/Easysort" class="social-link github-link" target="_blank">
+                <span>Github</span>
+            </a>
+            <a href="https://discord.com/invite/2Bh3SBFbdP" class="social-link discord-link" target="_blank">
+                <span>Discord</span>
+            </a>
+            <a href="https://docs.easysort.org" class="social-link docs-link" target="_blank">
+                <span>Docs</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="hero-section">
+        <div class="hero-content">
+            <div class="hero-left">
+                <h1 class="hook-text">Intelligent Waste Detection Systems</h1>
+                <p class="hero-subtitle">Open-source. Transparent. Free.</p>
+            </div>
+            <div class="hero-right">
+                <div class="demo-container">
+                    <div class="webcam-area" id="webcam-area">
+                        <div class="webcam-placeholder" id="webcam-placeholder">
+                            <div class="webcam-icon">📷</div>
+                            <div class="webcam-text">Allow camera to try yourself</div>
+                        </div>
+                        <video id="webcam-video" autoplay playsinline></video>
+                        <canvas id="frozen-frame"></canvas>
+                    </div>
+                    <div class="results-area" id="results-area">
+                        <div class="results-title">Analysis Results</div>
+                        <div class="result-item">
+                            <span class="result-label">Fraction:</span>
+                            <span class="result-value" id="result-fraction">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Purity:</span>
+                            <span class="result-value" id="result-purity">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Subclass:</span>
+                            <span class="result-value" id="result-subclass">-</span>
+                        </div>
+                    </div>
+                    <button id="identify-btn" class="analyze-button" disabled>Analyze waste</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="section-divider"></div>
+
+    <section class="product-section">
+        <div class="product-content">
+            <div class="product-left">
+                <img src="product.png" alt="Easysort 1.0 Product" class="product-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div style="display: none; width: 100%; max-width: 500px; height: 400px; background: #f3f4f6; border-radius: 24px; align-items: center; justify-content: center; color: #9ca3af; font-size: 1.1rem;">
+                    Product Image
+                </div>
+            </div>
+            <div class="product-right">
+                <h2 class="product-title">Easysort 1.0</h2>
+                <p class="product-description">
+
+                    <b>Portable AI waste scanner designed for high-volume production lines, waste streams and recycling centers.
+                    <br><br>
+                    On-board AI, compute, and camera. No cloud, no subscription.
+                    <br><br>
+                    <b>Ships: </b>Q4 2025. <b>Total cost:</b> 15,000 kr.<br>
+                    <b>Real-time</b> classification and analytics included.
+                </p>
+                <div class="reserve-section">
+                    <h3 class="reserve-title">Reserve your unit.</h3>
+                    <br>
+                    <a href="mailto:lucas@easysort.org?subject=Easysort 1.0 Reservation&body=Hi, I would like to reserve an Easysort 1.0 unit for 500 kr (fully refundable). Please provide more details." class="reserve-button">
+                        Reserve for 1000 kr. Fully refundable.
+                    </a>
+                    <p class="reserve-note">
+                        Contact lucas@easysort.org
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <section class="mission-section">
+        <div class="mission-content">
+            <p class="mission-label">Our Mission</p>
+            <h2 class="mission-statement">
+                Free the people from waste sorting <br> through intelligent waste sorting systems.
+            </h2>
+            <p class="mission-keywords">
+                Open-source. Fully transparent. Free to use.
+            </p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-contact">
+                Contact: <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+            </div>
+            <div class="footer-links">
+                <a href="https://discord.com/invite/2Bh3SBFbdP" class="footer-link" target="_blank">Discord</a>
+                <a href="https://github.com/Easysort" class="footer-link" target="_blank">Github</a>
+                <a href="https://docs.easysort.org" class="footer-link" target="_blank">Documentation</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+<script src="script.js"></script>
+</html>
