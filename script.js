@@ -3,7 +3,7 @@ let isVideoActive = false;
 let countdownTimer = null;
 
 // Backend API configuration
-const BACKEND_API_URL = 'http://localhost:8787/generate';
+const BACKEND_API_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
 
 function checkSecureContext() {
     const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
