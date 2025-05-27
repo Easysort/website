@@ -3,7 +3,7 @@ let isVideoActive = false;
 let countdownTimer = null;
 
 // Backend API configuration
-const BACKEND_API_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
+const BACKEND_API_URL = 'http://localhost:8787/generate';
 
 function checkSecureContext() {
     const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -98,8 +98,9 @@ function captureFrame() {
     const context = canvas.getContext('2d');
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Return base64 encoded image for OpenAI API
-    return canvas.toDataURL('image/jpeg', 0.8);
+    // Return base64 encoded image without the data URL prefix
+    const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+    return dataURL.split(',')[1]; // Remove "data:image/jpeg;base64," prefix
 }
 
 function showFrozenFrame() {
@@ -120,53 +121,57 @@ function hideFrozenFrame() {
     canvas.classList.remove('show');
 }
 
-async function testBackendConnection() {
+async function analyzeImage(imageBase64) {
     try {
-        console.log('Testing backend connection...');
-        const testResponse = await fetch(BACKEND_API_URL, {
-            method: 'OPTIONS'
+        const prompt = `Based on the following description return the following information in a json format: {fraction: str, purity: int, subfraction: str}
+
+purity has to be an int between 1 and 10, where 10 is extremely pure with no abnomalies, and 1 is extremely dirty with nothing that can 
+
+fraction has to be one of: Madaffald, glas, papir, metal, blød plast, hård plast, farligt affald, mad- og drikkekartoner, pap, tekstiler, restaffald.
+
+Subfraction has to be 1 word describing what the item is.
+
+Return only the json format!`;
+
+        console.log('Making request to backend...');
+        
+        const response = await fetch(BACKEND_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                image: imageBase64,
+                text: prompt
+            })
         });
-        console.log('OPTIONS request status:', testResponse.status);
-        return true;
+
+        console.log('Response received:', response.status, response.statusText);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Backend error:', errorText);
+            throw new Error(`Backend error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Backend response data:', data);
+        
+        // Parse JSON from AI response
+        const aiResponse = data.response;
+        const jsonMatch = aiResponse.match(/\{[^}]+\}/);
+        
+        if (jsonMatch) {
+            return JSON.parse(jsonMatch[0]);
+        } else {
+            throw new Error('No valid JSON found in response');
+        }
+        
     } catch (error) {
-        console.error('Backend connection test failed:', error);
-        return false;
+        console.error('Analysis error:', error);
+        throw new Error('AI could not run in your browser');
     }
 }
-
-async function postToWorker(imageBase64, prompt) {
-    const res = await fetch(BACKEND_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: imageBase64, text: prompt })
-    });
-  
-    if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(`Worker error ${res.status}: ${msg}`);
-    }
-    return res.json();        // { response: "…” }
-  }
-
-async function analyzeImage(imageBase64) {
-    const prompt = `Based on the following description return the following information in a json format: {fraction: str, purity: int, subfraction: str}
-  
-  purity has to be an int between 1 and 10, where 10 is extremely pure with no abnomalies, and 1 is extremely dirty with nothing that can 
-  
-  fraction has to be one of: Madaffald, glas, papir, metal, blød plast, hård plast, farligt affald, mad- og drikkekartoner, pap, tekstiler, restaffald.
-  
-  Subfraction has to be 1 word describing what the item is.`;
-  
-    /* talk to the Worker */
-    const { response } = await postToWorker(imageBase64, prompt);
-  
-    /* pull the JSON snippet out of the model’s reply */
-    const match = response.match(/\{[^}]+\}/);
-    if (!match) throw new Error('AI returned no JSON');
-  
-    return JSON.parse(match[0]);     // { fraction, purity, subfraction }
-  }
-
 
 function showResults(results) {
     const resultsArea = document.getElementById('results-area');
@@ -223,7 +228,7 @@ document.getElementById('identify-btn').addEventListener('click', async function
         
         try {
             const results = await analyzeImage(imageBase64);
-            console.log("AI Response:", results);
+            console.log("Analysis results:", results);
             showResults(results);
             
         } catch (error) {
