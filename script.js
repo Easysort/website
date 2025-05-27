@@ -8,14 +8,12 @@ const BACKEND_API_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilse
 function checkSecureContext() {
     const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (!isSecure) {
-        console.warn("Camera access requires HTTPS or localhost");
         return false;
     }
     return true;
 }
 
 async function requestCameraAccess() {
-    console.log("Requesting camera access...");
     
     if (!checkSecureContext()) {
         updatePlaceholder('🚫', 'Camera requires HTTPS. Click to try again.');
@@ -31,18 +29,13 @@ async function requestCameraAccess() {
             throw new Error('Camera API not supported in this browser');
         }
         
-        console.log("Requesting media stream...");
-        
         stream = await navigator.mediaDevices.getUserMedia({ 
             video: true
         });
         
-        console.log("Camera access granted!");
-        
         video.srcObject = stream;
         
         video.onloadedmetadata = () => {
-            console.log("Video loaded, showing stream");
             video.classList.add('active');
             placeholder.classList.add('hidden');
             
@@ -54,7 +47,6 @@ async function requestCameraAccess() {
         };
         
     } catch (error) {
-        console.error('Camera access error:', error);
         
         let errorMessage = 'Camera access denied. Click to try again.';
         
@@ -83,7 +75,6 @@ function updatePlaceholder(icon, text) {
 }
 
 // Request camera when page loads
-console.log("Page loaded, requesting camera access...");
 requestCameraAccess();
 
 function captureFrame() {
@@ -133,7 +124,6 @@ Subfraction has to be 1 word describing what the item is.
 
 Return only the json format!`;
 
-        console.log('Making request to backend...');
         
         const response = await fetch(BACKEND_API_URL, {
             method: 'POST',
@@ -146,16 +136,13 @@ Return only the json format!`;
             })
         });
 
-        console.log('Response received:', response.status, response.statusText);
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('Backend error:', errorText);
             throw new Error(`Backend error: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('Backend response data:', data);
         
         // Parse JSON from AI response
         const aiResponse = data.response;
@@ -164,11 +151,10 @@ Return only the json format!`;
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0]);
         } else {
-            throw new Error('No valid JSON found in response');
+            throw new Error('AI could not run in your browser');
         }
         
     } catch (error) {
-        console.error('Analysis error:', error);
         throw new Error('AI could not run in your browser');
     }
 }
@@ -228,15 +214,13 @@ document.getElementById('identify-btn').addEventListener('click', async function
         
         try {
             const results = await analyzeImage(imageBase64);
-            console.log("Analysis results:", results);
             showResults(results);
             
         } catch (error) {
-            console.error("Analysis error:", error);
             showResults({
-                fraction: "Error",
-                purity: "AI could not run in your browser",
-                subfraction: "Try again"
+                fraction: "AI could not run in browser, try again later or contact us",
+                purity: "none",
+                subfraction: "none"
             });
         }
         
