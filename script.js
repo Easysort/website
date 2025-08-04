@@ -1,6 +1,8 @@
 let stream = null;
 let isVideoActive = false;
 let countdownTimer = null;
+let currentCameraIndex = 0;
+let availableCameras = [];
 
 // Backend API configuration
 const BACKEND_API_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
@@ -11,6 +13,23 @@ function checkSecureContext() {
         return false;
     }
     return true;
+}
+
+async function getAvailableCameras() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter(device => device.kind === 'videoinput');
+    } catch (error) {
+        console.error('Error getting cameras:', error);
+        return [];
+    }
+}
+
+async function switchCamera() {
+    if (availableCameras.length <= 1) return;
+    
+    currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+    await requestCameraAccess();
 }
 
 async function requestCameraAccess() {
@@ -24,14 +43,34 @@ async function requestCameraAccess() {
         const video = document.getElementById('webcam-video');
         const placeholder = document.getElementById('webcam-placeholder');
         const analyzeButton = document.getElementById('identify-btn');
+        const switchButton = document.getElementById('camera-switch-btn');
+        const switchIcon = document.getElementById('camera-switch-icon');
         
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             throw new Error('Camera API not supported in this browser');
         }
         
-        stream = await navigator.mediaDevices.getUserMedia({ 
-            video: true
-        });
+        // Stop current stream if exists
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        
+        // Get available cameras if not already done
+        if (availableCameras.length === 0) {
+            availableCameras = await getAvailableCameras();
+        }
+        
+        // Show switch button and icon if multiple cameras available
+        const showSwitch = availableCameras.length > 1;
+        switchButton.style.display = showSwitch ? 'block' : 'none';
+        switchIcon.style.display = showSwitch ? 'block' : 'none';
+        
+        // Use specific camera if available
+        const constraints = availableCameras.length > 0 
+            ? { video: { deviceId: { exact: availableCameras[currentCameraIndex].deviceId } } }
+            : { video: true };
+        
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
         
         video.srcObject = stream;
         
@@ -227,6 +266,9 @@ document.getElementById('identify-btn').addEventListener('click', async function
         startCountdown(this);
     }
 });
+
+// Camera switch button functionality
+document.getElementById('camera-switch-btn').addEventListener('click', switchCamera);
 
 window.addEventListener('beforeunload', () => {
     if (stream) {
