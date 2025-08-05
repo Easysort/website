@@ -763,11 +763,20 @@ body {
     z-index: 10;
     transition: all 0.2s ease;
     display: none;
+    /* Mobile touch improvements */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
 }
 
 .camera-switch-btn:hover {
     background: rgba(0, 0, 0, 0.8);
     transform: scale(1.05);
+}
+
+.camera-switch-btn:active {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(0.95);
 }
 
 .camera-switch-icon {
@@ -781,5 +790,36 @@ body {
     z-index: 11;
     pointer-events: none;
     display: none;
+}
+
+/* Mobile-specific improvements for camera switch */
+@media (max-width: 768px) {
+    .camera-switch-btn {
+        width: 60px;
+        height: 60px;
+        top: 16px;
+        right: 16px;
+        /* Larger touch target for mobile */
+    }
+    
+    .camera-switch-icon {
+        width: 85px;
+        height: 85px;
+        top: 12px;
+        right: 4px;
+    }
+    
+    /* Ensure the button is easily tappable on mobile */
+    .camera-switch-btn:focus {
+        outline: 2px solid rgba(255, 255, 255, 0.5);
+        outline-offset: 2px;
+    }
+}
+
+/* High DPI display support for better icon clarity */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .camera-switch-icon {
+        transform: scale(0.9);
+    }
 }
 

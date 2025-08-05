@@ -17,6 +17,10 @@ function checkSecureContext() {
 
 async function getAvailableCameras() {
     try {
+        // Request camera permission first to ensure device enumeration works on mobile
+        const tempStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        tempStream.getTracks().forEach(track => track.stop());
+        
         const devices = await navigator.mediaDevices.enumerateDevices();
         return devices.filter(device => device.kind === 'videoinput');
     } catch (error) {
@@ -65,10 +69,19 @@ async function requestCameraAccess() {
         switchButton.style.display = showSwitch ? 'block' : 'none';
         switchIcon.style.display = showSwitch ? 'block' : 'none';
         
-        // Use specific camera if available
-        const constraints = availableCameras.length > 0 
-            ? { video: { deviceId: { exact: availableCameras[currentCameraIndex].deviceId } } }
-            : { video: true };
+        // Use specific camera if available, with fallback for mobile
+        let constraints;
+        if (availableCameras.length > 0) {
+            constraints = { 
+                video: { 
+                    deviceId: { exact: availableCameras[currentCameraIndex].deviceId },
+                    // Mobile-specific constraints for better performance
+                    facingMode: currentCameraIndex === 0 ? 'environment' : 'user'
+                } 
+            };
+        } else {
+            constraints = { video: true };
+        }
         
         stream = await navigator.mediaDevices.getUserMedia(constraints);
         
@@ -95,6 +108,25 @@ async function requestCameraAccess() {
             errorMessage = 'No camera found. Please connect a camera and try again.';
         } else if (error.name === 'NotSupportedError') {
             errorMessage = 'Camera not supported in this browser.';
+        } else if (error.name === 'OverconstrainedError') {
+            // Handle mobile camera switching errors gracefully
+            console.log('Camera constraint error, trying fallback...');
+            try {
+                // Fallback to basic video constraint
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('webcam-video');
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    video.classList.add('active');
+                    document.getElementById('webcam-placeholder').classList.add('hidden');
+                    isVideoActive = true;
+                    document.getElementById('identify-btn').disabled = false;
+                    document.getElementById('identify-btn').textContent = 'Analyze waste';
+                };
+                return;
+            } catch (fallbackError) {
+                errorMessage = 'Camera access failed. Please try again.';
+            }
         }
         
         updatePlaceholder('🚫', errorMessage);
@@ -267,8 +299,20 @@ document.getElementById('identify-btn').addEventListener('click', async function
     }
 });
 
-// Camera switch button functionality
+// Camera switch button functionality with improved mobile support
 document.getElementById('camera-switch-btn').addEventListener('click', switchCamera);
+
+// Add touch event support for better mobile interaction
+document.getElementById('camera-switch-btn').addEventListener('touchstart', function(e) {
+    e.preventDefault(); // Prevent double-tap zoom on mobile
+    this.style.transform = 'scale(0.95)';
+});
+
+document.getElementById('camera-switch-btn').addEventListener('touchend', function(e) {
+    e.preventDefault();
+    this.style.transform = 'scale(1)';
+    switchCamera();
+});
 
 window.addEventListener('beforeunload', () => {
     if (stream) {
