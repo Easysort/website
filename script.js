@@ -154,16 +154,36 @@ function applyVideoOrientation(video) {
     const settings = videoTrack.getSettings();
     const capabilities = videoTrack.getCapabilities();
     
-    // Check if this is likely a front camera (usually has lower resolution and different aspect ratio)
-    const isFrontCamera = settings.width < 1920 || 
-                         (capabilities.facingMode && capabilities.facingMode.includes('user'));
+    // More precise front camera detection
+    let isFrontCamera = false;
+    
+    // Method 1: Check if facingMode capability includes 'user' (front camera)
+    if (capabilities.facingMode && capabilities.facingMode.includes('user')) {
+        isFrontCamera = true;
+    }
+    // Method 2: Check if facingMode capability includes 'environment' (back camera)
+    else if (capabilities.facingMode && capabilities.facingMode.includes('environment')) {
+        isFrontCamera = false;
+    }
+    // Method 3: Fallback - use device index (usually front camera is index 1, back is index 0)
+    else if (availableCameras.length > 1) {
+        // On most mobile devices, front camera is typically the second camera
+        isFrontCamera = currentCameraIndex === 1;
+    }
+    // Method 4: Last resort - check device label for common front camera indicators
+    else if (availableCameras[currentCameraIndex] && availableCameras[currentCameraIndex].label) {
+        const label = availableCameras[currentCameraIndex].label.toLowerCase();
+        isFrontCamera = label.includes('front') || label.includes('user') || label.includes('selfie');
+    }
     
     if (isFrontCamera) {
-        // For front camera, we need to mirror the video horizontally
+        // For front camera, mirror the video horizontally (like a mirror)
         video.style.transform = 'scaleX(-1)';
+        console.log('Applied front camera mirroring');
     } else {
         // For back camera, keep normal orientation
         video.style.transform = 'scaleX(1)';
+        console.log('Applied back camera normal orientation');
     }
     
     // Set video properties for better mobile performance
