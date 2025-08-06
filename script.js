@@ -141,11 +141,6 @@ async function requestCameraAccess() {
 
 // New function to handle video orientation properly
 function applyVideoOrientation(video) {
-    // Check if we're on a mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (!isMobile) return;
-    
     // Get the video track to check camera capabilities
     const videoTrack = stream.getVideoTracks()[0];
     if (!videoTrack) return;
@@ -167,13 +162,14 @@ function applyVideoOrientation(video) {
     }
     // Method 3: Fallback - use device index (usually front camera is index 1, back is index 0)
     else if (availableCameras.length > 1) {
-        // On most mobile devices, front camera is typically the second camera
+        // On most devices, front camera is typically the second camera
         isFrontCamera = currentCameraIndex === 1;
     }
     // Method 4: Last resort - check device label for common front camera indicators
     else if (availableCameras[currentCameraIndex] && availableCameras[currentCameraIndex].label) {
         const label = availableCameras[currentCameraIndex].label.toLowerCase();
-        isFrontCamera = label.includes('front') || label.includes('user') || label.includes('selfie');
+        isFrontCamera = label.includes('front') || label.includes('user') || label.includes('selfie') || 
+                       label.includes('webcam') || label.includes('built-in') || label.includes('integrated');
     }
     
     if (isFrontCamera) {
@@ -186,7 +182,7 @@ function applyVideoOrientation(video) {
         console.log('Applied back camera normal orientation');
     }
     
-    // Set video properties for better mobile performance
+    // Set video properties for better performance
     video.setAttribute('playsinline', 'true');
     video.setAttribute('webkit-playsinline', 'true');
     video.setAttribute('autoplay', 'true');
