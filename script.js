@@ -252,7 +252,7 @@ async function analyzeImage(imageBase64) {
 
 purity has to be an int between 1 and 10, where 10 is extremely pure with no abnomalies, and 1 is extremely dirty with nothing that can 
 
-fraction has to be one of: Madaffald, glas, papir, metal, blød plast, hård plast, farligt affald, mad- og drikkekartoner, pap, tekstiler, restaffald.
+fraction must be one of: food waste, glass, paper, metal, soft plastics, hard plastics, hazardous waste, food and drink cartons, cardboard, textiles, or residual waste.
 
 Subfraction has to be 1 word describing what the item is.
 
