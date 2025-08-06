@@ -255,12 +255,18 @@ body {
     position: absolute;
     top: 0;
     left: 0;
+    /* Add these properties for better mobile video handling */
+    transform-origin: center center;
+    transition: transform 0.1s ease;
+    /* Ensure video doesn't get stretched or distorted */
+    object-position: center;
 }
 
 #webcam-video.active {
     display: block;
 }
 
+/* Ensure the frozen frame also respects the orientation */
 #frozen-frame {
     width: 100%;
     height: 100%;
@@ -271,6 +277,9 @@ body {
     top: 0;
     left: 0;
     z-index: 1;
+    /* Add the same transform properties */
+    transform-origin: center center;
+    object-position: center;
 }
 
 #frozen-frame.show {

@@ -69,14 +69,13 @@ async function requestCameraAccess() {
         switchButton.style.display = showSwitch ? 'block' : 'none';
         switchIcon.style.display = showSwitch ? 'block' : 'none';
         
-        // Use specific camera if available, with fallback for mobile
+        // Use specific camera if available, without facingMode to prevent orientation issues
         let constraints;
         if (availableCameras.length > 0) {
             constraints = { 
                 video: { 
-                    deviceId: { exact: availableCameras[currentCameraIndex].deviceId },
-                    // Mobile-specific constraints for better performance
-                    facingMode: currentCameraIndex === 0 ? 'environment' : 'user'
+                    deviceId: { exact: availableCameras[currentCameraIndex].deviceId }
+                    // Removed facingMode to prevent orientation issues
                 } 
             };
         } else {
@@ -87,6 +86,9 @@ async function requestCameraAccess() {
         
         video.srcObject = stream;
         
+        // Fix video orientation for mobile devices
+        video.style.transform = 'scaleX(1)'; // Reset any previous transforms
+        
         video.onloadedmetadata = () => {
             video.classList.add('active');
             placeholder.classList.add('hidden');
@@ -96,6 +98,9 @@ async function requestCameraAccess() {
             // Enable analyze button
             analyzeButton.disabled = false;
             analyzeButton.textContent = 'Analyze waste';
+            
+            // Apply orientation fix for mobile front camera
+            applyVideoOrientation(video);
         };
         
     } catch (error) {
@@ -122,6 +127,7 @@ async function requestCameraAccess() {
                     isVideoActive = true;
                     document.getElementById('identify-btn').disabled = false;
                     document.getElementById('identify-btn').textContent = 'Analyze waste';
+                    applyVideoOrientation(video);
                 };
                 return;
             } catch (fallbackError) {
@@ -131,6 +137,40 @@ async function requestCameraAccess() {
         
         updatePlaceholder('🚫', errorMessage);
     }
+}
+
+// New function to handle video orientation properly
+function applyVideoOrientation(video) {
+    // Check if we're on a mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (!isMobile) return;
+    
+    // Get the video track to check camera capabilities
+    const videoTrack = stream.getVideoTracks()[0];
+    if (!videoTrack) return;
+    
+    // Get camera settings to determine if it's front or back camera
+    const settings = videoTrack.getSettings();
+    const capabilities = videoTrack.getCapabilities();
+    
+    // Check if this is likely a front camera (usually has lower resolution and different aspect ratio)
+    const isFrontCamera = settings.width < 1920 || 
+                         (capabilities.facingMode && capabilities.facingMode.includes('user'));
+    
+    if (isFrontCamera) {
+        // For front camera, we need to mirror the video horizontally
+        video.style.transform = 'scaleX(-1)';
+    } else {
+        // For back camera, keep normal orientation
+        video.style.transform = 'scaleX(1)';
+    }
+    
+    // Set video properties for better mobile performance
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('autoplay', 'true');
+    video.setAttribute('muted', 'true');
 }
 
 function updatePlaceholder(icon, text) {
@@ -173,6 +213,13 @@ function showFrozenFrame() {
     canvas.height = video.videoHeight;
     
     const context = canvas.getContext('2d');
+    
+    // Apply the same transform as the video
+    const videoTransform = window.getComputedStyle(video).transform;
+    if (videoTransform && videoTransform !== 'none') {
+        canvas.style.transform = videoTransform;
+    }
+    
     context.drawImage(video, 0, 0);
     
     canvas.classList.add('show');
