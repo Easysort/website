@@ -248,48 +248,35 @@ function hideFrozenFrame() {
 
 async function analyzeImage(imageBase64) {
     try {
-        const prompt = `Based on the following description return the following information in a json format: {fraction: str, purity: int, subfraction: str}
-
-purity has to be an int between 1 and 10, where 10 is extremely pure with no abnomalies, and 1 is extremely dirty with nothing that can 
-
-fraction must be one of: food waste, glass, paper, metal, soft plastics, hard plastics, hazardous waste, food and drink cartons, cardboard, textiles, or residual waste.
-
-Subfraction has to be 1 word describing what the item is.
-
-Return only the json format!`;
-
-        
         const response = await fetch(BACKEND_API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                image: imageBase64,
-                text: prompt
+                image: imageBase64
             })
         });
 
 
+        const data = await response.json().catch(() => null);
+
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Backend error: ${response.status}`);
+            const id = data && typeof data.id === 'string' ? data.id : 'backend_error';
+            const message = data && typeof data.message === 'string' ? data.message : `Backend error: ${response.status}`;
+            throw new Error(`${id}: ${message}`);
         }
 
-        const data = await response.json();
-        
-        // Parse JSON from AI response
-        const aiResponse = data.response;
-        const jsonMatch = aiResponse.match(/\{[^}]+\}/);
-        
-        if (jsonMatch) {
-            return JSON.parse(jsonMatch[0]);
-        } else {
-            throw new Error('AI could not run in your browser');
+        if (!data || data.ok !== true || !data.result) {
+            throw new Error('Unexpected backend response');
         }
+
+        return data.result;
         
     } catch (error) {
-        throw new Error('AI could not run in your browser');
+        // Keep a user-friendly message but log the real one for debugging
+        console.error('Analyze error:', error);
+        throw new Error(error && error.message ? error.message : 'AI could not run in your browser');
     }
 }
 
