@@ -6,6 +6,7 @@ let availableCameras = [];
 
 // Backend API configuration
 const BACKEND_API_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
+const DEBUG = false; // set true temporarily if you want verbose console logs
 
 function checkSecureContext() {
     const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -264,19 +265,20 @@ async function analyzeImage(imageBase64) {
         if (!response.ok) {
             const id = data && typeof data.id === 'string' ? data.id : 'backend_error';
             const message = data && typeof data.message === 'string' ? data.message : `Backend error: ${response.status}`;
-            throw new Error(`${id}: ${message}`);
+            if (DEBUG) console.error('Backend error:', { status: response.status, id, message });
+            throw new Error('AI analysis failed. Please try again later.');
         }
 
         if (!data || data.ok !== true || !data.result) {
-            throw new Error('Unexpected backend response');
+            if (DEBUG) console.error('Unexpected backend response:', { status: response.status, data });
+            throw new Error('AI analysis failed. Please try again later.');
         }
 
         return data.result;
         
     } catch (error) {
-        // Keep a user-friendly message but log the real one for debugging
-        console.error('Analyze error:', error);
-        throw new Error(error && error.message ? error.message : 'AI could not run in your browser');
+        if (DEBUG) console.error('Analyze error:', error);
+        throw new Error('AI analysis failed. Please try again later.');
     }
 }
 
