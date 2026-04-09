@@ -3,6 +3,7 @@ let isVideoActive = false;
 let countdownTimer = null;
 let currentCameraIndex = 0;
 let availableCameras = [];
+let isRequestingCamera = false;
 
 // Backend API configuration
 const BACKEND_API_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
@@ -18,10 +19,6 @@ function checkSecureContext() {
 
 async function getAvailableCameras() {
     try {
-        // Request camera permission first to ensure device enumeration works on mobile
-        const tempStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        tempStream.getTracks().forEach(track => track.stop());
-        
         const devices = await navigator.mediaDevices.enumerateDevices();
         return devices.filter(device => device.kind === 'videoinput');
     } catch (error) {
@@ -38,96 +35,109 @@ async function switchCamera() {
 }
 
 async function requestCameraAccess() {
-    
     if (!checkSecureContext()) {
         updatePlaceholder('🚫', 'Camera requires HTTPS. Click to try again.');
         return;
     }
 
+    if (isRequestingCamera) {
+        return;
+    }
+
+    const video = document.getElementById('webcam-video');
+    const placeholder = document.getElementById('webcam-placeholder');
+    const analyzeButton = document.getElementById('identify-btn');
+    const switchButton = document.getElementById('camera-switch-btn');
+    const switchIcon = document.getElementById('camera-switch-icon');
+    const webcamArea = document.getElementById('webcam-area');
+
+    isRequestingCamera = true;
+
     try {
-        const video = document.getElementById('webcam-video');
-        const placeholder = document.getElementById('webcam-placeholder');
-        const analyzeButton = document.getElementById('identify-btn');
-        const switchButton = document.getElementById('camera-switch-btn');
-        const switchIcon = document.getElementById('camera-switch-icon');
-        
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             throw new Error('Camera API not supported in this browser');
         }
         
-        // Stop current stream if exists
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
         }
         
-        // Get available cameras if not already done
-        if (availableCameras.length === 0) {
-            availableCameras = await getAvailableCameras();
-        }
-        
-        // Show switch button and icon if multiple cameras available
-        const showSwitch = availableCameras.length > 1;
-        switchButton.style.display = showSwitch ? 'block' : 'none';
-        switchIcon.style.display = showSwitch ? 'block' : 'none';
-        
-        // Use specific camera if available, without facingMode to prevent orientation issues
         let constraints;
-        if (availableCameras.length > 0) {
-            constraints = { 
-                video: { 
+        if (availableCameras.length > 0 && availableCameras[currentCameraIndex]) {
+            constraints = {
+                video: {
                     deviceId: { exact: availableCameras[currentCameraIndex].deviceId }
-                    // Removed facingMode to prevent orientation issues
-                } 
+                }
             };
         } else {
             constraints = { video: true };
         }
         
         stream = await navigator.mediaDevices.getUserMedia(constraints);
+        availableCameras = await getAvailableCameras();
+        if (currentCameraIndex >= availableCameras.length) {
+            currentCameraIndex = 0;
+        }
+        
+        const showSwitch = availableCameras.length > 1;
+        switchButton.style.display = showSwitch ? 'block' : 'none';
+        switchIcon.style.display = showSwitch ? 'block' : 'none';
         
         video.srcObject = stream;
+        video.muted = true;
+        video.style.transform = 'scaleX(1)';
         
-        // Fix video orientation for mobile devices
-        video.style.transform = 'scaleX(1)'; // Reset any previous transforms
-        
-        video.onloadedmetadata = () => {
+        video.onloadedmetadata = async () => {
+            try {
+                await video.play();
+            } catch (playError) {
+                if (DEBUG) console.error('Video play error:', playError);
+            }
+            
             video.classList.add('active');
             placeholder.classList.add('hidden');
+            webcamArea.onclick = null;
+            webcamArea.style.cursor = 'default';
             
             isVideoActive = true;
-            
-            // Enable analyze button
             analyzeButton.disabled = false;
             analyzeButton.textContent = 'Analyze waste';
-            
-            // Apply orientation fix for mobile front camera
             applyVideoOrientation(video);
         };
         
     } catch (error) {
-        
         let errorMessage = 'Camera access denied. Click to try again.';
         
         if (error.name === 'NotAllowedError') {
-            errorMessage = 'Camera permission denied. Please allow camera access and click to try again.';
+            errorMessage = 'Camera permission denied. Please allow camera access in your browser and click to try again.';
         } else if (error.name === 'NotFoundError') {
             errorMessage = 'No camera found. Please connect a camera and try again.';
         } else if (error.name === 'NotSupportedError') {
             errorMessage = 'Camera not supported in this browser.';
         } else if (error.name === 'OverconstrainedError') {
-            // Handle mobile camera switching errors gracefully
-            console.log('Camera constraint error, trying fallback...');
+            if (DEBUG) console.log('Camera constraint error, trying fallback...');
             try {
-                // Fallback to basic video constraint
                 stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                const video = document.getElementById('webcam-video');
+                availableCameras = await getAvailableCameras();
                 video.srcObject = stream;
-                video.onloadedmetadata = () => {
+                video.muted = true;
+                video.onloadedmetadata = async () => {
+                    try {
+                        await video.play();
+                    } catch (playError) {
+                        if (DEBUG) console.error('Video play error:', playError);
+                    }
+                    
                     video.classList.add('active');
-                    document.getElementById('webcam-placeholder').classList.add('hidden');
+                    placeholder.classList.add('hidden');
+                    webcamArea.onclick = null;
+                    webcamArea.style.cursor = 'default';
                     isVideoActive = true;
-                    document.getElementById('identify-btn').disabled = false;
-                    document.getElementById('identify-btn').textContent = 'Analyze waste';
+                    analyzeButton.disabled = false;
+                    analyzeButton.textContent = 'Analyze waste';
+                    const showSwitch = availableCameras.length > 1;
+                    switchButton.style.display = showSwitch ? 'block' : 'none';
+                    switchIcon.style.display = showSwitch ? 'block' : 'none';
                     applyVideoOrientation(video);
                 };
                 return;
@@ -136,54 +146,48 @@ async function requestCameraAccess() {
             }
         }
         
+        isVideoActive = false;
+        video.classList.remove('active');
+        placeholder.classList.remove('hidden');
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = 'Enable camera to try demo';
+        switchButton.style.display = 'none';
+        switchIcon.style.display = 'none';
         updatePlaceholder('🚫', errorMessage);
+    } finally {
+        isRequestingCamera = false;
     }
 }
 
 // New function to handle video orientation properly
 function applyVideoOrientation(video) {
-    // Get the video track to check camera capabilities
-    const videoTrack = stream.getVideoTracks()[0];
+    const videoTrack = stream && stream.getVideoTracks ? stream.getVideoTracks()[0] : null;
     if (!videoTrack) return;
     
-    // Get camera settings to determine if it's front or back camera
-    const settings = videoTrack.getSettings();
-    const capabilities = videoTrack.getCapabilities();
+    const capabilities = typeof videoTrack.getCapabilities === 'function' ? videoTrack.getCapabilities() : {};
     
-    // More precise front camera detection
     let isFrontCamera = false;
     
-    // Method 1: Check if facingMode capability includes 'user' (front camera)
     if (capabilities.facingMode && capabilities.facingMode.includes('user')) {
         isFrontCamera = true;
-    }
-    // Method 2: Check if facingMode capability includes 'environment' (back camera)
-    else if (capabilities.facingMode && capabilities.facingMode.includes('environment')) {
+    } else if (capabilities.facingMode && capabilities.facingMode.includes('environment')) {
         isFrontCamera = false;
-    }
-    // Method 3: Fallback - use device index (usually front camera is index 1, back is index 0)
-    else if (availableCameras.length > 1) {
-        // On most devices, front camera is typically the second camera
+    } else if (availableCameras.length > 1) {
         isFrontCamera = currentCameraIndex === 1;
-    }
-    // Method 4: Last resort - check device label for common front camera indicators
-    else if (availableCameras[currentCameraIndex] && availableCameras[currentCameraIndex].label) {
+    } else if (availableCameras[currentCameraIndex] && availableCameras[currentCameraIndex].label) {
         const label = availableCameras[currentCameraIndex].label.toLowerCase();
-        isFrontCamera = label.includes('front') || label.includes('user') || label.includes('selfie') || 
+        isFrontCamera = label.includes('front') || label.includes('user') || label.includes('selfie') ||
                        label.includes('webcam') || label.includes('built-in') || label.includes('integrated');
     }
     
     if (isFrontCamera) {
-        // For front camera, mirror the video horizontally (like a mirror)
         video.style.transform = 'scaleX(-1)';
-        console.log('Applied front camera mirroring');
+        if (DEBUG) console.log('Applied front camera mirroring');
     } else {
-        // For back camera, keep normal orientation
         video.style.transform = 'scaleX(1)';
-        console.log('Applied back camera normal orientation');
+        if (DEBUG) console.log('Applied back camera normal orientation');
     }
     
-    // Set video properties for better performance
     video.setAttribute('playsinline', 'true');
     video.setAttribute('webkit-playsinline', 'true');
     video.setAttribute('autoplay', 'true');
@@ -192,6 +196,7 @@ function applyVideoOrientation(video) {
 
 function updatePlaceholder(icon, text) {
     const placeholder = document.getElementById('webcam-placeholder');
+    const webcamArea = document.getElementById('webcam-area');
     const webcamText = placeholder.querySelector('.webcam-text');
     const webcamIcon = placeholder.querySelector('.webcam-icon');
     
@@ -199,10 +204,22 @@ function updatePlaceholder(icon, text) {
     webcamText.textContent = text;
     
     placeholder.style.cursor = 'pointer';
-    placeholder.onclick = requestCameraAccess;
+    webcamArea.style.cursor = 'pointer';
+    webcamArea.onclick = () => {
+        if (!isVideoActive && !isRequestingCamera) {
+            requestCameraAccess();
+        }
+    };
 }
 
-// Request camera when page loads
+function initializeCameraPrompt() {
+    const analyzeButton = document.getElementById('identify-btn');
+    analyzeButton.disabled = true;
+    analyzeButton.textContent = 'Enable camera to try demo';
+    updatePlaceholder('📷', 'Allow camera to try it yourself');
+}
+
+initializeCameraPrompt();
 requestCameraAccess();
 
 function captureFrame() {
