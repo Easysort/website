@@ -4,10 +4,310 @@ let countdownTimer = null;
 let currentCameraIndex = 0;
 let availableCameras = [];
 let isRequestingCamera = false;
+let currentLanguage = 'en';
+let currentAnalyzeButtonState = 'disabled';
+let currentCountdownValue = 0;
+let latestResults = null;
 
 // Backend API configuration
 const BACKEND_API_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
 const DEBUG = false; // set true temporarily if you want verbose console logs
+const LANGUAGE_STORAGE_KEY = 'easysort-language';
+const SUPPORTED_LANGUAGES = ['en', 'da'];
+
+const translations = {
+    en: {
+        pageTitle: 'Easysort - Intelligent waste detection systems',
+        languageSwitcherLabel: 'Language switcher',
+        cameraSwitchTitle: 'Switch camera',
+        cameraSwitchAria: 'Switch camera',
+        headerCta: 'Book discovery call',
+        heroKicker: 'Intelligent waste detection systems',
+        heroTitle: 'Built for recycling centers and waste plants.',
+        heroSubtitle: 'Try the demo, see the projects, and book a discovery call to explore opportunities in your facility.',
+        heroPrimaryCta: 'Book a discovery call',
+        heroSecondaryCta: 'See current projects',
+        demoEyebrow: 'Live demo',
+        demoTitle: 'Test the waste classifier',
+        demoCopy: 'Use your camera to get a quick classification preview.',
+        placeholderDefault: 'Allow camera to try it yourself',
+        resultsTitle: 'Analysis Results',
+        fractionLabel: 'Fraction:',
+        purityLabel: 'Purity:',
+        subclassLabel: 'Subclass:',
+        consultationLabel: 'Free discovery call with Lucas',
+        consultationTitle: "Let's find where the opportunities are.",
+        consultationDescription: 'We use the call to understand your facility, point out practical improvement opportunities, and share ideas you can use whether you work with us, someone else, or solve it in-house. If there is a strong match, we also see whether you qualify for a project with us.',
+        consultationCta: 'Book a discovery call',
+        consultationNote: 'Practical pointers first. Project fit second.',
+        partnersLabel: 'Partners',
+        partnersTitle: 'Some of the teams we work with.',
+        partnersDescription: 'A few partners, pilots, and collaboration environments.',
+        projectsLabel: 'Projects',
+        projectsTitle: 'Current projects.',
+        projectsDescription: 'Two for recycling centers. Two for waste plants.',
+        project1Tag: 'Recycling centers',
+        project1Title: 'Direct reuse monitoring',
+        project1Description: 'Track what gets taken, reused, and visited.',
+        project2Tag: 'Recycling centers',
+        project2Title: 'Sorting guide',
+        project2Description: 'Guide visitors to the right container in seconds.',
+        project3Tag: 'Waste plants',
+        project3Title: 'Incoming waste inspection',
+        project3Description: 'Analyze loads and flag poor sorting with evidence.',
+        project4Tag: 'Waste plants',
+        project4Title: 'Facility optimization',
+        project4Description: 'Monitor weighbridge and plant flow with better control.',
+        footerSummary: 'Intelligent waste detection systems for recycling center and waste plants.',
+        footerContactLabel: 'Contact:',
+        footerReviewLink: 'Book review',
+        footerDocsLink: 'Documentation',
+        analyzeEnableCamera: 'Enable camera to try demo',
+        analyzeWaste: 'Analyze waste',
+        analyzing: 'Analyzing...',
+        countdownLabel: 'Wait {seconds}s',
+        cameraRequiresHttps: 'Camera requires HTTPS. Click to try again.',
+        cameraApiUnsupported: 'Camera API not supported in this browser.',
+        cameraAccessDenied: 'Camera access denied. Click to try again.',
+        cameraPermissionDenied: 'Camera permission denied. Please allow camera access in your browser and click to try again.',
+        cameraNotFound: 'No camera found. Please connect a camera and try again.',
+        cameraNotSupported: 'Camera not supported in this browser.',
+        cameraAccessFailed: 'Camera access failed. Please try again later.',
+        aiFailed: 'AI analysis failed. Please try again later.'
+    },
+    da: {
+        pageTitle: 'Easysort - Intelligente systemer til affaldsgenkendelse',
+        languageSwitcherLabel: 'Sprogskifter',
+        cameraSwitchTitle: 'Skift kamera',
+        cameraSwitchAria: 'Skift kamera',
+        headerCta: 'Book introduktionsmøde',
+        heroKicker: 'Intelligente systemer til affaldsgenkendelse',
+        heroTitle: 'Bygget til genbrugspladser og affaldsanlæg.',
+        heroSubtitle: 'Prøv demoen, se projekterne, og book et introduktionsmøde for at udforske mulighederne i jeres anlæg.',
+        heroPrimaryCta: 'Book introduktionsmøde',
+        heroSecondaryCta: 'Se aktuelle projekter',
+        demoEyebrow: 'Live demo',
+        demoTitle: 'Test affaldsklassificeringen',
+        demoCopy: 'Brug dit kamera og få en hurtig klassificering.',
+        placeholderDefault: 'Giv kameraadgang for at prøve selv',
+        resultsTitle: 'Analyseresultater',
+        fractionLabel: 'Fraktion:',
+        purityLabel: 'Renhed:',
+        subclassLabel: 'Underkategori:',
+        consultationLabel: 'Gratis introduktionsmøde med Lucas',
+        consultationTitle: 'Lad os finde ud af, hvor mulighederne er.',
+        consultationDescription: 'Vi bruger mødet på at forstå jeres anlæg, pege på praktiske forbedringsmuligheder og dele idéer, I kan bruge, uanset om I arbejder med os, en anden leverandør eller løser det internt. Hvis der er et stærkt match, ser vi også på, om I passer til et projekt med os.',
+        consultationCta: 'Book introduktionsmøde',
+        consultationNote: 'Praktiske input først. Projektmatch bagefter.',
+        partnersLabel: 'Partnere',
+        partnersTitle: 'Nogle af de teams, vi arbejder med.',
+        partnersDescription: 'Et udvalg af partnere, piloter og samarbejdsmiljøer.',
+        projectsLabel: 'Projekter',
+        projectsTitle: 'Aktuelle projekter.',
+        projectsDescription: 'To til genbrugspladser. To til affaldsanlæg.',
+        project1Tag: 'Genbrugspladser',
+        project1Title: 'Overvågning af direkte genbrug',
+        project1Description: 'Følg hvad der bliver taget, genbrugt og besøgt.',
+        project2Tag: 'Genbrugspladser',
+        project2Title: 'Sorteringsguide',
+        project2Description: 'Hjælp besøgende til den rigtige container på få sekunder.',
+        project3Tag: 'Affaldsanlæg',
+        project3Title: 'Kontrol af indkommende affald',
+        project3Description: 'Analyser læs og marker fejlsortering med dokumentation.',
+        project4Tag: 'Affaldsanlæg',
+        project4Title: 'Optimering af anlæg',
+        project4Description: 'Overvåg brovægt og flow i anlægget med bedre kontrol.',
+        footerSummary: 'Intelligente systemer til affaldsgenkendelse for genbrugspladser og affaldsanlæg.',
+        footerContactLabel: 'Kontakt:',
+        footerReviewLink: 'Book gennemgang',
+        footerDocsLink: 'Dokumentation',
+        analyzeEnableCamera: 'Aktiver kamera for at prøve demoen',
+        analyzeWaste: 'Analyser affald',
+        analyzing: 'Analyserer...',
+        countdownLabel: 'Vent {seconds}s',
+        cameraRequiresHttps: 'Kamera kræver HTTPS. Tryk for at prøve igen.',
+        cameraApiUnsupported: 'Kamera understøttes ikke i denne browser.',
+        cameraAccessDenied: 'Kameraadgang blev afvist. Tryk for at prøve igen.',
+        cameraPermissionDenied: 'Kameratilladelse blev afvist. Giv adgang i browseren og tryk for at prøve igen.',
+        cameraNotFound: 'Intet kamera fundet. Tilslut et kamera og prøv igen.',
+        cameraNotSupported: 'Kamera understøttes ikke i denne browser.',
+        cameraAccessFailed: 'Kameraadgang mislykkedes. Prøv igen senere.',
+        aiFailed: 'AI-analysen mislykkedes. Prøv igen senere.'
+    }
+};
+
+const localizedResultValues = {
+    en: {
+        '__ai_unavailable__': 'AI could not run in browser. Try again later or contact us.',
+        '__unknown__': 'Unknown',
+        '__none__': 'None',
+        'food waste': 'Food waste',
+        'glass': 'Glass',
+        'paper': 'Paper',
+        'metal': 'Metal',
+        'soft plastics': 'Soft plastics',
+        'hard plastics': 'Hard plastics',
+        'hazardous waste': 'Hazardous waste',
+        'food and drink cartons': 'Food and drink cartons',
+        'cardboard': 'Cardboard',
+        'textiles': 'Textiles',
+        'residual waste': 'Residual waste'
+    },
+    da: {
+        '__ai_unavailable__': 'AI kunne ikke køre i browseren. Prøv igen senere eller kontakt os.',
+        '__unknown__': 'Ukendt',
+        '__none__': 'Ingen',
+        'food waste': 'Madaffald',
+        'glass': 'Glas',
+        'paper': 'Papir',
+        'metal': 'Metal',
+        'soft plastics': 'Blød plast',
+        'hard plastics': 'Hård plast',
+        'hazardous waste': 'Farligt affald',
+        'food and drink cartons': 'Mad- og drikkekartoner',
+        'cardboard': 'Pap',
+        'textiles': 'Tekstiler',
+        'residual waste': 'Restaffald'
+    }
+};
+
+function getPreferredLanguage() {
+    const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (SUPPORTED_LANGUAGES.includes(savedLanguage)) {
+        return savedLanguage;
+    }
+
+    return navigator.language && navigator.language.toLowerCase().startsWith('da') ? 'da' : 'en';
+}
+
+function t(key, replacements = {}) {
+    const dictionary = translations[currentLanguage] || translations.en;
+    const fallback = translations.en[key] || key;
+    const template = dictionary[key] || fallback;
+
+    return template.replace(/\{(\w+)\}/g, (_, token) => replacements[token] ?? `{${token}}`);
+}
+
+function normalizeResultValue(value) {
+    return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function localizeResultValue(type, value) {
+    if (type === 'purity' && typeof value === 'number' && Number.isFinite(value)) {
+        return `${value}/10`;
+    }
+
+    const normalized = normalizeResultValue(value);
+    if (!normalized) {
+        return localizedResultValues[currentLanguage].__unknown__ || value;
+    }
+
+    return localizedResultValues[currentLanguage][normalized] || value;
+}
+
+function setLanguage(language) {
+    if (!SUPPORTED_LANGUAGES.includes(language) || language === currentLanguage) {
+        return;
+    }
+
+    currentLanguage = language;
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    applyTranslations();
+}
+
+function applyTranslations() {
+    document.documentElement.lang = currentLanguage;
+    document.title = t('pageTitle');
+
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) {
+        pageTitle.textContent = t('pageTitle');
+    }
+
+    document.querySelectorAll('[data-i18n]').forEach((element) => {
+        const key = element.dataset.i18n;
+        element.textContent = t(key);
+    });
+
+    const languageSwitch = document.querySelector('.language-switch');
+    if (languageSwitch) {
+        languageSwitch.setAttribute('aria-label', t('languageSwitcherLabel'));
+    }
+
+    const switchButton = document.getElementById('camera-switch-btn');
+    if (switchButton) {
+        switchButton.title = t('cameraSwitchTitle');
+        switchButton.setAttribute('aria-label', t('cameraSwitchAria'));
+    }
+
+    document.querySelectorAll('[data-language-option]').forEach((button) => {
+        const isActive = button.dataset.languageOption === currentLanguage;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+    });
+
+    updateAnalyzeButtonState(currentAnalyzeButtonState, currentCountdownValue);
+
+    if (latestResults) {
+        showResults(latestResults);
+    }
+}
+
+function setupLanguageSwitcher() {
+    document.querySelectorAll('[data-language-option]').forEach((button) => {
+        button.addEventListener('click', () => {
+            setLanguage(button.dataset.languageOption);
+        });
+    });
+}
+
+function setPlaceholder(icon, messageKey) {
+    const placeholder = document.getElementById('webcam-placeholder');
+    const webcamArea = document.getElementById('webcam-area');
+    const webcamText = placeholder.querySelector('.webcam-text');
+    const webcamIcon = placeholder.querySelector('.webcam-icon');
+
+    webcamIcon.textContent = icon;
+    webcamText.textContent = t(messageKey);
+
+    placeholder.style.cursor = 'pointer';
+    webcamArea.style.cursor = 'pointer';
+    webcamArea.onclick = () => {
+        if (!isVideoActive && !isRequestingCamera) {
+            requestCameraAccess();
+        }
+    };
+}
+
+function updateAnalyzeButtonState(state, timeLeft = currentCountdownValue) {
+    const analyzeButton = document.getElementById('identify-btn');
+
+    currentAnalyzeButtonState = state;
+    currentCountdownValue = timeLeft;
+
+    if (state === 'disabled') {
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = t('analyzeEnableCamera');
+        return;
+    }
+
+    if (state === 'ready') {
+        analyzeButton.disabled = false;
+        analyzeButton.textContent = t('analyzeWaste');
+        return;
+    }
+
+    if (state === 'analyzing') {
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = t('analyzing');
+        return;
+    }
+
+    if (state === 'countdown') {
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = t('countdownLabel', { seconds: timeLeft });
+    }
+}
 
 function checkSecureContext() {
     const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -36,7 +336,7 @@ async function switchCamera() {
 
 async function requestCameraAccess() {
     if (!checkSecureContext()) {
-        updatePlaceholder('🚫', 'Camera requires HTTPS. Click to try again.');
+        setPlaceholder('🚫', 'cameraRequiresHttps');
         return;
     }
 
@@ -46,7 +346,6 @@ async function requestCameraAccess() {
 
     const video = document.getElementById('webcam-video');
     const placeholder = document.getElementById('webcam-placeholder');
-    const analyzeButton = document.getElementById('identify-btn');
     const switchButton = document.getElementById('camera-switch-btn');
     const switchIcon = document.getElementById('camera-switch-icon');
     const webcamArea = document.getElementById('webcam-area');
@@ -55,7 +354,7 @@ async function requestCameraAccess() {
 
     try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('Camera API not supported in this browser');
+            throw new Error('cameraApiUnsupported');
         }
         
         if (stream) {
@@ -100,20 +399,21 @@ async function requestCameraAccess() {
             webcamArea.style.cursor = 'default';
             
             isVideoActive = true;
-            analyzeButton.disabled = false;
-            analyzeButton.textContent = 'Analyze waste';
+            updateAnalyzeButtonState('ready');
             applyVideoOrientation(video);
         };
         
     } catch (error) {
-        let errorMessage = 'Camera access denied. Click to try again.';
+        let errorMessageKey = 'cameraAccessDenied';
         
         if (error.name === 'NotAllowedError') {
-            errorMessage = 'Camera permission denied. Please allow camera access in your browser and click to try again.';
+            errorMessageKey = 'cameraPermissionDenied';
         } else if (error.name === 'NotFoundError') {
-            errorMessage = 'No camera found. Please connect a camera and try again.';
+            errorMessageKey = 'cameraNotFound';
         } else if (error.name === 'NotSupportedError') {
-            errorMessage = 'Camera not supported in this browser.';
+            errorMessageKey = 'cameraNotSupported';
+        } else if (error.message === 'cameraApiUnsupported') {
+            errorMessageKey = 'cameraApiUnsupported';
         } else if (error.name === 'OverconstrainedError') {
             if (DEBUG) console.log('Camera constraint error, trying fallback...');
             try {
@@ -133,8 +433,7 @@ async function requestCameraAccess() {
                     webcamArea.onclick = null;
                     webcamArea.style.cursor = 'default';
                     isVideoActive = true;
-                    analyzeButton.disabled = false;
-                    analyzeButton.textContent = 'Analyze waste';
+                    updateAnalyzeButtonState('ready');
                     const showSwitch = availableCameras.length > 1;
                     switchButton.style.display = showSwitch ? 'block' : 'none';
                     switchIcon.style.display = showSwitch ? 'block' : 'none';
@@ -142,18 +441,17 @@ async function requestCameraAccess() {
                 };
                 return;
             } catch (fallbackError) {
-                errorMessage = 'Camera access failed. Please try again.';
+                errorMessageKey = 'cameraAccessFailed';
             }
         }
         
         isVideoActive = false;
         video.classList.remove('active');
         placeholder.classList.remove('hidden');
-        analyzeButton.disabled = true;
-        analyzeButton.textContent = 'Enable camera to try demo';
+        updateAnalyzeButtonState('disabled');
         switchButton.style.display = 'none';
         switchIcon.style.display = 'none';
-        updatePlaceholder('🚫', errorMessage);
+        setPlaceholder('🚫', errorMessageKey);
     } finally {
         isRequestingCamera = false;
     }
@@ -194,31 +492,14 @@ function applyVideoOrientation(video) {
     video.setAttribute('muted', 'true');
 }
 
-function updatePlaceholder(icon, text) {
-    const placeholder = document.getElementById('webcam-placeholder');
-    const webcamArea = document.getElementById('webcam-area');
-    const webcamText = placeholder.querySelector('.webcam-text');
-    const webcamIcon = placeholder.querySelector('.webcam-icon');
-    
-    webcamIcon.textContent = icon;
-    webcamText.textContent = text;
-    
-    placeholder.style.cursor = 'pointer';
-    webcamArea.style.cursor = 'pointer';
-    webcamArea.onclick = () => {
-        if (!isVideoActive && !isRequestingCamera) {
-            requestCameraAccess();
-        }
-    };
-}
-
 function initializeCameraPrompt() {
-    const analyzeButton = document.getElementById('identify-btn');
-    analyzeButton.disabled = true;
-    analyzeButton.textContent = 'Enable camera to try demo';
-    updatePlaceholder('📷', 'Allow camera to try it yourself');
+    updateAnalyzeButtonState('disabled');
+    setPlaceholder('📷', 'placeholderDefault');
 }
 
+currentLanguage = getPreferredLanguage();
+setupLanguageSwitcher();
+applyTranslations();
 initializeCameraPrompt();
 requestCameraAccess();
 
@@ -304,10 +585,11 @@ function showResults(results) {
     const fractionElement = document.getElementById('result-fraction');
     const purityElement = document.getElementById('result-purity');
     const subclassElement = document.getElementById('result-subclass');
-    
-    fractionElement.textContent = results.fraction || 'Unknown';
-    purityElement.textContent = results.purity || 'Unknown';
-    subclassElement.textContent = results.subfraction || 'Unknown';
+
+    latestResults = results;
+    fractionElement.textContent = localizeResultValue('fraction', results.fraction);
+    purityElement.textContent = localizeResultValue('purity', results.purity);
+    subclassElement.textContent = localizeResultValue('subfraction', results.subfraction);
     
     resultsArea.classList.add('show');
 }
@@ -319,11 +601,10 @@ function hideResults() {
 
 function startCountdown(button) {
     let timeLeft = 10;
-    button.disabled = true;
     button.classList.add('countdown');
     
     const updateButton = () => {
-        button.textContent = `Wait ${timeLeft}s`;
+        updateAnalyzeButtonState('countdown', timeLeft);
         timeLeft--;
         
         if (timeLeft === 0) {
@@ -332,9 +613,8 @@ function startCountdown(button) {
         }
         
         if (timeLeft < 0) {
-            button.disabled = false;
             button.classList.remove('countdown');
-            button.textContent = 'Analyze waste';
+            updateAnalyzeButtonState('ready', 0);
             clearInterval(countdownTimer);
         }
     };
@@ -349,8 +629,7 @@ document.getElementById('identify-btn').addEventListener('click', async function
         const imageBase64 = captureFrame();
         showFrozenFrame();
         
-        this.textContent = 'Analyzing...';
-        this.disabled = true;
+        updateAnalyzeButtonState('analyzing');
         
         try {
             const results = await analyzeImage(imageBase64);
@@ -358,9 +637,9 @@ document.getElementById('identify-btn').addEventListener('click', async function
             
         } catch (error) {
             showResults({
-                fraction: "AI could not run in browser, try again later or contact us",
-                purity: "none",
-                subfraction: "none"
+                fraction: '__ai_unavailable__',
+                purity: '__none__',
+                subfraction: '__none__'
             });
         }
         

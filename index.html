@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easysort - Intelligent waste detection systems</title>
-    <link rel="stylesheet" href="style2.css?v=20260409b">
+    <title id="page-title">Easysort - Intelligent waste detection systems</title>
+    <link rel="stylesheet" href="style2.css?v=20260420da">
 </head>
 <body id="top">
 
@@ -14,6 +14,10 @@
             <span class="logo-fallback">Easysort</span>
         </a>
         <div class="social-links">
+            <div class="language-switch" aria-label="Language switcher">
+                <button type="button" class="language-option" data-language-option="en" aria-pressed="true">EN</button>
+                <button type="button" class="language-option" data-language-option="da" aria-pressed="false">DA</button>
+            </div>
             <a href="https://track.easysort.org" class="social-link tracking-link" target="_blank" rel="noreferrer">
                 <span>EasyTrack</span>
             </a>
@@ -26,7 +30,7 @@
             <a href="https://docs.easysort.org" class="social-link docs-link" target="_blank" rel="noreferrer">
                 <span>Docs</span>
             </a>
-            <a href="https://app.cal.com/easysort" class="social-link header-cta" target="_blank" rel="noreferrer">
+            <a href="https://app.cal.com/easysort" class="social-link header-cta" target="_blank" rel="noreferrer" data-i18n="headerCta">
                 <span>Book discovery call</span>
             </a>
         </div>
@@ -36,43 +40,43 @@
         <section class="hero-section">
             <div class="hero-content">
                 <div class="hero-left">
-                    <p class="hero-kicker">Intelligent waste detection systems</p>
-                    <h1 class="hook-text">Built for recycling centers and waste plants.</h1>
-                    <p class="hero-subtitle">Try the demo, see the projects, and book a discovery call to explore opportunities in your facility.</p>
+                    <p class="hero-kicker" data-i18n="heroKicker">Intelligent waste detection systems</p>
+                    <h1 class="hook-text" data-i18n="heroTitle">Built for recycling centers and waste plants.</h1>
+                    <p class="hero-subtitle" data-i18n="heroSubtitle">Try the demo, see the projects, and book a discovery call to explore opportunities in your facility.</p>
                     <div class="hero-actions">
-                        <a href="https://app.cal.com/easysort" class="primary-button" target="_blank" rel="noreferrer">Book a discovery call</a>
-                        <a href="#projects" class="secondary-button">See current projects</a>
+                        <a href="https://app.cal.com/easysort" class="primary-button" target="_blank" rel="noreferrer" data-i18n="heroPrimaryCta">Book a discovery call</a>
+                        <a href="#projects" class="secondary-button" data-i18n="heroSecondaryCta">See current projects</a>
                     </div>
                 </div>
                 <div class="hero-right">
                     <div class="demo-container">
                         <div class="demo-header">
-                            <p class="demo-eyebrow">Live demo</p>
-                            <h2 class="demo-title">Test the waste classifier</h2>
-                            <p class="demo-copy">Use your camera to get a quick classification preview.</p>
+                            <p class="demo-eyebrow" data-i18n="demoEyebrow">Live demo</p>
+                            <h2 class="demo-title" data-i18n="demoTitle">Test the waste classifier</h2>
+                            <p class="demo-copy" data-i18n="demoCopy">Use your camera to get a quick classification preview.</p>
                         </div>
                         <div class="webcam-area" id="webcam-area">
                             <div class="webcam-placeholder" id="webcam-placeholder">
                                 <div class="webcam-icon">📷</div>
-                                <div class="webcam-text">Allow camera to try it yourself</div>
+                                <div class="webcam-text" data-placeholder-default>Allow camera to try it yourself</div>
                             </div>
                             <video id="webcam-video" autoplay playsinline muted></video>
                             <canvas id="frozen-frame"></canvas>
-                            <button id="camera-switch-btn" class="camera-switch-btn" title="Switch camera"></button>
+                            <button id="camera-switch-btn" class="camera-switch-btn" title="Switch camera" aria-label="Switch camera"></button>
                             <svg id="camera-switch-icon" class="camera-switch-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 125" style="enable-background:new 0 0 100 100;" xml:space="preserve"><path d="M40.9,56.5l-3.5,6.1c-0.3,0.6-0.8,1-1.4,1.1l-0.1,0c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3,0l0,0  c-0.3-0.1-0.7-0.2-1-0.4l-12.3-8c-1-0.7-1.2-1.7-1-2.4c0.2-0.7,0.9-1.4,2.1-1.4l5.3,0l0.1,0l-0.3-1.2c-0.6-4.3,0.1-8.6,1.8-12.4  c0.1-0.1,0.1-0.2,0.2-0.3c0.1-0.1,0.1-0.2,0.2-0.3c0.3-0.6,0.6-1.1,0.9-1.7c0.4-0.6,0.8-1.2,1.2-1.8c0.4-0.5,0.8-1,1.2-1.5  c2.9-3.4,6.8-5.8,11.5-7c5.1-1.3,10.3-0.7,14.7,1.4l-0.1,0.1l-4.6,8c-2.4-0.9-5.1-1.1-7.7-0.5c-3.1,0.8-5.7,2.6-7.4,5  c-0.3,0.3-0.5,0.7-0.7,1c-1.5,2.6-2.2,5.7-1.6,8.8l4.7-2.3c1.2-0.6,2.1-0.2,2.6,0.3c0.2,0.2,0.4,0.5,0.5,0.8  c0.1,0.5,0.1,1.1-0.3,1.7l-3.7,6.5L40.9,56.5z"/><path d="M69.2,58.7c-0.4,0.6-0.8,1.2-1.2,1.8c-0.4,0.5-0.8,1-1.2,1.5c-2.9,3.4-6.9,5.9-11.5,7c-5.1,1.3-10.3,0.7-14.7-1.4l0.1-0.2  l4.6-8c2.4,0.9,5.1,1.1,7.8,0.4c2.3-0.6,4.3-1.7,5.9-3.3c0,0,0,0,0,0c0.5-0.5,1-1.1,1.4-1.7c0.3-0.3,0.5-0.7,0.7-1  c1.5-2.6,2.2-5.6,1.6-8.8l-4.7,2.4c-1.2,0.6-2.1,0.2-2.6-0.3c-0.2-0.2-0.4-0.5-0.5-0.9c-0.1-0.5-0.1-1.1,0.3-1.7l3.7-6.5l0.1-0.2  l3.5-6.1c0.3-0.6,0.8-1,1.4-1.1l0.1,0c0.1,0,0.2,0,0.3,0c0.1,0,0.2,0,0.3,0c0.1,0,0.2,0,0.2,0c0,0,0.1,0,0.1,0c0.3,0,0.7,0.2,1,0.4  l12.3,8c1.1,0.7,1.3,1.7,1,2.4c-0.2,0.7-0.9,1.4-2.1,1.4l-5.3,0l0,0l0.3,1.2c0.6,4.3-0.1,8.6-1.8,12.4c-0.1,0.1-0.1,0.3-0.2,0.4  c0,0.1-0.1,0.2-0.1,0.2C69.8,57.6,69.5,58.2,69.2,58.7z"/><text x="0" y="115" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"></text><text x="0" y="120" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"></text></svg>
                         </div>
                         <div class="results-area" id="results-area">
-                            <div class="results-title">Analysis Results</div>
+                            <div class="results-title" data-i18n="resultsTitle">Analysis Results</div>
                             <div class="result-item">
-                                <span class="result-label">Fraction:</span>
+                                <span class="result-label" data-i18n="fractionLabel">Fraction:</span>
                                 <span class="result-value" id="result-fraction">-</span>
                             </div>
                             <div class="result-item">
-                                <span class="result-label">Purity:</span>
+                                <span class="result-label" data-i18n="purityLabel">Purity:</span>
                                 <span class="result-value" id="result-purity">-</span>
                             </div>
                             <div class="result-item">
-                                <span class="result-label">Subclass:</span>
+                                <span class="result-label" data-i18n="subclassLabel">Subclass:</span>
                                 <span class="result-value" id="result-subclass">-</span>
                             </div>
                         </div>
@@ -90,12 +94,12 @@
                     <img src="lucas.png" alt="Lucas from Easysort" class="consultation-image" loading="lazy">
                 </div>
                 <div class="consultation-copy">
-                    <p class="section-label">Free discovery call with Lucas</p>
-                    <h2 class="section-title">Let's find where the opportunities are.</h2>
-                    <p class="section-description">We use the call to understand your facility, point out practical improvement opportunities, and share ideas you can use whether you work with us, someone else, or solve it in-house. If there is a strong match, we also see whether you qualify for a project with us.</p>
+                    <p class="section-label" data-i18n="consultationLabel">Free discovery call with Lucas</p>
+                    <h2 class="section-title" data-i18n="consultationTitle">Let's find where the opportunities are.</h2>
+                    <p class="section-description" data-i18n="consultationDescription">We use the call to understand your facility, point out practical improvement opportunities, and share ideas you can use whether you work with us, someone else, or solve it in-house. If there is a strong match, we also see whether you qualify for a project with us.</p>
                     <div class="consultation-actions">
-                        <a href="https://app.cal.com/easysort" class="primary-button" target="_blank" rel="noreferrer">Book a discovery call</a>
-                        <p class="consultation-note">Practical pointers first. Project fit second.</p>
+                        <a href="https://app.cal.com/easysort" class="primary-button" target="_blank" rel="noreferrer" data-i18n="consultationCta">Book a discovery call</a>
+                        <p class="consultation-note" data-i18n="consultationNote">Practical pointers first. Project fit second.</p>
                     </div>
                 </div>
             </div>
@@ -105,9 +109,9 @@
 
         <section class="partners-section" id="partners">
             <div class="partners-content">
-                <p class="section-label">Partners</p>
-                <h2 class="section-title">Some of the teams we work with.</h2>
-                <p class="section-description">A few partners, pilots, and collaboration environments.</p>
+                <p class="section-label" data-i18n="partnersLabel">Partners</p>
+                <h2 class="section-title" data-i18n="partnersTitle">Some of the teams we work with.</h2>
+                <p class="section-description" data-i18n="partnersDescription">A few partners, pilots, and collaboration environments.</p>
                 <div class="logo-grid">
                     <div class="logo-card">
                         <img src="logos/argo.png" alt="Argo" class="partner-logo" loading="lazy">
@@ -133,9 +137,9 @@
         <section class="projects-section" id="projects">
             <div class="projects-content">
                 <div class="projects-header">
-                    <p class="section-label">Projects</p>
-                    <h2 class="section-title">Current projects.</h2>
-                    <p class="section-description">Two for recycling centers. Two for waste plants.</p>
+                    <p class="section-label" data-i18n="projectsLabel">Projects</p>
+                    <h2 class="section-title" data-i18n="projectsTitle">Current projects.</h2>
+                    <p class="section-description" data-i18n="projectsDescription">Two for recycling centers. Two for waste plants.</p>
                 </div>
                 <div class="project-grid">
                     <article class="project-card">
@@ -143,9 +147,9 @@
                             <img src="models/teltovervågning.png" alt="Direct reuse monitoring illustration" class="project-illustration" loading="lazy">
                         </div>
                         <div class="project-card-copy">
-                            <span class="project-tag">Recycling centers</span>
-                            <h3>Direct reuse monitoring</h3>
-                            <p>Track what gets taken, reused, and visited.</p>
+                            <span class="project-tag" data-i18n="project1Tag">Recycling centers</span>
+                            <h3 data-i18n="project1Title">Direct reuse monitoring</h3>
+                            <p data-i18n="project1Description">Track what gets taken, reused, and visited.</p>
                         </div>
                     </article>
                     <article class="project-card">
@@ -153,9 +157,9 @@
                             <img src="models/sorteringsguide.png" alt="Sorting guide illustration" class="project-illustration" loading="lazy">
                         </div>
                         <div class="project-card-copy">
-                            <span class="project-tag">Recycling centers</span>
-                            <h3>Sorting guide</h3>
-                            <p>Guide visitors to the right container in seconds.</p>
+                            <span class="project-tag" data-i18n="project2Tag">Recycling centers</span>
+                            <h3 data-i18n="project2Title">Sorting guide</h3>
+                            <p data-i18n="project2Description">Guide visitors to the right container in seconds.</p>
                         </div>
                     </article>
                     <article class="project-card">
@@ -163,9 +167,9 @@
                             <img src="models/modtagekontrol.png" alt="Incoming waste inspection illustration" class="project-illustration" loading="lazy">
                         </div>
                         <div class="project-card-copy">
-                            <span class="project-tag">Waste plants</span>
-                            <h3>Incoming waste inspection</h3>
-                            <p>Analyze loads and flag poor sorting with evidence.</p>
+                            <span class="project-tag" data-i18n="project3Tag">Waste plants</span>
+                            <h3 data-i18n="project3Title">Incoming waste inspection</h3>
+                            <p data-i18n="project3Description">Analyze loads and flag poor sorting with evidence.</p>
                         </div>
                     </article>
                     <article class="project-card">
@@ -173,9 +177,9 @@
                             <img src="models/anlægsoptimering.png" alt="Facility optimization illustration" class="project-illustration" loading="lazy">
                         </div>
                         <div class="project-card-copy">
-                            <span class="project-tag">Waste plants</span>
-                            <h3>Facility optimization</h3>
-                            <p>Monitor weighbridge and plant flow with better control.</p>
+                            <span class="project-tag" data-i18n="project4Tag">Waste plants</span>
+                            <h3 data-i18n="project4Title">Facility optimization</h3>
+                            <p data-i18n="project4Description">Monitor weighbridge and plant flow with better control.</p>
                         </div>
                     </article>
                 </div>
@@ -187,20 +191,20 @@
         <div class="footer-content">
             <div class="footer-intro">
                 <a href="#top" class="footer-brand">Easysort</a>
-                <p class="footer-summary">Intelligent waste detection systems for recycling center and waste plants.</p>
+                <p class="footer-summary" data-i18n="footerSummary">Intelligent waste detection systems for recycling center and waste plants.</p>
                 <div class="footer-contact">
-                    Contact: <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+                    <span data-i18n="footerContactLabel">Contact:</span> <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
                 </div>
             </div>
             <div class="footer-links">
-                <a href="https://app.cal.com/easysort" class="footer-link" target="_blank" rel="noreferrer">Book review</a>
+                <a href="https://app.cal.com/easysort" class="footer-link" target="_blank" rel="noreferrer" data-i18n="footerReviewLink">Book review</a>
                 <a href="https://track.easysort.org" class="footer-link" target="_blank" rel="noreferrer">EasyTrack</a>
                 <a href="https://github.com/Easysort" class="footer-link" target="_blank" rel="noreferrer">Github</a>
-                <a href="https://docs.easysort.org" class="footer-link" target="_blank" rel="noreferrer">Documentation</a>
+                <a href="https://docs.easysort.org" class="footer-link" target="_blank" rel="noreferrer" data-i18n="footerDocsLink">Documentation</a>
             </div>
         </div>
     </footer>
 
-    <script src="script.js?v=20260409b"></script>
+    <script src="script.js?v=20260420da"></script>
 </body>
 </html>
