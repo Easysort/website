@@ -88,6 +88,10 @@ a {
 }
 
 .language-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     min-width: 52px;
     min-height: 38px;
     padding: 0 14px;
@@ -100,6 +104,13 @@ a {
     letter-spacing: 0.06em;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.language-flag {
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: 0;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
 }
 
 .language-option:hover {
