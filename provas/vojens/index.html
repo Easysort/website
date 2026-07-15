@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Sorteringsguide – Vojens Genbrugsplads | Easysort</title>
     <link rel="stylesheet" href="../../style2.css?v=20260715">
-    <link rel="stylesheet" href="guide.css?v=20260715b">
+    <link rel="stylesheet" href="guide.css?v=20260715c">
 </head>
 <body id="top">
 
@@ -28,18 +28,20 @@
             <h1 class="guide-title" data-i18n="guideTitle">Hvad skal du af med?</h1>
             <p class="guide-subtitle" data-i18n="guideSubtitle">Tag et billede af dit affald, så finder vi den rigtige container og viser dig vejen fra indgangen.</p>
 
-            <div class="photo-box">
-                <input type="file" id="camera-input" accept="image/*" capture="environment" hidden>
-                <input type="file" id="library-input" accept="image/*" hidden>
-                <button type="button" id="photo-button" class="photo-button">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm-8-9.2h2.6l1.2-1.8c.4-.6 1-.9 1.7-.9h5c.7 0 1.3.3 1.7.9L17.4 6H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Zm8 11.2a5.2 5.2 0 1 1 0-10.4 5.2 5.2 0 0 1 0 10.4Z"/></svg>
-                    <span data-i18n="photoButton">Tag et billede af dit affald</span>
-                </button>
-                <button type="button" id="library-button" class="library-button" data-i18n="libraryButton">… eller vælg et billede fra galleriet</button>
-                <div class="photo-preview" id="photo-preview" hidden>
-                    <img id="preview-image" alt="">
-                    <p class="photo-status" id="photo-status"></p>
+            <div class="camera-card">
+                <div class="webcam-area" id="webcam-area">
+                    <div class="webcam-placeholder" id="webcam-placeholder">
+                        <div class="webcam-icon">📷</div>
+                        <div class="webcam-text" data-placeholder-default>Giv kameraadgang for at komme i gang</div>
+                    </div>
+                    <video id="webcam-video" autoplay playsinline muted></video>
+                    <canvas id="frozen-frame"></canvas>
+                    <button id="camera-switch-btn" class="camera-switch-btn" title="Skift kamera" aria-label="Skift kamera">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7.5 5.5 12 9V6a6 6 0 0 1 5.7 7.9l1.5 1A7.5 7.5 0 0 0 12 4.5V5Zm0 13a6 6 0 0 1-5.7-7.9l-1.5-1A7.5 7.5 0 0 0 12 19.5V22l4.5-3.5L12 15v3Z"/></svg>
+                    </button>
                 </div>
+                <button id="identify-btn" class="analyze-button" disabled>Analyser affald</button>
+                <p class="photo-status" id="photo-status"></p>
             </div>
         </section>
 
@@ -79,6 +81,6 @@
         </div>
     </footer>
 
-    <script src="guide.js?v=20260715b"></script>
+    <script src="guide.js?v=20260715d"></script>
 </body>
 </html>

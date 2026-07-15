@@ -1,16 +1,22 @@
 /* Sorting guide for Provas / Vojens Genbrugsplads.
  *
- * Flow: user takes a photo -> API returns fraction id(s) -> the map draws
- * the route from the entrance to that container.
+ * Flow: live camera (like the easysort.org front page) -> take a photo ->
+ * API returns a fraction -> the map draws the route from the entrance to
+ * the nearest matching container, respecting one-way roads.
+ *
+ * The map itself (roads, buildings, fractions, coordinates) is authored in
+ * an external editor and loaded from vojens-genbrugsplads.json. This file
+ * only knows how to render and route on it.
  *
  * Primary API (not live yet):
  *   POST SORTING_API_URL
  *   body:     { site: "provas-vojens", image: <base64 jpeg>, language: "da" | "en" }
- *   response: { ok: true, result: { fractionIds: string[] } }   (primary first)
+ *   response: { ok: true, result: { fractionKeys: string[] } }   (primary first)
  *
  * Until it exists we fall back to the existing Easysort Gemini worker.
  */
 
+const MAP_URL = 'vojens-genbrugsplads.json?v=20260715';
 const SORTING_API_URL = 'https://api.easysort.org/v1/sorting-guide';
 const FALLBACK_WORKER_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
 const API_TIMEOUT_MS = 20000;
@@ -20,6 +26,13 @@ const LANGUAGE_STORAGE_KEY = 'easysort-language';
 const SUPPORTED_LANGUAGES = ['da', 'en'];
 let currentLanguage = 'da';
 
+const COLORS = {
+    navy: '#2d5474', lightblue: '#2e7fb4', teal: '#33b58e', darkgreen: '#20603c',
+    darkred: '#8e3049', purple: '#8e3d95', brown: '#77571e', sand: '#b99b62',
+    slate: '#46585e', black: '#232323', lightgreen: '#6fb44e', orange: '#e28c2b',
+    red: '#d0342c'
+};
+
 /* ── Static texts ──────────────────────────────────────────── */
 
 const translations = {
@@ -28,17 +41,23 @@ const translations = {
         guideKicker: 'Provas · Vojens Genbrugsplads',
         guideTitle: 'Hvad skal du af med?',
         guideSubtitle: 'Tag et billede af dit affald, så finder vi den rigtige container og viser dig vejen fra indgangen.',
-        photoButton: 'Tag et billede af dit affald',
-        libraryButton: '… eller vælg et billede fra galleriet',
-        analyzing: 'Kigger på billedet ...',
+        placeholderDefault: 'Giv kameraadgang for at komme i gang',
+        analyzeEnableCamera: 'Aktiver kamera for at fortsætte',
+        analyzeWaste: 'Analyser affald',
+        analyzing: 'Analyserer ...',
+        cameraSwitchTitle: 'Skift kamera',
+        cameraRequiresHttps: 'Kamera kræver HTTPS. Tryk for at prøve igen.',
+        cameraApiUnsupported: 'Kamera understøttes ikke i denne browser.',
+        cameraAccessDenied: 'Kameraadgang blev afvist. Tryk for at prøve igen.',
+        cameraPermissionDenied: 'Kameratilladelse blev afvist. Giv adgang i browseren og tryk for at prøve igen.',
+        cameraNotFound: 'Intet kamera fundet. Tryk for at prøve igen.',
         analyzeFailed: 'Vi kunne ikke analysere billedet. Prøv igen, eller spørg personalet.',
-        noMatch: 'Vi er ikke sikre på, hvad det er. Prøv et nyt billede tættere på, eller spørg personalet.',
+        noMatch: 'Vi er ikke sikre på, hvad det er. Prøv et billede tættere på, eller spørg personalet.',
         resultPill: 'Følg den grønne rute',
+        multiSpotNote: 'Findes flere steder – ruten går til den nærmeste.',
         alsoMaybe: 'Andre muligheder:',
         mapCaption: 'Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.',
         mapEntrance: 'Indgang',
-        mapStaff: 'Personale',
-        mapHall: 'Miljøhal',
         footerSummary: 'Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.',
         footerContactLabel: 'Kontakt:',
         footerBackLink: 'Tilbage til easysort.org'
@@ -48,169 +67,224 @@ const translations = {
         guideKicker: 'Provas · Vojens Recycling Center',
         guideTitle: 'What are you dropping off?',
         guideSubtitle: 'Take a photo of your waste and we will find the right container and show you the way from the entrance.',
-        photoButton: 'Take a photo of your waste',
-        libraryButton: '… or pick a photo from your library',
-        analyzing: 'Looking at the photo ...',
+        placeholderDefault: 'Allow camera access to get started',
+        analyzeEnableCamera: 'Enable camera to continue',
+        analyzeWaste: 'Analyze waste',
+        analyzing: 'Analyzing ...',
+        cameraSwitchTitle: 'Switch camera',
+        cameraRequiresHttps: 'Camera requires HTTPS. Tap to try again.',
+        cameraApiUnsupported: 'Camera is not supported in this browser.',
+        cameraAccessDenied: 'Camera access was denied. Tap to try again.',
+        cameraPermissionDenied: 'Camera permission was denied. Allow access in your browser and tap to try again.',
+        cameraNotFound: 'No camera found. Tap to try again.',
         analyzeFailed: 'We could not analyze the photo. Try again, or ask the staff.',
         noMatch: 'We are not sure what this is. Try a closer photo, or ask the staff.',
         resultPill: 'Follow the green route',
+        multiSpotNote: 'Available in several places – the route goes to the nearest one.',
         alsoMaybe: 'Other options:',
         mapCaption: 'Tap a container to see the route. The map is indicative – ask the staff if in doubt.',
         mapEntrance: 'Entrance',
-        mapStaff: 'Staff',
-        mapHall: 'Hazardous waste hall',
         footerSummary: 'Sorting guide for Vojens Recycling Center, operated by Provas.',
         footerContactLabel: 'Contact:',
         footerBackLink: 'Back to easysort.org'
     }
 };
 
-/* ── Fractions ─────────────────────────────────────────────────
- * Layout digitized from the official Provas map of Vojens Genbrugsplads.
- * Colors follow the Danish waste pictogram system used on the signs.
- * spots: [x, y] tile centers in map coordinates (viewBox 620x900).
- * aisle: x of the driving lane the container is reached from. */
+/* ── Map data (loaded from JSON) ───────────────────────────── */
 
-const COLORS = {
-    navy: '#2d5474', lightblue: '#2e7fb4', teal: '#33b58e', darkgreen: '#20603c',
-    darkred: '#8e3049', purple: '#8e3d95', brown: '#77571e', sand: '#b99b62',
-    slate: '#46585e', black: '#232323', lightgreen: '#6fb44e', orange: '#e28c2b',
-    red: '#d0342c'
-};
+let MAP = null;
+let FRACTIONS = [];          // grouped by key, each { key, color, name, instructions, spots }
+let FRACTION_BY_KEY = new Map();
+let ROADS = [];
+let ENTRANCE = null;
 
-const AISLE = { left: 115, mid: 285, inner: 400, right: 555 };
+function slugify(text) {
+    return text.toLowerCase().trim()
+        .replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
-const FRACTIONS = [
-    { id: 'pap', color: 'sand', aisle: 'left', spots: [[63, 488], [63, 548], [352, 445]],
-      name: { da: 'Pap', en: 'Cardboard' },
-      instructions: { da: 'Rent og tørt pap. Slå kasserne flade, og fjern flamingo og plastfyld først.', en: 'Clean, dry cardboard. Flatten boxes and remove styrofoam and plastic filling first.' } },
-    { id: 'papir', color: 'lightblue', aisle: 'inner', spots: [[352, 496]],
-      name: { da: 'Papir', en: 'Paper' },
-      instructions: { da: 'Aviser, reklamer og kontorpapir.', en: 'Newspapers, flyers and office paper.' } },
-    { id: 'boeger', color: 'lightblue', aisle: 'inner', spots: [[352, 547]],
-      name: { da: 'Bøger', en: 'Books' },
-      instructions: { da: 'Bøger i alle former – også med stift ryg.', en: 'Books of all kinds – hardcovers too.' } },
-    { id: 'glas', color: 'teal', aisle: 'inner', spots: [[352, 343]],
-      name: { da: 'Glas', en: 'Glass' },
-      instructions: { da: 'Flasker og emballageglas. Tøm dem – skyl gerne.', en: 'Bottles and packaging glass. Empty them – rinse if possible.' } },
-    { id: 'fladt-glas', color: 'teal', aisle: 'inner', spots: [[352, 190]],
-      name: { da: 'Fladt glas', en: 'Flat glass' },
-      instructions: { da: 'Planglas og spejle uden rammer.', en: 'Flat glass and mirrors without frames.' } },
-    { id: 'vinduer', color: 'navy', aisle: 'inner', spots: [[352, 241]],
-      name: { da: 'Vinduer', en: 'Windows' },
-      instructions: { da: 'Hele vinduer med ramme og karm.', en: 'Whole windows with frame and casing.' } },
-    { id: 'metal', color: 'slate', aisle: 'mid', spots: [[218, 194], [218, 260]],
-      name: { da: 'Metal', en: 'Metal' },
-      instructions: { da: 'Alt af metal: rør, gryder, cykler og havemøbler i metal.', en: 'Anything metal: pipes, pots, bicycles and metal garden furniture.' } },
-    { id: 'haard-plast', color: 'purple', aisle: 'inner', spots: [[352, 649]],
-      name: { da: 'Hård plast', en: 'Hard plastic' },
-      instructions: { da: 'Spande, kasser og legetøj uden elektronik. Tøm for indhold.', en: 'Buckets, crates and toys without electronics. Empty of contents.' } },
-    { id: 'bloed-plast', color: 'purple', aisle: 'inner', spots: [[352, 598]],
-      name: { da: 'Blød plast', en: 'Soft plastic' },
-      instructions: { da: 'Ren og tør folie, poser og bobleplast.', en: 'Clean, dry film, bags and bubble wrap.' } },
-    { id: 'haard-pvc', color: 'purple', aisle: 'left', spots: [[63, 607]],
-      name: { da: 'Hård PVC', en: 'Rigid PVC' },
-      instructions: { da: 'Rør, tagrender og kabelbakker af hård PVC.', en: 'Pipes, gutters and cable trays of rigid PVC.' } },
-    { id: 'plast-havemoebler', color: 'purple', aisle: 'inner', spots: [[352, 292]],
-      name: { da: 'Plast-havemøbler', en: 'Plastic garden furniture' },
-      instructions: { da: 'Havemøbler af plast – tømte og uden hynder.', en: 'Plastic garden furniture – emptied and without cushions.' } },
-    { id: 'flamingo', color: 'purple', aisle: 'inner', spots: [[352, 394]],
-      name: { da: 'Flamingo', en: 'Styrofoam' },
-      instructions: { da: 'Ren flamingo (EPS) fra emballage.', en: 'Clean styrofoam (EPS) from packaging.' } },
-    { id: 'daek', color: 'purple', aisle: 'left', spots: [[63, 667]],
-      name: { da: 'Dæk', en: 'Tyres' },
-      instructions: { da: 'Dæk med og uden fælge.', en: 'Tyres with and without rims.' } },
-    { id: 'indendoers-trae', color: 'brown', aisle: 'left', spots: [[63, 368], [63, 428], [218, 454]],
-      name: { da: 'Indendørs træ', en: 'Indoor wood' },
-      instructions: { da: 'Rent træ og møbler af træ. Søm og skruer må gerne sidde i.', en: 'Clean wood and wooden furniture. Nails and screws can stay in.' } },
-    { id: 'tryk-impraegneret', color: 'brown', aisle: 'left', spots: [[63, 308], [218, 334]],
-      name: { da: 'Trykimprægneret træ', en: 'Pressure-treated wood' },
-      instructions: { da: 'Trykimprægneret træ, hegn og terrassebrædder.', en: 'Pressure-treated wood, fencing and decking boards.' } },
-    { id: 'paller', color: 'brown', aisle: 'inner', spots: [[445, 386]],
-      name: { da: 'Paller', en: 'Pallets' },
-      instructions: { da: 'Hele paller og pallerammer.', en: 'Whole pallets and pallet collars.' } },
-    { id: 'tagpap', color: 'navy', aisle: 'inner', spots: [[445, 302]],
-      name: { da: 'Tagpap', en: 'Roofing felt' },
-      instructions: { da: 'Tagpap uden træ og søm i større mængder.', en: 'Roofing felt without large amounts of wood and nails.' } },
-    { id: 'mineraluld', color: 'navy', aisle: 'left', spots: [[63, 130]],
-      name: { da: 'Mineraluld', en: 'Mineral wool' },
-      instructions: { da: 'Isolering som rockwool og glasuld – gerne i lukkede sække.', en: 'Insulation such as rockwool and glass wool – preferably in closed bags.' } },
-    { id: 'gips', color: 'navy', aisle: 'left', spots: [[63, 189]],
-      name: { da: 'Gips', en: 'Plasterboard' },
-      instructions: { da: 'Gipsplader uden fliser og træ. Skruer må gerne sidde i.', en: 'Plasterboard without tiles and wood. Screws can stay in.' } },
-    { id: 'polstrede-moebler', color: 'darkred', aisle: 'left', spots: [[63, 249]],
-      name: { da: 'Polstrede møbler', en: 'Upholstered furniture' },
-      instructions: { da: 'Sofaer, lænestole og andre polstrede møbler.', en: 'Sofas, armchairs and other upholstered furniture.' } },
-    { id: 'tekstilaffald', color: 'darkred', aisle: 'inner', spots: [[445, 447]],
-      name: { da: 'Tekstilaffald', en: 'Textile waste' },
-      instructions: { da: 'Ødelagte tekstiler – rent og tørt i poser.', en: 'Damaged textiles – clean and dry in bags.' } },
-    { id: 'sko-toej', color: 'lightgreen', aisle: 'inner', spots: [[445, 532]],
-      name: { da: 'Sko & tøj', en: 'Shoes & clothes' },
-      instructions: { da: 'Brugbart tøj og sko til genbrug – rent og i poser.', en: 'Usable clothes and shoes for reuse – clean and bagged.' } },
-    { id: 'mursten-tegl', color: 'navy', aisle: 'right', spots: [[505, 542]],
-      name: { da: 'Mursten & tegl', en: 'Bricks & tiles' },
-      instructions: { da: 'Rene mursten og tegl uden puds og beton.', en: 'Clean bricks and roof tiles without plaster and concrete.' } },
-    { id: 'beton', color: 'navy', aisle: 'right', spots: [[505, 640]],
-      name: { da: 'Beton', en: 'Concrete' },
-      instructions: { da: 'Beton og murbrokker uden armering og træ.', en: 'Concrete and rubble without rebar and wood.' } },
-    { id: 'sanitet', color: 'navy', aisle: 'right', spots: [[505, 444]],
-      name: { da: 'Sanitet', en: 'Sanitary ware' },
-      instructions: { da: 'Toiletter, håndvaske og andet porcelæn fra badeværelset.', en: 'Toilets, sinks and other bathroom porcelain.' } },
-    { id: 'jord', color: 'darkgreen', aisle: 'right', spots: [[505, 228]],
-      name: { da: 'Jord', en: 'Soil' },
-      instructions: { da: 'Ren jord uden rødder, sten og byggeaffald.', en: 'Clean soil without roots, stones and construction waste.' } },
-    { id: 'kompost', color: 'darkgreen', aisle: 'right', spots: [[505, 342]],
-      name: { da: 'Kompost', en: 'Compost' },
-      instructions: { da: 'Haveaffald: grene, græs, blade og planter. Tøm sækkene.', en: 'Garden waste: branches, grass, leaves and plants. Empty the bags.' } },
-    { id: 'rest-efter-sortering', color: 'black', aisle: 'mid', spots: [[218, 514], [218, 574]],
-      name: { da: 'Rest efter sortering', en: 'Residual after sorting' },
-      instructions: { da: 'Det, der er tilbage, når alt andet er sorteret fra.', en: 'What is left when everything else has been sorted out.' } },
-    { id: 'stor-rest', color: 'black', aisle: 'mid', spots: [[218, 394]],
-      name: { da: 'Stor rest efter sortering', en: 'Large residual waste' },
-      instructions: { da: 'Store ting, der ikke kan genanvendes, fx madrasser og gulvtæpper.', en: 'Large items that cannot be recycled, e.g. mattresses and carpets.' } },
-    { id: 'til-nedgravning', color: 'black', aisle: 'mid', spots: [[218, 641]],
-      name: { da: 'Til nedgravning', en: 'For landfill' },
-      instructions: { da: 'Ikke-brændbart affald til deponi, fx keramik og porcelæn.', en: 'Non-combustible waste for landfill, e.g. ceramics and porcelain.' } },
-    { id: 'genbrug', color: 'lightgreen', aisle: 'inner', spots: [[445, 620]],
-      name: { da: 'Direkte genbrug', en: 'Direct reuse' },
-      instructions: { da: 'Ting, der stadig kan bruges – stil dem i GenTag-området.', en: 'Things that can still be used – place them in the GenTag area.' } },
-    { id: 'elektronik', color: 'orange', aisle: 'bottom', spots: [[562, 744]],
-      name: { da: 'Elektronik', en: 'Electronics' },
-      instructions: { da: 'Alt med ledning eller batteri: lamper, computere og småt elektronik.', en: 'Anything with a cord or battery: lamps, computers and small electronics.' } },
-    { id: 'koeleudstyr', color: 'orange', aisle: 'bottom', spots: [[562, 796]],
-      name: { da: 'Køleudstyr', en: 'Cooling appliances' },
-      instructions: { da: 'Køleskabe og frysere – stilles hele.', en: 'Fridges and freezers – place them whole.' } },
-    { id: 'hvidevarer', color: 'orange', aisle: 'bottom', spots: [[562, 848]],
-      name: { da: 'Hårde hvidevarer', en: 'White goods' },
-      instructions: { da: 'Vaskemaskiner, komfurer og opvaskemaskiner.', en: 'Washing machines, stoves and dishwashers.' } },
-    { id: 'farligt-affald', color: 'red', aisle: 'bottom', spots: [[412, 800]],
-      name: { da: 'Farligt affald', en: 'Hazardous waste' },
-      instructions: { da: 'Maling, kemikalier, spraydåser, batterier og olie. Afleveres til personalet i miljøhallen.', en: 'Paint, chemicals, spray cans, batteries and oil. Hand it to the staff in the hazardous waste hall.' } }
-];
+function deriveEntrance(roads) {
+    let best = null;
+    roads.forEach((road) => road.points.forEach((p) => {
+        if (!best || p[1] > best[1] || (p[1] === best[1] && p[0] < best[0])) best = p;
+    }));
+    return best || [0, 0];
+}
 
-/* ── Routing ───────────────────────────────────────────────────
- * Roads on the schematic map: an entry road from the entrance, a bottom
- * road, and four vertical aisles. Every container hangs off one aisle,
- * so a route is always: entrance -> bottom road -> aisle -> container. */
+function buildFractions(rawFractions) {
+    const groups = new Map();
+    rawFractions.forEach((fr) => {
+        const key = slugify(fr.name.da || fr.id);
+        if (!groups.has(key)) {
+            groups.set(key, {
+                key,
+                color: fr.color,
+                name: { da: fr.name.da, en: fr.name.en || fr.name.da },
+                instructions: { da: fr.instructions?.da || '', en: fr.instructions?.en || fr.instructions?.da || '' },
+                spots: []
+            });
+        }
+        const group = groups.get(key);
+        (fr.spots || []).forEach((spot) => group.spots.push(spot));
+    });
+    return [...groups.values()];
+}
 
-const ENTRANCE = [240, 858];
-const ROAD_TOP = 150;
-const ROAD_BOTTOM = 700;
+async function loadMap() {
+    const response = await fetch(MAP_URL);
+    MAP = await response.json();
+    ROADS = MAP.roads || [];
+    ENTRANCE = Array.isArray(MAP.entrance) ? MAP.entrance
+        : (MAP.entrance && typeof MAP.entrance === 'object') ? [MAP.entrance.x, MAP.entrance.y]
+        : deriveEntrance(ROADS);
+    FRACTIONS = buildFractions(MAP.fractions || []);
+    FRACTION_BY_KEY = new Map(FRACTIONS.map((f) => [f.key, f]));
 
-function routeTo(fraction) {
-    const [sx, sy] = fraction.spots[0];
-    const points = [ENTRANCE, [240, ROAD_BOTTOM]];
-    if (fraction.aisle === 'bottom') {
-        if (sx !== 240) points.push([sx, ROAD_BOTTOM]);
-        points.push([sx, sy]);
-        return points;
+    const svg = document.getElementById('site-map');
+    if (MAP.viewBox) svg.setAttribute('viewBox', `0 0 ${MAP.viewBox[0]} ${MAP.viewBox[1]}`);
+}
+
+/* ── Routing engine (Dijkstra on the directed road graph) ──── */
+
+function segIntersectionParams(p1, p2, p3, p4) {
+    const d1x = p2[0] - p1[0], d1y = p2[1] - p1[1];
+    const d2x = p4[0] - p3[0], d2y = p4[1] - p3[1];
+    const denom = d1x * d2y - d1y * d2x;
+    if (Math.abs(denom) < 1e-9) return null; // parallel
+    const t = ((p3[0] - p1[0]) * d2y - (p3[1] - p1[1]) * d2x) / denom;
+    const u = ((p3[0] - p1[0]) * d1y - (p3[1] - p1[1]) * d1x) / denom;
+    if (t < -1e-9 || t > 1 + 1e-9 || u < -1e-9 || u > 1 + 1e-9) return null;
+    return { t, u };
+}
+
+function buildGraph() {
+    const raw = [];
+    ROADS.forEach((road) => {
+        for (let i = 0; i < road.points.length - 1; i++) {
+            raw.push({ a: road.points[i], b: road.points[i + 1], oneway: !!road.oneway });
+        }
+    });
+
+    // Split every segment where another crosses/touches it, so junctions
+    // become shared graph nodes.
+    const cuts = raw.map(() => [0, 1]);
+    for (let i = 0; i < raw.length; i++) {
+        for (let j = i + 1; j < raw.length; j++) {
+            const hit = segIntersectionParams(raw[i].a, raw[i].b, raw[j].a, raw[j].b);
+            if (hit) { cuts[i].push(hit.t); cuts[j].push(hit.u); }
+        }
     }
-    const ax = AISLE[fraction.aisle];
-    const ay = Math.max(ROAD_TOP + 17, Math.min(ROAD_BOTTOM - 17, sy));
-    points.push([ax, ROAD_BOTTOM]);
-    points.push([ax, ay]);
-    points.push([sx, sy]);
-    return points;
+
+    const nodes = [];
+    const edges = [];
+
+    function nodeAt(p) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (Math.hypot(nodes[i][0] - p[0], nodes[i][1] - p[1]) < 1) return i;
+        }
+        nodes.push([p[0], p[1]]);
+        edges.push([]);
+        return nodes.length - 1;
+    }
+
+    function addEdge(a, b) {
+        if (a === b) return;
+        edges[a].push({ to: b, len: Math.hypot(nodes[a][0] - nodes[b][0], nodes[a][1] - nodes[b][1]) });
+    }
+
+    const segments = [];
+    raw.forEach((seg, i) => {
+        const ts = [...new Set(cuts[i])].sort((x, y) => x - y);
+        for (let k = 0; k < ts.length - 1; k++) {
+            const pa = [seg.a[0] + (seg.b[0] - seg.a[0]) * ts[k], seg.a[1] + (seg.b[1] - seg.a[1]) * ts[k]];
+            const pb = [seg.a[0] + (seg.b[0] - seg.a[0]) * ts[k + 1], seg.a[1] + (seg.b[1] - seg.a[1]) * ts[k + 1]];
+            const a = nodeAt(pa);
+            const b = nodeAt(pb);
+            if (a === b) continue;
+            addEdge(a, b);
+            if (!seg.oneway) addEdge(b, a);
+            segments.push({ a, b, oneway: seg.oneway });
+        }
+    });
+
+    return { nodes, edges, segments, nodeAt, addEdge };
+}
+
+function projectOnSegment(p, a, b) {
+    const abx = b[0] - a[0], aby = b[1] - a[1];
+    const len2 = abx * abx + aby * aby;
+    const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((p[0] - a[0]) * abx + (p[1] - a[1]) * aby) / len2));
+    return [a[0] + t * abx, a[1] + t * aby];
+}
+
+function dijkstra(g, start) {
+    const dist = new Array(g.nodes.length).fill(Infinity);
+    const prev = new Array(g.nodes.length).fill(-1);
+    const done = new Array(g.nodes.length).fill(false);
+    dist[start] = 0;
+    for (;;) {
+        let u = -1;
+        for (let i = 0; i < g.nodes.length; i++) {
+            if (!done[i] && dist[i] < (u === -1 ? Infinity : dist[u])) u = i;
+        }
+        if (u === -1) break;
+        done[u] = true;
+        g.edges[u].forEach(({ to, len }) => {
+            if (dist[u] + len < dist[to]) { dist[to] = dist[u] + len; prev[to] = u; }
+        });
+    }
+    return { dist, prev };
+}
+
+/* A container is reached by driving on the roads and then walking a short
+ * final approach ("spur") from the nearest road point. We only allow that
+ * spur to be short, otherwise a route could cut straight across the site
+ * and ignore one-way roads. If nothing is close enough, fall back to the
+ * globally nearest access point. */
+const MAX_SPUR = 130;
+
+function routeToPoint(target) {
+    const g = buildGraph();
+    const candidates = [];
+    g.segments.forEach(({ a, b, oneway }) => {
+        const p = projectOnSegment(target, g.nodes[a], g.nodes[b]);
+        const idx = g.nodeAt(p);
+        if (idx !== a && idx !== b) {
+            g.addEdge(a, idx);
+            if (!oneway) g.addEdge(b, idx);
+        }
+        candidates.push({ idx, spur: Math.hypot(p[0] - target[0], p[1] - target[1]) });
+    });
+
+    const start = g.nodeAt(ENTRANCE);
+    const { dist, prev } = dijkstra(g, start);
+
+    let best = null;
+    let fallback = null;
+    candidates.forEach((c) => {
+        if (dist[c.idx] === Infinity) return;
+        const total = dist[c.idx] + c.spur;
+        if (c.spur <= MAX_SPUR && (!best || total < best.total)) best = { ...c, total };
+        if (!fallback || total < fallback.total) fallback = { ...c, total };
+    });
+    const chosen = best || fallback;
+    if (!chosen) return { path: [ENTRANCE, target], cost: Infinity };
+
+    const path = [];
+    for (let u = chosen.idx; u !== -1; u = prev[u]) path.unshift(g.nodes[u]);
+    path.push(target);
+    return { path, cost: chosen.total };
+}
+
+/* Route to the nearest of a fraction's (possibly several) spots. */
+function routeToFraction(fraction) {
+    let best = null;
+    fraction.spots.forEach((spot) => {
+        const route = routeToPoint(spot);
+        if (!best || route.cost < best.cost) best = { ...route, spot };
+    });
+    return best || { path: [ENTRANCE], cost: Infinity, spot: fraction.spots[0] };
 }
 
 /* ── i18n helpers ──────────────────────────────────────────── */
@@ -240,35 +314,147 @@ function applyTranslations() {
         element.textContent = t(element.dataset.i18n);
     });
 
+    const switchButton = document.getElementById('camera-switch-btn');
+    switchButton.title = t('cameraSwitchTitle');
+    switchButton.setAttribute('aria-label', t('cameraSwitchTitle'));
+
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         const isActive = button.dataset.languageOption === currentLanguage;
         button.classList.toggle('active', isActive);
         button.setAttribute('aria-pressed', String(isActive));
     });
 
-    renderMap();
+    updateAnalyzeButton(currentAnalyzeState);
+    if (currentPlaceholderKey) setPlaceholder(currentPlaceholderIcon, currentPlaceholderKey);
+    if (MAP) renderMap();
     if (currentResult) showResult(currentResult, { scroll: false });
 }
 
-/* ── Image handling ────────────────────────────────────────── */
+/* ── Camera (same behavior as the front page demo) ─────────── */
 
-function fileToBase64Jpeg(file, maxSize = 1024) {
-    return new Promise((resolve, reject) => {
-        const url = URL.createObjectURL(file);
-        const img = new Image();
-        img.onload = () => {
-            const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.round(img.width * scale);
-            canvas.height = Math.round(img.height * scale);
-            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-            URL.revokeObjectURL(url);
-            resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
-        };
-        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad image')); };
-        img.src = url;
-    });
+let stream = null;
+let isVideoActive = false;
+let isRequestingCamera = false;
+let availableCameras = [];
+let currentCameraIndex = 0;
+let currentAnalyzeState = 'disabled';
+let currentPlaceholderIcon = '📷';
+let currentPlaceholderKey = 'placeholderDefault';
+
+function setPlaceholder(icon, messageKey) {
+    currentPlaceholderIcon = icon;
+    currentPlaceholderKey = messageKey;
+    const placeholder = document.getElementById('webcam-placeholder');
+    placeholder.querySelector('.webcam-icon').textContent = icon;
+    placeholder.querySelector('.webcam-text').textContent = t(messageKey);
+
+    const webcamArea = document.getElementById('webcam-area');
+    webcamArea.style.cursor = 'pointer';
+    webcamArea.onclick = () => {
+        if (!isVideoActive && !isRequestingCamera) requestCameraAccess();
+    };
 }
+
+function updateAnalyzeButton(state) {
+    currentAnalyzeState = state;
+    const button = document.getElementById('identify-btn');
+    if (state === 'disabled') {
+        button.disabled = true;
+        button.textContent = t('analyzeEnableCamera');
+    } else if (state === 'ready') {
+        button.disabled = false;
+        button.textContent = t('analyzeWaste');
+    } else if (state === 'analyzing') {
+        button.disabled = true;
+        button.textContent = t('analyzing');
+    }
+}
+
+async function getAvailableCameras() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter((device) => device.kind === 'videoinput');
+    } catch {
+        return [];
+    }
+}
+
+async function requestCameraAccess() {
+    const isSecure = location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname);
+    if (!isSecure) { setPlaceholder('🚫', 'cameraRequiresHttps'); return; }
+    if (isRequestingCamera) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setPlaceholder('🚫', 'cameraApiUnsupported');
+        return;
+    }
+
+    isRequestingCamera = true;
+    const video = document.getElementById('webcam-video');
+    const placeholder = document.getElementById('webcam-placeholder');
+    const switchButton = document.getElementById('camera-switch-btn');
+
+    try {
+        if (stream) stream.getTracks().forEach((track) => track.stop());
+
+        let constraints;
+        if (availableCameras.length > 0 && availableCameras[currentCameraIndex]) {
+            constraints = { video: { deviceId: { exact: availableCameras[currentCameraIndex].deviceId } } };
+        } else {
+            constraints = { video: { facingMode: { ideal: 'environment' } } };
+        }
+
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        availableCameras = await getAvailableCameras();
+        if (currentCameraIndex >= availableCameras.length) currentCameraIndex = 0;
+        switchButton.style.display = availableCameras.length > 1 ? 'flex' : 'none';
+
+        video.srcObject = stream;
+        video.onloadedmetadata = async () => {
+            try { await video.play(); } catch { /* autoplay quirks */ }
+            video.classList.add('active');
+            placeholder.classList.add('hidden');
+            const webcamArea = document.getElementById('webcam-area');
+            webcamArea.onclick = null;
+            webcamArea.style.cursor = 'default';
+            isVideoActive = true;
+            updateAnalyzeButton('ready');
+        };
+    } catch (error) {
+        let messageKey = 'cameraAccessDenied';
+        if (error.name === 'NotAllowedError') messageKey = 'cameraPermissionDenied';
+        else if (error.name === 'NotFoundError') messageKey = 'cameraNotFound';
+        isVideoActive = false;
+        video.classList.remove('active');
+        placeholder.classList.remove('hidden');
+        switchButton.style.display = 'none';
+        updateAnalyzeButton('disabled');
+        setPlaceholder('🚫', messageKey);
+    } finally {
+        isRequestingCamera = false;
+    }
+}
+
+async function switchCamera() {
+    if (availableCameras.length <= 1) return;
+    currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+    await requestCameraAccess();
+}
+
+function captureFrame() {
+    const video = document.getElementById('webcam-video');
+    const canvas = document.getElementById('frozen-frame');
+    if (!video.videoWidth || !video.videoHeight) return null;
+
+    const maxSize = 1024;
+    const scale = Math.min(1, maxSize / Math.max(video.videoWidth, video.videoHeight));
+    canvas.width = Math.round(video.videoWidth * scale);
+    canvas.height = Math.round(video.videoHeight * scale);
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+}
+
+function showFrozenFrame() { document.getElementById('frozen-frame').classList.add('show'); }
+function hideFrozenFrame() { document.getElementById('frozen-frame').classList.remove('show'); }
 
 /* ── API (primary + Gemini worker fallback) ────────────────── */
 
@@ -282,14 +468,14 @@ async function fetchWithTimeout(url, options) {
     }
 }
 
-function extractFractionIds(text) {
+function extractFractionKeys(text) {
     const found = [];
     const lower = text.toLowerCase();
     FRACTIONS.forEach((fraction) => {
-        const index = lower.indexOf(`"${fraction.id}"`) !== -1 ? lower.indexOf(`"${fraction.id}"`) : lower.indexOf(fraction.id);
-        if (index !== -1) found.push({ id: fraction.id, index });
+        const index = lower.indexOf(fraction.key);
+        if (index !== -1) found.push({ key: fraction.key, index });
     });
-    return found.sort((a, b) => a.index - b.index).map((f) => f.id);
+    return found.sort((a, b) => a.index - b.index).map((f) => f.key);
 }
 
 async function classifyImage(imageBase64) {
@@ -300,25 +486,25 @@ async function classifyImage(imageBase64) {
             body: JSON.stringify({ site: SITE_ID, image: imageBase64, language: currentLanguage })
         });
         const data = await response.json();
-        if (response.ok && data.ok === true && Array.isArray(data.result?.fractionIds)) {
-            return data.result.fractionIds;
+        if (response.ok && data.ok === true && Array.isArray(data.result?.fractionKeys)) {
+            return data.result.fractionKeys;
         }
         throw new Error('bad response');
     } catch {
         // Fallback: existing Gemini worker
-        const ids = FRACTIONS.map((f) => f.id).join(', ');
+        const options = FRACTIONS.map((f) => `${f.key} (${f.name.da})`).join(', ');
         const prompt = `You are a waste sorting assistant at a Danish recycling center (genbrugsplads). ` +
             `Look at the photo and decide which waste fraction the main object belongs to. ` +
-            `Answer ONLY with a JSON array of 1-3 fraction ids, most likely first, chosen from: [${ids}]. ` +
-            `Example answer: ["pap", "rest-efter-sortering"]`;
+            `Answer ONLY with a JSON array of 1-3 fraction keys, most likely first, chosen from these options: [${options}]. ` +
+            `Use the key (the part before the parenthesis). Example answer: ["pap", "rest-efter-sortering"]`;
         const response = await fetchWithTimeout(FALLBACK_WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ image: imageBase64, text: prompt })
         });
         const data = await response.json();
-        const reply = data?.response || data?.result?.fraction || '';
-        return extractFractionIds(String(reply));
+        const reply = data?.response || '';
+        return extractFractionKeys(String(reply));
     }
 }
 
@@ -351,81 +537,92 @@ function wrapName(name) {
     return [first, words.slice(i).join(' ')];
 }
 
-function renderMap(activeFractionId = currentResult?.fractionIds?.[0] ?? null) {
+function renderBox(box, className) {
+    const g = svgEl('g', { class: className });
+    g.appendChild(svgEl('rect', { x: box.x, y: box.y, width: box.width, height: box.height, rx: 12 }));
+    const label = (box.label && (box.label[currentLanguage] || box.label.da)) || '';
+    if (label) {
+        g.appendChild(svgEl('text', { x: box.x + box.width / 2, y: box.y + 26 }, label));
+    }
+    return g;
+}
+
+function renderMap(activeKey = currentResult?.keys?.[0] ?? null) {
     const svg = document.getElementById('site-map');
     svg.innerHTML = '';
+    const [vw, vh] = MAP.viewBox || [620, 900];
 
-    // Ground
-    svg.appendChild(svgEl('rect', { x: 6, y: 6, width: 608, height: 888, rx: 26, class: 'map-ground' }));
-    svg.appendChild(svgEl('text', { x: 310, y: 52, class: 'map-site-title' }, 'Vojens Genbrugsplads'));
+    svg.appendChild(svgEl('rect', { x: 6, y: 6, width: vw - 12, height: vh - 12, rx: 26, class: 'map-ground' }));
+    if (MAP.siteName) {
+        svg.appendChild(svgEl('text', { x: vw / 2, y: 52, class: 'map-site-title' }, MAP.siteName));
+    }
 
-    // Platform islands (container rows)
-    [[36, 100, 54, 592], [191, 164, 54, 511], [325, 164, 54, 511], [418, 275, 54, 372], [478, 200, 54, 465], [518, 718, 88, 168]]
-        .forEach(([x, y, w, h]) => svg.appendChild(svgEl('rect', { x, y, width: w, height: h, rx: 14, class: 'map-island' })));
+    (MAP.islands || []).forEach((island) =>
+        svg.appendChild(svgEl('rect', { x: island.x, y: island.y, width: island.width, height: island.height, rx: 14, class: 'map-island' })));
 
-    // Roads: loop + two inner aisles + entry road
-    const roads = [
-        `M ${AISLE.left} ${ROAD_TOP} H ${AISLE.right} V ${ROAD_BOTTOM} H ${AISLE.left} Z`,
-        `M ${AISLE.mid} ${ROAD_TOP} V ${ROAD_BOTTOM}`,
-        `M ${AISLE.inner} ${ROAD_TOP} V ${ROAD_BOTTOM}`,
-        `M 240 ${ROAD_BOTTOM} V 880`
-    ];
-    roads.forEach((d) => svg.appendChild(svgEl('path', { d, class: 'map-road' })));
-    roads.forEach((d) => svg.appendChild(svgEl('path', { d, class: 'map-road-line' })));
+    if (MAP.staff) svg.appendChild(renderBox(MAP.staff, 'map-building'));
+    (MAP.buildings || []).forEach((b) => svg.appendChild(renderBox(b, 'map-building')));
 
-    // Buildings
-    const staff = svgEl('g', { class: 'map-building' });
-    staff.appendChild(svgEl('rect', { x: 60, y: 762, width: 122, height: 86, rx: 12 }));
-    staff.appendChild(svgEl('text', { x: 121, y: 810 }, t('mapStaff')));
-    svg.appendChild(staff);
+    // Roads
+    ROADS.forEach((road) => {
+        const points = road.points.map((p) => p.join(',')).join(' ');
+        svg.appendChild(svgEl('polyline', { points, class: 'map-road' }));
+        svg.appendChild(svgEl('polyline', { points, class: 'map-road-line' }));
+    });
 
-    const hall = svgEl('g', { class: 'map-building' });
-    hall.appendChild(svgEl('rect', { x: 320, y: 748, width: 186, height: 100, rx: 12 }));
-    hall.appendChild(svgEl('text', { x: 413, y: 775 }, t('mapHall')));
-    svg.appendChild(hall);
+    // One-way arrows
+    ROADS.filter((road) => road.oneway).forEach((road) => {
+        for (let i = 0; i < road.points.length - 1; i++) {
+            const [a, b] = [road.points[i], road.points[i + 1]];
+            const angle = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+            [0.33, 0.66].forEach((f) => {
+                const x = a[0] + (b[0] - a[0]) * f;
+                const y = a[1] + (b[1] - a[1]) * f;
+                svg.appendChild(svgEl('path', {
+                    d: 'M -5 -4 L 4 0 L -5 4',
+                    class: 'map-oneway-arrow',
+                    transform: `translate(${x} ${y}) rotate(${angle})`
+                }));
+            });
+        }
+    });
 
-    // Route
-    const activeFraction = FRACTIONS.find((f) => f.id === activeFractionId);
+    // Route to the active fraction (nearest spot)
+    const activeFraction = activeKey ? FRACTION_BY_KEY.get(activeKey) : null;
+    let destinationSpot = null;
     if (activeFraction) {
-        const route = routeTo(activeFraction);
+        const route = routeToFraction(activeFraction);
+        destinationSpot = route.spot;
         svg.appendChild(svgEl('polyline', {
-            points: route.map((p) => p.join(',')).join(' '),
+            points: route.path.map((p) => p.join(',')).join(' '),
             class: 'map-route'
         }));
-        const [dx, dy] = activeFraction.spots[0];
-        svg.appendChild(svgEl('circle', { cx: dx, cy: dy, r: 26, class: 'map-destination-pulse' }));
+        svg.appendChild(svgEl('circle', { cx: route.spot[0], cy: route.spot[1], r: 26, class: 'map-destination-pulse' }));
     }
 
     // Container tiles
     FRACTIONS.forEach((fraction) => {
-        fraction.spots.forEach(([x, y], spotIndex) => {
+        const isActive = fraction.key === activeKey;
+        fraction.spots.forEach(([x, y]) => {
+            const isDestination = destinationSpot && x === destinationSpot[0] && y === destinationSpot[1];
             const group = svgEl('g', {
-                class: `map-tile${fraction.id === activeFractionId ? ' active' : ''}`,
+                class: `map-tile${isActive ? ' active' : ''}${isDestination ? ' destination' : ''}`,
                 tabindex: 0,
                 role: 'button',
                 'aria-label': fraction.name[currentLanguage]
             });
-            // generous invisible tap target
             group.appendChild(svgEl('rect', { x: x - 26, y: y - 26, width: 52, height: 52, fill: 'transparent' }));
             group.appendChild(svgEl('rect', {
                 x: x - 16, y: y - 16, width: 32, height: 32, rx: 7,
-                fill: COLORS[fraction.color], class: 'map-tile-box'
+                fill: COLORS[fraction.color] || '#888', class: 'map-tile-box'
             }));
-            if (spotIndex === 0) {
-                const lines = wrapName(fraction.name[currentLanguage]);
-                lines.forEach((line, li) => {
-                    group.appendChild(svgEl('text', {
-                        x, y: y + 27 + li * 10, class: 'map-tile-label'
-                    }, line));
-                });
-            }
-            const select = () => showResult({ fractionIds: [fraction.id] }, { scroll: false });
+            wrapName(fraction.name[currentLanguage]).forEach((line, li) => {
+                group.appendChild(svgEl('text', { x, y: y + 27 + li * 10, class: 'map-tile-label' }, line));
+            });
+            const select = () => showResult({ keys: [fraction.key] }, { scroll: false });
             group.addEventListener('click', select);
             group.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    select();
-                }
+                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); }
             });
             svg.appendChild(group);
         });
@@ -447,14 +644,17 @@ function renderMap(activeFractionId = currentResult?.fractionIds?.[0] ?? null) {
 function showResult(result, { scroll = true } = {}) {
     currentResult = result;
     const card = document.getElementById('result-card');
-    const primary = FRACTIONS.find((f) => f.id === result.fractionIds[0]);
+    const primary = FRACTION_BY_KEY.get(result.keys[0]);
     if (!primary) return;
 
     document.getElementById('result-fraction-name').textContent = primary.name[currentLanguage];
-    document.getElementById('result-instructions').textContent = primary.instructions[currentLanguage];
 
-    const alternates = result.fractionIds.slice(1)
-        .map((id) => FRACTIONS.find((f) => f.id === id))
+    const base = primary.instructions[currentLanguage] || '';
+    const note = primary.spots.length > 1 ? (base ? ' ' : '') + t('multiSpotNote') : '';
+    document.getElementById('result-instructions').textContent = base + note;
+
+    const alternates = result.keys.slice(1)
+        .map((key) => FRACTION_BY_KEY.get(key))
         .filter(Boolean);
     const alternatesWrap = document.getElementById('result-alternates');
     alternatesWrap.hidden = alternates.length === 0;
@@ -466,19 +666,19 @@ function showResult(result, { scroll = true } = {}) {
         chip.className = 'chip';
         chip.textContent = fraction.name[currentLanguage];
         chip.addEventListener('click', () => {
-            showResult({ fractionIds: [fraction.id, ...result.fractionIds.filter((id) => id !== fraction.id)] }, { scroll: false });
+            showResult({ keys: [fraction.key, ...result.keys.filter((key) => key !== fraction.key)] }, { scroll: false });
         });
         chips.appendChild(chip);
     });
 
     card.hidden = false;
-    renderMap(primary.id);
+    renderMap(primary.key);
     if (scroll) {
         document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
-/* ── Photo flow ────────────────────────────────────────────── */
+/* ── Analyze flow ──────────────────────────────────────────── */
 
 function setStatus(message, isError = false) {
     const status = document.getElementById('photo-status');
@@ -486,53 +686,49 @@ function setStatus(message, isError = false) {
     status.classList.toggle('error', isError);
 }
 
-async function handleFile(file) {
-    if (!file) return;
+document.getElementById('identify-btn').addEventListener('click', async () => {
+    if (!isVideoActive) return;
+    const imageBase64 = captureFrame();
+    if (!imageBase64) return;
 
-    const preview = document.getElementById('photo-preview');
-    const previewImage = document.getElementById('preview-image');
-    previewImage.src = URL.createObjectURL(file);
-    preview.hidden = false;
-
-    const photoButton = document.getElementById('photo-button');
-    photoButton.disabled = true;
-    setStatus(t('analyzing'));
+    showFrozenFrame();
+    updateAnalyzeButton('analyzing');
+    setStatus('');
 
     try {
-        const imageBase64 = await fileToBase64Jpeg(file);
-        const fractionIds = await classifyImage(imageBase64);
-        const valid = fractionIds.filter((id) => FRACTIONS.some((f) => f.id === id));
+        const keys = await classifyImage(imageBase64);
+        const valid = keys.filter((key) => FRACTION_BY_KEY.has(key));
         if (valid.length === 0) {
             setStatus(t('noMatch'), true);
         } else {
-            setStatus('');
-            showResult({ fractionIds: valid });
+            showResult({ keys: valid });
         }
     } catch {
         setStatus(t('analyzeFailed'), true);
     } finally {
-        photoButton.disabled = false;
+        hideFrozenFrame();
+        updateAnalyzeButton('ready');
     }
-}
+});
 
 /* ── Init ──────────────────────────────────────────────────── */
 
-document.getElementById('photo-button').addEventListener('click', () => {
-    document.getElementById('camera-input').click();
-});
-document.getElementById('library-button').addEventListener('click', () => {
-    document.getElementById('library-input').click();
-});
-['camera-input', 'library-input'].forEach((id) => {
-    document.getElementById(id).addEventListener('change', (event) => {
-        handleFile(event.target.files[0]);
-        event.target.value = '';
-    });
-});
+document.getElementById('camera-switch-btn').addEventListener('click', switchCamera);
 
 document.querySelectorAll('[data-language-option]').forEach((button) => {
     button.addEventListener('click', () => setLanguage(button.dataset.languageOption));
 });
 
+window.addEventListener('beforeunload', () => {
+    if (stream) stream.getTracks().forEach((track) => track.stop());
+});
+
 currentLanguage = getPreferredLanguage();
-applyTranslations();
+setPlaceholder('📷', 'placeholderDefault');
+updateAnalyzeButton('disabled');
+
+loadMap()
+    .then(() => { applyTranslations(); })
+    .catch((error) => { console.error('Failed to load map', error); });
+
+requestCameraAccess();
