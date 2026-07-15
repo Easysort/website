@@ -1,3 +1,7 @@
 easysort-worker/
+easysort-worker-genbrugsplads/
 cloudflare_worker.js
 api-contract.md
+editor/
+.dev.vars
+easysort-worker-genbrugsplads

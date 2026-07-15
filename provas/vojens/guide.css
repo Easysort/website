@@ -132,50 +132,62 @@ html {
     white-space: nowrap;
 }
 
+.result-identified {
+    margin-bottom: 10px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #15803d;
+}
+
 .result-instructions {
     font-size: 1rem;
     color: #374151;
 }
 
-.result-alternates {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-}
-
-.alternates-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #6b7280;
-}
-
-.alternates-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.chip {
+.scan-again-btn {
+    margin-top: 16px;
     display: inline-flex;
     align-items: center;
-    min-height: 36px;
-    padding: 0 14px;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 20px;
     border-radius: 999px;
-    border: 1px solid rgba(17, 24, 39, 0.12);
+    border: 1px solid rgba(17, 24, 39, 0.14);
     background: #ffffff;
-    color: #374151;
-    font-size: 0.88rem;
-    font-weight: 600;
+    color: #111827;
+    font-size: 0.95rem;
+    font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s ease;
 }
 
-.chip:hover {
+.scan-again-btn:hover {
     background: #f0fdf4;
     border-color: #22c55e;
+}
+
+.scan-again-btn:active {
+    transform: scale(0.98);
+}
+
+/* "Ask the staff" state – no container for this item on site */
+
+.result-card.unassigned {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.result-card.unassigned .result-identified {
+    color: #92400e;
+}
+
+.result-card.unassigned .result-fraction {
+    color: #92400e;
+}
+
+.result-card.unassigned .container-pill {
+    background: #f59e0b;
 }
 
 /* Map */

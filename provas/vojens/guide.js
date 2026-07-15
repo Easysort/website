@@ -1,26 +1,25 @@
 /* Sorting guide for Provas / Vojens Genbrugsplads.
  *
  * Flow: live camera (like the easysort.org front page) -> take a photo ->
- * API returns a fraction -> the map draws the route from the entrance to
- * the nearest matching container, respecting one-way roads.
+ * the genbrugsplads worker identifies the item and returns a catalog
+ * fraction + item -> we map that fraction to a container and draw the
+ * route from the entrance, respecting one-way roads. If the fraction has
+ * no container on this site, we tell the user to ask the staff.
  *
  * The map itself (roads, buildings, fractions, coordinates) is authored in
  * an external editor and loaded from vojens-genbrugsplads.json. This file
  * only knows how to render and route on it.
  *
- * Primary API (not live yet):
- *   POST SORTING_API_URL
- *   body:     { site: "provas-vojens", image: <base64 jpeg>, language: "da" | "en" }
- *   response: { ok: true, result: { fractionKeys: string[] } }   (primary first)
- *
- * Until it exists we fall back to the existing Easysort Gemini worker.
+ * API (easysort-worker-genbrugsplads):
+ *   POST GENBRUGSPLADS_WORKER_URL
+ *   body:     { image: <base64 jpeg>, language: "da" | "en" }
+ *   response: { ok: true, result: { description, fraction, item, language } }
  */
 
 const MAP_URL = 'vojens-genbrugsplads.json?v=20260715';
-const SORTING_API_URL = 'https://api.easysort.org/v1/sorting-guide';
-const FALLBACK_WORKER_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
-const API_TIMEOUT_MS = 20000;
-const SITE_ID = 'provas-vojens';
+// Update this after `wrangler deploy` if your worker URL differs.
+const GENBRUGSPLADS_WORKER_URL = 'https://website-workers.lucas-vilsen.workers.dev/classify';
+const API_TIMEOUT_MS = 30000;
 
 const LANGUAGE_STORAGE_KEY = 'easysort-language';
 const SUPPORTED_LANGUAGES = ['da', 'en'];
@@ -53,9 +52,13 @@ const translations = {
         cameraNotFound: 'Intet kamera fundet. Tryk for at prøve igen.',
         analyzeFailed: 'Vi kunne ikke analysere billedet. Prøv igen, eller spørg personalet.',
         noMatch: 'Vi er ikke sikre på, hvad det er. Prøv et billede tættere på, eller spørg personalet.',
+        identifiedLabel: 'Vi tror, det er:',
         resultPill: 'Følg den grønne rute',
+        askStaffPill: 'Til personalet',
+        unassignedTitle: 'Spørg personalet',
+        unassignedBody: 'Vi har ikke en fast container til dette her. Vis det til personalet – de hjælper dig med at komme af med det på det rigtige sted.',
+        scanAgain: 'Scan noget andet',
         multiSpotNote: 'Findes flere steder – ruten går til den nærmeste.',
-        alsoMaybe: 'Andre muligheder:',
         mapCaption: 'Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.',
         mapEntrance: 'Indgang',
         footerSummary: 'Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.',
@@ -79,9 +82,13 @@ const translations = {
         cameraNotFound: 'No camera found. Tap to try again.',
         analyzeFailed: 'We could not analyze the photo. Try again, or ask the staff.',
         noMatch: 'We are not sure what this is. Try a closer photo, or ask the staff.',
+        identifiedLabel: 'We think this is:',
         resultPill: 'Follow the green route',
+        askStaffPill: 'Ask the staff',
+        unassignedTitle: 'Ask the staff',
+        unassignedBody: 'We do not have a fixed container for this on site. Show it to the staff – they will help you drop it in the right place.',
+        scanAgain: 'Scan something else',
         multiSpotNote: 'Available in several places – the route goes to the nearest one.',
-        alsoMaybe: 'Other options:',
         mapCaption: 'Tap a container to see the route. The map is indicative – ask the staff if in doubt.',
         mapEntrance: 'Entrance',
         footerSummary: 'Sorting guide for Vojens Recycling Center, operated by Provas.',
@@ -102,6 +109,40 @@ function slugify(text) {
     return text.toLowerCase().trim()
         .replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa')
         .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+/* The API returns a fraction name from fraction_to_items.json. Most of them
+ * slugify straight onto a map container key, but some catalog fractions are
+ * named slightly differently or are collected together on this site. This
+ * table bridges the ones that don't line up 1:1 (keyed by slugified name). */
+const FRACTION_ALIASES = {
+    'farligt-affald': 'miljoeafald',
+    'lysstofroer': 'miljoeafald',
+    'printerpatroner': 'miljoeafald',
+    'haveaffald': 'kompost',
+    'glasuld': 'mineraluld',
+    'stenuld': 'mineraluld',
+    'toej-og-sko': 'toej',
+    'bloed-folie': 'bloed-plast',
+    'smaat-elektronik': 'elektronik',
+    'mellemstor-elektronik': 'elektronik',
+    'mursten-og-tegl': 'mursten-tegl',
+    'plasthavemoebler': 'plast-havemoebler',
+    'trykimpraegneret': 'tryk-impraegneret',
+    'valgplakater-af-kanalplast': 'haard-plast',
+    'haarde-hvidevare': 'haarde-hvidevarer',
+    'makulering': 'papir'
+};
+
+/* Map a catalog fraction name onto a container key on this map, or null if
+ * the fraction has no dedicated container here (then: ask the staff). */
+function resolveMapKey(fractionName) {
+    if (!fractionName) return null;
+    const slug = slugify(fractionName);
+    if (FRACTION_BY_KEY.has(slug)) return slug;
+    const alias = FRACTION_ALIASES[slug];
+    if (alias && FRACTION_BY_KEY.has(alias)) return alias;
+    return null;
 }
 
 function deriveEntrance(roads) {
@@ -455,7 +496,7 @@ function captureFrame() {
 function showFrozenFrame() { document.getElementById('frozen-frame').classList.add('show'); }
 function hideFrozenFrame() { document.getElementById('frozen-frame').classList.remove('show'); }
 
-/* ── API (primary + Gemini worker fallback) ────────────────── */
+/* ── API (easysort-worker-genbrugsplads) ───────────────────── */
 
 async function fetchWithTimeout(url, options) {
     const abort = new AbortController();
@@ -467,44 +508,22 @@ async function fetchWithTimeout(url, options) {
     }
 }
 
-function extractFractionKeys(text) {
-    const found = [];
-    const lower = text.toLowerCase();
-    FRACTIONS.forEach((fraction) => {
-        const index = lower.indexOf(fraction.key);
-        if (index !== -1) found.push({ key: fraction.key, index });
-    });
-    return found.sort((a, b) => a.index - b.index).map((f) => f.key);
-}
-
+/* Returns { description, fraction, item } or throws on failure. */
 async function classifyImage(imageBase64) {
-    try {
-        const response = await fetchWithTimeout(SORTING_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ site: SITE_ID, image: imageBase64, language: currentLanguage })
-        });
-        const data = await response.json();
-        if (response.ok && data.ok === true && Array.isArray(data.result?.fractionKeys)) {
-            return data.result.fractionKeys;
-        }
+    const response = await fetchWithTimeout(GENBRUGSPLADS_WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageBase64, language: currentLanguage })
+    });
+    const data = await response.json();
+    if (!response.ok || data.ok !== true || !data.result) {
         throw new Error('bad response');
-    } catch {
-        // Fallback: existing Gemini worker
-        const options = FRACTIONS.map((f) => `${f.key} (${f.name.da})`).join(', ');
-        const prompt = `You are a waste sorting assistant at a Danish recycling center (genbrugsplads). ` +
-            `Look at the photo and decide which waste fraction the main object belongs to. ` +
-            `Answer ONLY with a JSON array of 1-3 fraction keys, most likely first, chosen from these options: [${options}]. ` +
-            `Use the key (the part before the parenthesis). Example answer: ["pap", "rest-efter-sortering"]`;
-        const response = await fetchWithTimeout(FALLBACK_WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: imageBase64, text: prompt })
-        });
-        const data = await response.json();
-        const reply = data?.response || '';
-        return extractFractionKeys(String(reply));
     }
+    return {
+        description: data.result.description || '',
+        fraction: data.result.fraction || '',
+        item: data.result.item || ''
+    };
 }
 
 /* ── Map rendering ─────────────────────────────────────────── */
@@ -647,38 +666,51 @@ function renderMap(activeKey = currentResult?.keys?.[0] ?? null) {
 function showResult(result, { scroll = true } = {}) {
     currentResult = result;
     const card = document.getElementById('result-card');
-    const primary = FRACTION_BY_KEY.get(result.keys[0]);
-    if (!primary) return;
+    const mapKey = result.keys && result.keys[0];
+    const primary = mapKey ? FRACTION_BY_KEY.get(mapKey) : null;
 
-    document.getElementById('result-fraction-name').textContent = primary.name[currentLanguage];
+    // "We think this is: ..." – only when the camera gave us an identification.
+    const identifiedEl = document.getElementById('result-identified');
+    if (result.description) {
+        identifiedEl.textContent = `${t('identifiedLabel')} ${result.description}`;
+        identifiedEl.hidden = false;
+    } else {
+        identifiedEl.hidden = true;
+    }
 
-    const base = primary.instructions[currentLanguage] || '';
-    const note = primary.spots.length > 1 ? (base ? ' ' : '') + t('multiSpotNote') : '';
-    document.getElementById('result-instructions').textContent = base + note;
+    const nameEl = document.getElementById('result-fraction-name');
+    const pillEl = document.getElementById('result-pill');
+    const instructionsEl = document.getElementById('result-instructions');
 
-    const alternates = result.keys.slice(1)
-        .map((key) => FRACTION_BY_KEY.get(key))
-        .filter(Boolean);
-    const alternatesWrap = document.getElementById('result-alternates');
-    alternatesWrap.hidden = alternates.length === 0;
-    const chips = document.getElementById('alternates-chips');
-    chips.innerHTML = '';
-    alternates.forEach((fraction) => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = 'chip';
-        chip.textContent = fraction.name[currentLanguage];
-        chip.addEventListener('click', () => {
-            showResult({ keys: [fraction.key, ...result.keys.filter((key) => key !== fraction.key)] }, { scroll: false });
-        });
-        chips.appendChild(chip);
-    });
+    if (primary) {
+        card.classList.remove('unassigned');
+        nameEl.textContent = primary.name[currentLanguage];
+        pillEl.textContent = t('resultPill');
+        const base = primary.instructions[currentLanguage] || '';
+        const note = primary.spots.length > 1 ? (base ? ' ' : '') + t('multiSpotNote') : '';
+        instructionsEl.textContent = base + note;
+        renderMap(primary.key);
+    } else {
+        card.classList.add('unassigned');
+        nameEl.textContent = result.catalogFraction || t('unassignedTitle');
+        pillEl.textContent = t('askStaffPill');
+        instructionsEl.textContent = t('unassignedBody');
+        renderMap(null);
+    }
 
     card.hidden = false;
-    renderMap(primary.key);
     if (scroll) {
         document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+}
+
+/* Reset back to the camera so the user can scan the next item. */
+function scanAgain() {
+    setStatus('');
+    document.getElementById('result-card').hidden = true;
+    currentResult = null;
+    renderMap(null);
+    document.getElementById('top').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ── Analyze flow ──────────────────────────────────────────── */
@@ -699,12 +731,17 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
     setStatus('');
 
     try {
-        const keys = await classifyImage(imageBase64);
-        const valid = keys.filter((key) => FRACTION_BY_KEY.has(key));
-        if (valid.length === 0) {
+        const result = await classifyImage(imageBase64);
+        if (!result.fraction && !result.description) {
             setStatus(t('noMatch'), true);
         } else {
-            showResult({ keys: valid });
+            const mapKey = resolveMapKey(result.fraction);
+            showResult({
+                keys: mapKey ? [mapKey] : [],
+                description: result.description,
+                item: result.item,
+                catalogFraction: result.fraction
+            });
         }
     } catch {
         setStatus(t('analyzeFailed'), true);
@@ -717,6 +754,7 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
 /* ── Init ──────────────────────────────────────────────────── */
 
 document.getElementById('camera-switch-btn').addEventListener('click', switchCamera);
+document.getElementById('scan-again-btn').addEventListener('click', scanAgain);
 
 document.querySelectorAll('[data-language-option]').forEach((button) => {
     button.addEventListener('click', () => setLanguage(button.dataset.languageOption));
