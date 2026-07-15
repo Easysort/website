@@ -9,6 +9,67 @@ html {
     display: none !important;
 }
 
+/* Detection banner – temporarily replaces the logo + language switch in the
+ * header to announce what was just scanned. */
+
+.detection-banner {
+    flex: 1 1 auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 38px;
+    flex-wrap: wrap;
+    text-align: center;
+    animation: detection-pop 0.35s ease both;
+}
+
+.detection-banner .detection-what {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #14532d;
+}
+
+.detection-banner .detection-arrow {
+    color: #9ca3af;
+    font-weight: 700;
+}
+
+.detection-banner .detection-fraction {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 13px;
+    border-radius: 999px;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.detection-banner.unassigned .detection-what {
+    color: #92400e;
+}
+
+.detection-banner.unassigned .detection-fraction {
+    background: #f59e0b;
+}
+
+#main-header.showing-detection .logo-link,
+#main-header.showing-detection .social-links {
+    display: none;
+}
+
+@keyframes detection-pop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
 .guide-main {
     max-width: 720px;
     margin: 0 auto;
@@ -169,6 +230,22 @@ html {
 
 .scan-again-btn:active {
     transform: scale(0.98);
+}
+
+/* Prominent "scan something else" at the bottom of the page */
+
+.scan-again-bottom {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+}
+
+.scan-again-btn--bottom {
+    margin-top: 0;
+    width: 100%;
+    max-width: 320px;
+    min-height: 52px;
+    font-size: 1rem;
 }
 
 /* "Ask the staff" state – no container for this item on site */

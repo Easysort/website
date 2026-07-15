@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Sorteringsguide – Vojens Genbrugsplads | Easysort</title>
     <link rel="stylesheet" href="../../style2.css?v=20260715">
-    <link rel="stylesheet" href="guide.css?v=20260715e">
+    <link rel="stylesheet" href="guide.css?v=20260715f">
 </head>
 <body id="top">
 
@@ -20,6 +20,7 @@
                 <button type="button" class="language-option" data-language-option="en" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇬🇧</span>EN</button>
             </div>
         </div>
+        <div class="detection-banner" id="detection-banner" role="status" aria-live="polite" hidden></div>
     </header>
 
     <main class="guide-main">
@@ -53,13 +54,16 @@
                     <span class="container-pill" id="result-pill" data-i18n="resultPill">Følg den grønne rute</span>
                 </div>
                 <p class="result-instructions" id="result-instructions"></p>
-                <button type="button" class="scan-again-btn" id="scan-again-btn" data-i18n="scanAgain">Scan noget andet</button>
             </div>
 
             <div class="map-card">
                 <svg id="site-map" viewBox="0 0 620 900" role="img" aria-label="Kort over Vojens Genbrugsplads"></svg>
             </div>
             <p class="map-caption" data-i18n="mapCaption">Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.</p>
+
+            <div class="scan-again-bottom" id="scan-again-bottom" hidden>
+                <button type="button" class="scan-again-btn scan-again-btn--bottom" id="scan-again-bottom-btn" data-i18n="scanAgain">Scan noget andet</button>
+            </div>
         </section>
     </main>
 
@@ -79,6 +83,6 @@
         </div>
     </footer>
 
-    <script src="guide.js?v=20260715e"></script>
+    <script src="guide.js?v=20260715f"></script>
 </body>
 </html>

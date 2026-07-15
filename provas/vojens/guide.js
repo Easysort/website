@@ -699,15 +699,63 @@ function showResult(result, { scroll = true } = {}) {
     }
 
     card.hidden = false;
+    document.getElementById('scan-again-bottom').hidden = false;
     if (scroll) {
         document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+}
+
+/* ── Header detection banner ───────────────────────────────── */
+
+/* When something is scanned, briefly swap the logo + language switch in the
+ * header for a banner telling the user what it is / where it goes. */
+let detectionTimer = null;
+const DETECTION_BANNER_MS = 4000;
+
+function makeSpan(className, text) {
+    const span = document.createElement('span');
+    span.className = className;
+    span.textContent = text;
+    return span;
+}
+
+function flashDetection(result) {
+    const header = document.getElementById('main-header');
+    const banner = document.getElementById('detection-banner');
+    const mapKey = result.keys && result.keys[0];
+    const fraction = mapKey ? FRACTION_BY_KEY.get(mapKey) : null;
+    const what = result.description || result.item || '';
+    const fractionName = fraction ? fraction.name[currentLanguage]
+        : (result.catalogFraction || t('unassignedTitle'));
+
+    banner.innerHTML = '';
+    banner.classList.toggle('unassigned', !fraction);
+    if (what) {
+        banner.appendChild(makeSpan('detection-what', what));
+        banner.appendChild(makeSpan('detection-arrow', '→'));
+    }
+    banner.appendChild(makeSpan('detection-fraction', fractionName));
+
+    banner.hidden = false;
+    header.classList.add('showing-detection');
+
+    clearTimeout(detectionTimer);
+    detectionTimer = setTimeout(hideDetectionBanner, DETECTION_BANNER_MS);
+}
+
+function hideDetectionBanner() {
+    clearTimeout(detectionTimer);
+    detectionTimer = null;
+    document.getElementById('main-header').classList.remove('showing-detection');
+    document.getElementById('detection-banner').hidden = true;
 }
 
 /* Reset back to the camera so the user can scan the next item. */
 function scanAgain() {
     setStatus('');
     document.getElementById('result-card').hidden = true;
+    document.getElementById('scan-again-bottom').hidden = true;
+    hideDetectionBanner();
     currentResult = null;
     renderMap(null);
     document.getElementById('top').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -736,12 +784,14 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
             setStatus(t('noMatch'), true);
         } else {
             const mapKey = resolveMapKey(result.fraction);
-            showResult({
+            const payload = {
                 keys: mapKey ? [mapKey] : [],
                 description: result.description,
                 item: result.item,
                 catalogFraction: result.fraction
-            });
+            };
+            showResult(payload);
+            flashDetection(payload);
         }
     } catch {
         setStatus(t('analyzeFailed'), true);
@@ -754,7 +804,7 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
 /* ── Init ──────────────────────────────────────────────────── */
 
 document.getElementById('camera-switch-btn').addEventListener('click', switchCamera);
-document.getElementById('scan-again-btn').addEventListener('click', scanAgain);
+document.getElementById('scan-again-bottom-btn').addEventListener('click', scanAgain);
 
 document.querySelectorAll('[data-language-option]').forEach((button) => {
     button.addEventListener('click', () => setLanguage(button.dataset.languageOption));
