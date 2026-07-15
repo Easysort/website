@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Sorteringsguide – Vojens Genbrugsplads | Easysort</title>
+    <link rel="stylesheet" href="../../style2.css?v=20260715">
+    <link rel="stylesheet" href="guide.css?v=20260715">
+</head>
+<body id="top">
+
+    <header id="main-header">
+        <a href="../../" class="logo-link">
+            <img src="../../logo.png" alt="Easysort Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+            <span class="logo-fallback">Easysort</span>
+        </a>
+        <div class="social-links">
+            <div class="language-switch" aria-label="Sprogskifter">
+                <button type="button" class="language-option" data-language-option="da" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇩🇰</span>DA</button>
+                <button type="button" class="language-option" data-language-option="en" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇬🇧</span>EN</button>
+            </div>
+            <a href="https://easysort.org" class="social-link" rel="noreferrer">
+                <span>easysort.org</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="guide-hero">
+            <div class="guide-content">
+                <p class="hero-kicker" data-i18n="guideKicker">Provas · Vojens Genbrugsplads</p>
+                <h1 class="guide-title" data-i18n="guideTitle">Hvad skal du af med?</h1>
+                <p class="hero-subtitle guide-subtitle" data-i18n="guideSubtitle">Skriv, hvad du har med, så viser vi dig den rigtige container – og vejen derhen fra indgangen.</p>
+
+                <form id="search-form" class="search-box" autocomplete="off">
+                    <input type="text" id="search-input" class="search-input" placeholder="F.eks. sofa, maling, pizzabakke ..." aria-label="Søg efter affald">
+                    <button type="submit" id="search-button" class="search-button" data-i18n="searchButton">Find container</button>
+                </form>
+
+                <div class="quick-picks">
+                    <span class="quick-picks-label" data-i18n="quickPicksLabel">Prøv fx</span>
+                    <div class="quick-picks-chips" id="quick-picks"></div>
+                </div>
+
+                <div class="result-card" id="result-card" hidden>
+                    <p class="result-kicker" id="result-query"></p>
+                    <div class="result-head">
+                        <h2 class="result-fraction" id="result-fraction-name"></h2>
+                        <span class="container-pill" id="result-container"></span>
+                    </div>
+                    <p class="result-instructions" id="result-instructions"></p>
+                    <div class="result-alternates" id="result-alternates" hidden>
+                        <span class="alternates-label" data-i18n="alsoMaybe">Måske i stedet:</span>
+                        <div class="alternates-chips" id="alternates-chips"></div>
+                    </div>
+                    <p class="result-source" id="result-source" hidden data-i18n="offlineNote">Vejledende svar – guiden svarede lokalt, da tjenesten ikke kunne nås.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="map-section" id="map-section">
+            <div class="guide-content">
+                <p class="section-label" data-i18n="mapLabel">Kort over pladsen</p>
+                <h2 class="section-title map-title" data-i18n="mapTitle">Sådan finder du derhen.</h2>
+                <p class="section-description" data-i18n="mapSubtitle">Ruten fra indgangen er markeret med grønt. Tryk på en container for at se ruten.</p>
+                <div class="map-card">
+                    <svg id="site-map" viewBox="0 0 1000 660" role="img" aria-label="Kort over Vojens Genbrugsplads"></svg>
+                </div>
+                <p class="map-caption" data-i18n="mapCaption">Kortet er vejledende. Spørg altid personalet, hvis du er i tvivl.</p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="fractions-section">
+            <div class="guide-content">
+                <p class="section-label" data-i18n="allFractionsLabel">Eller vælg selv</p>
+                <h2 class="section-title" data-i18n="allFractionsTitle">Alle fraktioner på pladsen.</h2>
+                <div class="fraction-grid" id="fraction-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-intro">
+                <a href="../../" class="footer-brand">Easysort</a>
+                <p class="footer-summary" data-i18n="footerSummary">Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.</p>
+                <div class="footer-contact">
+                    <span data-i18n="footerContactLabel">Kontakt:</span> <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="../../" class="footer-link" data-i18n="footerBackLink">Tilbage til easysort.org</a>
+                <a href="https://www.provas.dk" class="footer-link" target="_blank" rel="noreferrer">provas.dk</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="guide.js?v=20260715"></script>
+</body>
+</html>
