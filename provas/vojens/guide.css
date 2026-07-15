@@ -9,6 +9,11 @@ html {
     display: none !important;
 }
 
+/* Leave room at the bottom for the fixed "scan again" bar while a result is up. */
+body.scanning {
+    padding-bottom: 96px;
+}
+
 /* Detection banner – temporarily replaces the logo + language switch in the
  * header to announce what was just scanned. */
 
@@ -18,34 +23,35 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    min-height: 38px;
+    gap: 14px;
+    min-height: 52px;
     flex-wrap: wrap;
     text-align: center;
     animation: detection-pop 0.35s ease both;
 }
 
 .detection-banner .detection-what {
-    font-size: 1.15rem;
+    font-size: 1.7rem;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     color: #14532d;
 }
 
 .detection-banner .detection-arrow {
     color: #9ca3af;
     font-weight: 700;
+    font-size: 1.3rem;
 }
 
 .detection-banner .detection-fraction {
     display: inline-flex;
     align-items: center;
-    min-height: 30px;
-    padding: 0 13px;
+    min-height: 38px;
+    padding: 0 18px;
     border-radius: 999px;
     background: #16a34a;
     color: #ffffff;
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -232,20 +238,39 @@ html {
     transform: scale(0.98);
 }
 
-/* Prominent "scan something else" at the bottom of the page */
+/* Prominent "scan something else" – sticks to the bottom of the viewport so
+ * it's always reachable without scrolling. */
 
 .scan-again-bottom {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
     display: flex;
     justify-content: center;
-    margin-top: 28px;
+    margin-top: 0;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-top: 1px solid rgba(17, 24, 39, 0.08);
 }
 
 .scan-again-btn--bottom {
     margin-top: 0;
     width: 100%;
-    max-width: 320px;
-    min-height: 52px;
-    font-size: 1rem;
+    max-width: 420px;
+    min-height: 54px;
+    font-size: 1.05rem;
+    background: #16a34a;
+    color: #ffffff;
+    border-color: #16a34a;
+}
+
+.scan-again-btn--bottom:hover {
+    background: #15803d;
+    border-color: #15803d;
 }
 
 /* "Ask the staff" state – no container for this item on site */

@@ -39,7 +39,7 @@ const translations = {
         pageTitle: 'Sorteringsguide – Vojens Genbrugsplads | Easysort',
         guideKicker: 'Provas · Vojens Genbrugsplads',
         guideTitle: 'Hvad skal du af med?',
-        guideSubtitle: 'Tag et billede af dit affald, så finder vi den rigtige container og viser dig vejen fra indgangen.',
+        guideSubtitle: 'Tag et billede af dit affald, så finder vi den rigtige container.',
         placeholderDefault: 'Giv kameraadgang for at komme i gang',
         analyzeEnableCamera: 'Aktiver kamera for at fortsætte',
         analyzeWaste: 'Analyser affald',
@@ -69,7 +69,7 @@ const translations = {
         pageTitle: 'Sorting guide – Vojens Recycling Center | Easysort',
         guideKicker: 'Provas · Vojens Recycling Center',
         guideTitle: 'What are you dropping off?',
-        guideSubtitle: 'Take a photo of your waste and we will find the right container and show you the way from the entrance.',
+        guideSubtitle: 'Take a photo of your waste and we will find the right container.',
         placeholderDefault: 'Allow camera access to get started',
         analyzeEnableCamera: 'Enable camera to continue',
         analyzeWaste: 'Analyze waste',
@@ -700,6 +700,7 @@ function showResult(result, { scroll = true } = {}) {
 
     card.hidden = false;
     document.getElementById('scan-again-bottom').hidden = false;
+    document.body.classList.add('scanning');
     if (scroll) {
         document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -755,6 +756,7 @@ function scanAgain() {
     setStatus('');
     document.getElementById('result-card').hidden = true;
     document.getElementById('scan-again-bottom').hidden = true;
+    document.body.classList.remove('scanning');
     hideDetectionBanner();
     currentResult = null;
     renderMap(null);
