@@ -711,7 +711,7 @@ function showResult(result, { scroll = true } = {}) {
 /* When something is scanned, briefly swap the logo + language switch in the
  * header for a banner telling the user what it is / where it goes. */
 let detectionTimer = null;
-const DETECTION_BANNER_MS = 4000;
+const DETECTION_BANNER_MS = 8000;
 
 function makeSpan(className, text) {
     const span = document.createElement('span');

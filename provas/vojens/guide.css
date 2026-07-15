@@ -128,6 +128,19 @@ body.scanning {
     border-radius: 18px;
 }
 
+/* Hide any native play/pause overlay the browser adds to the live camera. */
+#webcam-video::-webkit-media-controls,
+#webcam-video::-webkit-media-controls-panel,
+#webcam-video::-webkit-media-controls-play-button,
+#webcam-video::-webkit-media-controls-overlay-play-button,
+#webcam-video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
 .camera-card .camera-switch-btn {
     display: none;
     align-items: center;
