@@ -237,13 +237,11 @@ function dijkstra(g, start) {
     return { dist, prev };
 }
 
-/* A container is reached by driving on the roads and then walking a short
- * final approach ("spur") from the nearest road point. We only allow that
- * spur to be short, otherwise a route could cut straight across the site
- * and ignore one-way roads. If nothing is close enough, fall back to the
- * globally nearest access point. */
-const MAX_SPUR = 130;
-
+/* A container is reached by driving on the roads and then stepping off at
+ * the CLOSEST point on the road network. Choosing the closest road point
+ * (not the one that minimizes total travel) keeps the final approach a
+ * short perpendicular step and never a diagonal cut across the site.
+ * Ties are broken by the shorter drive. */
 function routeToPoint(target) {
     const g = buildGraph();
     const candidates = [];
@@ -260,15 +258,16 @@ function routeToPoint(target) {
     const start = g.nodeAt(ENTRANCE);
     const { dist, prev } = dijkstra(g, start);
 
-    let best = null;
-    let fallback = null;
+    let chosen = null;
     candidates.forEach((c) => {
         if (dist[c.idx] === Infinity) return;
         const total = dist[c.idx] + c.spur;
-        if (c.spur <= MAX_SPUR && (!best || total < best.total)) best = { ...c, total };
-        if (!fallback || total < fallback.total) fallback = { ...c, total };
+        if (!chosen
+            || c.spur < chosen.spur - 0.5
+            || (Math.abs(c.spur - chosen.spur) <= 0.5 && total < chosen.total)) {
+            chosen = { ...c, total };
+        }
     });
-    const chosen = best || fallback;
     if (!chosen) return { path: [ENTRANCE, target], cost: Infinity };
 
     const path = [];
@@ -542,7 +541,11 @@ function renderBox(box, className) {
     g.appendChild(svgEl('rect', { x: box.x, y: box.y, width: box.width, height: box.height, rx: 12 }));
     const label = (box.label && (box.label[currentLanguage] || box.label.da)) || '';
     if (label) {
-        g.appendChild(svgEl('text', { x: box.x + box.width / 2, y: box.y + 26 }, label));
+        g.appendChild(svgEl('text', {
+            x: box.x + box.width / 2,
+            y: box.y + box.height / 2,
+            'dominant-baseline': 'central'
+        }, label));
     }
     return g;
 }
