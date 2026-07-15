@@ -1,14 +1,19 @@
 /* Sorting guide for Provas / Vojens Genbrugsplads.
  *
- * API contract (not live yet — falls back to local keyword matching):
+ * Flow: user takes a photo -> API returns fraction id(s) -> the map draws
+ * the route from the entrance to that container.
+ *
+ * Primary API (not live yet):
  *   POST SORTING_API_URL
- *   body:     { site: "provas-vojens", query: string, language: "da" | "en" }
- *   response: { ok: true, result: { fractionIds: string[], note?: string } }
- * fractionIds must match ids in FRACTIONS below (first id = primary suggestion).
+ *   body:     { site: "provas-vojens", image: <base64 jpeg>, language: "da" | "en" }
+ *   response: { ok: true, result: { fractionIds: string[] } }   (primary first)
+ *
+ * Until it exists we fall back to the existing Easysort Gemini worker.
  */
 
 const SORTING_API_URL = 'https://api.easysort.org/v1/sorting-guide';
-const API_TIMEOUT_MS = 6000;
+const FALLBACK_WORKER_URL = 'https://workers-playground-bitter-term-7fe4.lucas-vilsen.workers.dev/generate';
+const API_TIMEOUT_MS = 20000;
 const SITE_ID = 'provas-vojens';
 
 const LANGUAGE_STORAGE_KEY = 'easysort-language';
@@ -22,177 +27,197 @@ const translations = {
         pageTitle: 'Sorteringsguide – Vojens Genbrugsplads | Easysort',
         guideKicker: 'Provas · Vojens Genbrugsplads',
         guideTitle: 'Hvad skal du af med?',
-        guideSubtitle: 'Skriv, hvad du har med, så viser vi dig den rigtige container – og vejen derhen fra indgangen.',
-        searchPlaceholder: 'F.eks. sofa, maling, pizzabakke ...',
-        searchButton: 'Find container',
-        searching: 'Søger ...',
-        quickPicksLabel: 'Prøv fx',
-        containerLabel: 'Container {num}',
-        areaLabel: 'Ved indgangen',
-        youSearchedFor: 'Du søgte efter “{query}”',
-        alsoMaybe: 'Måske i stedet:',
-        offlineNote: 'Vejledende svar – guiden svarede lokalt, da tjenesten ikke kunne nås.',
-        noMatch: 'Vi kunne ikke finde et sikkert svar. Spørg personalet på pladsen, eller vælg en fraktion nedenfor.',
-        mapLabel: 'Kort over pladsen',
-        mapTitle: 'Sådan finder du derhen.',
-        mapSubtitle: 'Ruten fra indgangen er markeret med grønt. Tryk på en container for at se ruten.',
-        mapCaption: 'Kortet er vejledende. Spørg altid personalet, hvis du er i tvivl.',
+        guideSubtitle: 'Tag et billede af dit affald, så finder vi den rigtige container og viser dig vejen fra indgangen.',
+        photoButton: 'Tag et billede af dit affald',
+        libraryButton: '… eller vælg et billede fra galleriet',
+        analyzing: 'Kigger på billedet ...',
+        analyzeFailed: 'Vi kunne ikke analysere billedet. Prøv igen, eller spørg personalet.',
+        noMatch: 'Vi er ikke sikre på, hvad det er. Prøv et nyt billede tættere på, eller spørg personalet.',
+        resultPill: 'Følg den grønne rute',
+        alsoMaybe: 'Andre muligheder:',
+        mapCaption: 'Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.',
         mapEntrance: 'Indgang',
-        mapYouAreHere: 'Du er her',
-        allFractionsLabel: 'Eller vælg selv',
-        allFractionsTitle: 'Alle fraktioner på pladsen.',
+        mapStaff: 'Personale',
+        mapHall: 'Miljøhal',
         footerSummary: 'Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.',
         footerContactLabel: 'Kontakt:',
-        footerBackLink: 'Tilbage til easysort.org',
-        quickPicks: ['Sofa', 'Maling', 'Pizzabakke', 'Spejl', 'Cykel', 'Flamingo']
+        footerBackLink: 'Tilbage til easysort.org'
     },
     en: {
         pageTitle: 'Sorting guide – Vojens Recycling Center | Easysort',
         guideKicker: 'Provas · Vojens Recycling Center',
         guideTitle: 'What are you dropping off?',
-        guideSubtitle: 'Tell us what you brought, and we will point you to the right container – and the way there from the entrance.',
-        searchPlaceholder: 'E.g. sofa, paint, pizza box ...',
-        searchButton: 'Find container',
-        searching: 'Searching ...',
-        quickPicksLabel: 'Try e.g.',
-        containerLabel: 'Container {num}',
-        areaLabel: 'Near the entrance',
-        youSearchedFor: 'You searched for “{query}”',
-        alsoMaybe: 'Possibly instead:',
-        offlineNote: 'Indicative answer – the guide answered locally because the service could not be reached.',
-        noMatch: 'We could not find a confident answer. Ask the staff on site, or pick a fraction below.',
-        mapLabel: 'Site map',
-        mapTitle: 'How to get there.',
-        mapSubtitle: 'The route from the entrance is marked in green. Tap a container to see the route.',
-        mapCaption: 'The map is indicative. Always ask the staff if in doubt.',
+        guideSubtitle: 'Take a photo of your waste and we will find the right container and show you the way from the entrance.',
+        photoButton: 'Take a photo of your waste',
+        libraryButton: '… or pick a photo from your library',
+        analyzing: 'Looking at the photo ...',
+        analyzeFailed: 'We could not analyze the photo. Try again, or ask the staff.',
+        noMatch: 'We are not sure what this is. Try a closer photo, or ask the staff.',
+        resultPill: 'Follow the green route',
+        alsoMaybe: 'Other options:',
+        mapCaption: 'Tap a container to see the route. The map is indicative – ask the staff if in doubt.',
         mapEntrance: 'Entrance',
-        mapYouAreHere: 'You are here',
-        allFractionsLabel: 'Or choose yourself',
-        allFractionsTitle: 'All fractions on site.',
+        mapStaff: 'Staff',
+        mapHall: 'Hazardous waste hall',
         footerSummary: 'Sorting guide for Vojens Recycling Center, operated by Provas.',
         footerContactLabel: 'Contact:',
-        footerBackLink: 'Back to easysort.org',
-        quickPicks: ['Sofa', 'Paint', 'Pizza box', 'Mirror', 'Bicycle', 'Styrofoam']
+        footerBackLink: 'Back to easysort.org'
     }
 };
 
-/* ── Fractions: names, instructions, keywords, map position ──
- * pos = center of the container on the schematic map (viewBox 1000x660).
- * num = container number on site (null for areas like the hazardous waste shed). */
+/* ── Fractions ─────────────────────────────────────────────────
+ * Layout digitized from the official Provas map of Vojens Genbrugsplads.
+ * Colors follow the Danish waste pictogram system used on the signs.
+ * spots: [x, y] tile centers in map coordinates (viewBox 620x900).
+ * aisle: x of the driving lane the container is reached from. */
+
+const COLORS = {
+    navy: '#2d5474', lightblue: '#2e7fb4', teal: '#33b58e', darkgreen: '#20603c',
+    darkred: '#8e3049', purple: '#8e3d95', brown: '#77571e', sand: '#b99b62',
+    slate: '#46585e', black: '#232323', lightgreen: '#6fb44e', orange: '#e28c2b',
+    red: '#d0342c'
+};
+
+const AISLE = { left: 115, mid: 285, inner: 400, right: 555 };
 
 const FRACTIONS = [
-    { id: 'cardboard', num: 1, pos: [62, 480],
+    { id: 'pap', color: 'sand', aisle: 'left', spots: [[63, 488], [63, 548], [352, 445]],
       name: { da: 'Pap', en: 'Cardboard' },
-      instructions: { da: 'Rent og tørt pap. Slå kasserne flade, og fjern flamingo og plastfyld først.', en: 'Clean, dry cardboard. Flatten boxes and remove styrofoam and plastic filling first.' },
-      keywords: ['pap', 'papkasse', 'karton', 'flyttekasse', 'cardboard', 'box', 'moving box'] },
-    { id: 'paper', num: 2, pos: [62, 400],
+      instructions: { da: 'Rent og tørt pap. Slå kasserne flade, og fjern flamingo og plastfyld først.', en: 'Clean, dry cardboard. Flatten boxes and remove styrofoam and plastic filling first.' } },
+    { id: 'papir', color: 'lightblue', aisle: 'inner', spots: [[352, 496]],
       name: { da: 'Papir', en: 'Paper' },
-      instructions: { da: 'Aviser, reklamer, kontorpapir og bøger uden stift ryg.', en: 'Newspapers, flyers, office paper and paperback books.' },
-      keywords: ['papir', 'avis', 'aviser', 'reklamer', 'magasin', 'bog', 'paper', 'newspaper', 'magazine', 'book'] },
-    { id: 'glass', num: 3, pos: [62, 320],
-      name: { da: 'Glas & flasker', en: 'Glass & bottles' },
-      instructions: { da: 'Flasker og emballageglas. Tøm dem – skyl gerne. Ikke spejle eller vinduesglas.', en: 'Bottles and packaging glass. Empty them – rinse if possible. No mirrors or window glass.' },
-      keywords: ['glas', 'flaske', 'flasker', 'syltetøjsglas', 'vinflaske', 'glass', 'bottle', 'jar'] },
-    { id: 'metal', num: 4, pos: [62, 240],
-      name: { da: 'Metal & jern', en: 'Metal & iron' },
-      instructions: { da: 'Alt af metal: rør, søm, gryder, cykler og havemøbler i metal.', en: 'Anything metal: pipes, nails, pots, bicycles and metal garden furniture.' },
-      keywords: ['metal', 'jern', 'cykel', 'gryde', 'søm', 'rør', 'stål', 'aluminium', 'iron', 'bicycle', 'bike', 'steel', 'pots'] },
-    { id: 'hard-plastic', num: 5, pos: [62, 160],
+      instructions: { da: 'Aviser, reklamer og kontorpapir.', en: 'Newspapers, flyers and office paper.' } },
+    { id: 'boeger', color: 'lightblue', aisle: 'inner', spots: [[352, 547]],
+      name: { da: 'Bøger', en: 'Books' },
+      instructions: { da: 'Bøger i alle former – også med stift ryg.', en: 'Books of all kinds – hardcovers too.' } },
+    { id: 'glas', color: 'teal', aisle: 'inner', spots: [[352, 343]],
+      name: { da: 'Glas', en: 'Glass' },
+      instructions: { da: 'Flasker og emballageglas. Tøm dem – skyl gerne.', en: 'Bottles and packaging glass. Empty them – rinse if possible.' } },
+    { id: 'fladt-glas', color: 'teal', aisle: 'inner', spots: [[352, 190]],
+      name: { da: 'Fladt glas', en: 'Flat glass' },
+      instructions: { da: 'Planglas og spejle uden rammer.', en: 'Flat glass and mirrors without frames.' } },
+    { id: 'vinduer', color: 'navy', aisle: 'inner', spots: [[352, 241]],
+      name: { da: 'Vinduer', en: 'Windows' },
+      instructions: { da: 'Hele vinduer med ramme og karm.', en: 'Whole windows with frame and casing.' } },
+    { id: 'metal', color: 'slate', aisle: 'mid', spots: [[218, 194], [218, 260]],
+      name: { da: 'Metal', en: 'Metal' },
+      instructions: { da: 'Alt af metal: rør, gryder, cykler og havemøbler i metal.', en: 'Anything metal: pipes, pots, bicycles and metal garden furniture.' } },
+    { id: 'haard-plast', color: 'purple', aisle: 'inner', spots: [[352, 649]],
       name: { da: 'Hård plast', en: 'Hard plastic' },
-      instructions: { da: 'Havemøbler i plast, spande, kasser og legetøj uden elektronik. Tøm for indhold.', en: 'Plastic garden furniture, buckets, crates and toys without electronics. Empty of contents.' },
-      keywords: ['hård plast', 'plast', 'spand', 'plastkasse', 'havemøbler plast', 'legetøj', 'hard plastic', 'plastic', 'bucket', 'crate', 'toys'] },
-    { id: 'plastic-film', num: 6, pos: [200, 57],
-      name: { da: 'Plastfolie', en: 'Plastic film' },
-      instructions: { da: 'Ren og tør blød plast: folie, poser og bobleplast. Ingen madrester.', en: 'Clean, dry soft plastic: film, bags and bubble wrap. No food residue.' },
-      keywords: ['folie', 'plastfolie', 'blød plast', 'poser', 'plastpose', 'bobleplast', 'plastic film', 'soft plastic', 'plastic bag', 'bubble wrap'] },
-    { id: 'wood', num: 7, pos: [300, 57],
-      name: { da: 'Træ', en: 'Wood' },
-      instructions: { da: 'Rent træ og møbler af træ. Søm og skruer må gerne sidde i.', en: 'Clean wood and wooden furniture. Nails and screws can stay in.' },
-      keywords: ['træ', 'brædder', 'planker', 'træmøbler', 'wood', 'timber', 'planks', 'wooden'] },
-    { id: 'impregnated-wood', num: 8, pos: [400, 57],
-      name: { da: 'Imprægneret træ', en: 'Impregnated wood' },
-      instructions: { da: 'Trykimprægneret træ, hegn og terrassebrædder. Holdes adskilt fra rent træ.', en: 'Pressure-treated wood, fencing and decking boards. Keep separate from clean wood.' },
-      keywords: ['imprægneret', 'trykimprægneret', 'hegn', 'terrassebrædder', 'impregnated', 'pressure treated', 'decking', 'fence'] },
-    { id: 'garden', num: 9, pos: [500, 57],
-      name: { da: 'Haveaffald', en: 'Garden waste' },
-      instructions: { da: 'Grene, græs, blade og planter. Tøm sække og tag dem med hjem igen.', en: 'Branches, grass, leaves and plants. Empty the bags and take them back home.' },
-      keywords: ['haveaffald', 'grene', 'græs', 'blade', 'planter', 'hæk', 'garden waste', 'branches', 'grass', 'leaves', 'plants', 'hedge'] },
-    { id: 'combustible', num: 10, pos: [600, 57],
-      name: { da: 'Småt brændbart', en: 'Small combustible' },
-      instructions: { da: 'Brændbart affald under 1 meter, fx snavset pap, flamingo og polstrede møbler i mindre dele.', en: 'Combustible waste under 1 metre, e.g. dirty cardboard, styrofoam and upholstered furniture in smaller parts.' },
-      keywords: ['brændbart', 'småt brændbart', 'sofa', 'madras', 'pizzabakke', 'flamingo', 'tæppe', 'combustible', 'burnable', 'mattress', 'pizza box', 'styrofoam', 'carpet'] },
-    { id: 'landfill', num: 11, pos: [700, 57],
-      name: { da: 'Deponi', en: 'Landfill' },
-      instructions: { da: 'Ikke-brændbart affald, der ikke kan genanvendes: spejle, keramik, porcelæn og vinduesglas.', en: 'Non-combustible waste that cannot be recycled: mirrors, ceramics, porcelain and window glass.' },
-      keywords: ['deponi', 'spejl', 'keramik', 'porcelæn', 'vinduesglas', 'toilet', 'håndvask', 'landfill', 'mirror', 'ceramics', 'porcelain', 'window glass', 'sink'] },
-    { id: 'concrete', num: 12, pos: [790, 57],
-      name: { da: 'Beton & tegl', en: 'Concrete & bricks' },
-      instructions: { da: 'Rene murbrokker, beton, tegl og fliser uden armering og træ.', en: 'Clean rubble, concrete, bricks and tiles without rebar and wood.' },
-      keywords: ['beton', 'tegl', 'mursten', 'murbrokker', 'fliser', 'concrete', 'bricks', 'rubble', 'tiles'] },
-    { id: 'gypsum', num: 13, pos: [938, 160],
+      instructions: { da: 'Spande, kasser og legetøj uden elektronik. Tøm for indhold.', en: 'Buckets, crates and toys without electronics. Empty of contents.' } },
+    { id: 'bloed-plast', color: 'purple', aisle: 'inner', spots: [[352, 598]],
+      name: { da: 'Blød plast', en: 'Soft plastic' },
+      instructions: { da: 'Ren og tør folie, poser og bobleplast.', en: 'Clean, dry film, bags and bubble wrap.' } },
+    { id: 'haard-pvc', color: 'purple', aisle: 'left', spots: [[63, 607]],
+      name: { da: 'Hård PVC', en: 'Rigid PVC' },
+      instructions: { da: 'Rør, tagrender og kabelbakker af hård PVC.', en: 'Pipes, gutters and cable trays of rigid PVC.' } },
+    { id: 'plast-havemoebler', color: 'purple', aisle: 'inner', spots: [[352, 292]],
+      name: { da: 'Plast-havemøbler', en: 'Plastic garden furniture' },
+      instructions: { da: 'Havemøbler af plast – tømte og uden hynder.', en: 'Plastic garden furniture – emptied and without cushions.' } },
+    { id: 'flamingo', color: 'purple', aisle: 'inner', spots: [[352, 394]],
+      name: { da: 'Flamingo', en: 'Styrofoam' },
+      instructions: { da: 'Ren flamingo (EPS) fra emballage.', en: 'Clean styrofoam (EPS) from packaging.' } },
+    { id: 'daek', color: 'purple', aisle: 'left', spots: [[63, 667]],
+      name: { da: 'Dæk', en: 'Tyres' },
+      instructions: { da: 'Dæk med og uden fælge.', en: 'Tyres with and without rims.' } },
+    { id: 'indendoers-trae', color: 'brown', aisle: 'left', spots: [[63, 368], [63, 428], [218, 454]],
+      name: { da: 'Indendørs træ', en: 'Indoor wood' },
+      instructions: { da: 'Rent træ og møbler af træ. Søm og skruer må gerne sidde i.', en: 'Clean wood and wooden furniture. Nails and screws can stay in.' } },
+    { id: 'tryk-impraegneret', color: 'brown', aisle: 'left', spots: [[63, 308], [218, 334]],
+      name: { da: 'Trykimprægneret træ', en: 'Pressure-treated wood' },
+      instructions: { da: 'Trykimprægneret træ, hegn og terrassebrædder.', en: 'Pressure-treated wood, fencing and decking boards.' } },
+    { id: 'paller', color: 'brown', aisle: 'inner', spots: [[445, 386]],
+      name: { da: 'Paller', en: 'Pallets' },
+      instructions: { da: 'Hele paller og pallerammer.', en: 'Whole pallets and pallet collars.' } },
+    { id: 'tagpap', color: 'navy', aisle: 'inner', spots: [[445, 302]],
+      name: { da: 'Tagpap', en: 'Roofing felt' },
+      instructions: { da: 'Tagpap uden træ og søm i større mængder.', en: 'Roofing felt without large amounts of wood and nails.' } },
+    { id: 'mineraluld', color: 'navy', aisle: 'left', spots: [[63, 130]],
+      name: { da: 'Mineraluld', en: 'Mineral wool' },
+      instructions: { da: 'Isolering som rockwool og glasuld – gerne i lukkede sække.', en: 'Insulation such as rockwool and glass wool – preferably in closed bags.' } },
+    { id: 'gips', color: 'navy', aisle: 'left', spots: [[63, 189]],
       name: { da: 'Gips', en: 'Plasterboard' },
-      instructions: { da: 'Gipsplader uden fliser og træ. Skruer må gerne sidde i.', en: 'Plasterboard without tiles and wood. Screws can stay in.' },
-      keywords: ['gips', 'gipsplader', 'plasterboard', 'gypsum', 'drywall'] },
-    { id: 'electronics', num: 14, pos: [938, 240],
-      name: { da: 'Elektronik', en: 'Electronics' },
-      instructions: { da: 'Alt med ledning eller batteri: lamper, computere, mobiler og småt elektronik.', en: 'Anything with a cord or battery: lamps, computers, phones and small electronics.' },
-      keywords: ['elektronik', 'computer', 'mobil', 'lampe', 'tv', 'fjernsyn', 'ledning', 'electronics', 'phone', 'laptop', 'lamp', 'cable'] },
-    { id: 'white-goods', num: 15, pos: [938, 320],
-      name: { da: 'Hvidevarer', en: 'White goods' },
-      instructions: { da: 'Køleskabe, frysere, vaskemaskiner og komfurer. Stilles hele ved containeren.', en: 'Fridges, freezers, washing machines and stoves. Place them whole next to the container.' },
-      keywords: ['hvidevarer', 'køleskab', 'fryser', 'vaskemaskine', 'komfur', 'opvaskemaskine', 'fridge', 'freezer', 'washing machine', 'stove', 'dishwasher'] },
-    { id: 'textiles', num: 16, pos: [938, 400],
-      name: { da: 'Tekstiler', en: 'Textiles' },
-      instructions: { da: 'Tøj, sko og tekstiler – også i stykker. Afleveres rent og tørt i poser.', en: 'Clothes, shoes and textiles – even damaged. Hand in clean and dry in bags.' },
-      keywords: ['tekstil', 'tekstiler', 'tøj', 'sko', 'sengetøj', 'håndklæder', 'textiles', 'clothes', 'shoes', 'bedding', 'towels'] },
-    { id: 'hazardous', num: null, pos: [340, 500],
-      name: { da: 'Farligt affald', en: 'Hazardous waste' },
-      instructions: { da: 'Maling, kemikalier, spraydåser, batterier og olie. Afleveres til personalet i huset ved indgangen.', en: 'Paint, chemicals, spray cans, batteries and oil. Hand it to the staff in the shed near the entrance.' },
-      keywords: ['farligt', 'maling', 'kemikalier', 'spraydåse', 'batteri', 'batterier', 'olie', 'gift', 'hazardous', 'paint', 'chemicals', 'spray can', 'battery', 'oil'] },
-    { id: 'reuse', num: null, pos: [560, 500],
+      instructions: { da: 'Gipsplader uden fliser og træ. Skruer må gerne sidde i.', en: 'Plasterboard without tiles and wood. Screws can stay in.' } },
+    { id: 'polstrede-moebler', color: 'darkred', aisle: 'left', spots: [[63, 249]],
+      name: { da: 'Polstrede møbler', en: 'Upholstered furniture' },
+      instructions: { da: 'Sofaer, lænestole og andre polstrede møbler.', en: 'Sofas, armchairs and other upholstered furniture.' } },
+    { id: 'tekstilaffald', color: 'darkred', aisle: 'inner', spots: [[445, 447]],
+      name: { da: 'Tekstilaffald', en: 'Textile waste' },
+      instructions: { da: 'Ødelagte tekstiler – rent og tørt i poser.', en: 'Damaged textiles – clean and dry in bags.' } },
+    { id: 'sko-toej', color: 'lightgreen', aisle: 'inner', spots: [[445, 532]],
+      name: { da: 'Sko & tøj', en: 'Shoes & clothes' },
+      instructions: { da: 'Brugbart tøj og sko til genbrug – rent og i poser.', en: 'Usable clothes and shoes for reuse – clean and bagged.' } },
+    { id: 'mursten-tegl', color: 'navy', aisle: 'right', spots: [[505, 542]],
+      name: { da: 'Mursten & tegl', en: 'Bricks & tiles' },
+      instructions: { da: 'Rene mursten og tegl uden puds og beton.', en: 'Clean bricks and roof tiles without plaster and concrete.' } },
+    { id: 'beton', color: 'navy', aisle: 'right', spots: [[505, 640]],
+      name: { da: 'Beton', en: 'Concrete' },
+      instructions: { da: 'Beton og murbrokker uden armering og træ.', en: 'Concrete and rubble without rebar and wood.' } },
+    { id: 'sanitet', color: 'navy', aisle: 'right', spots: [[505, 444]],
+      name: { da: 'Sanitet', en: 'Sanitary ware' },
+      instructions: { da: 'Toiletter, håndvaske og andet porcelæn fra badeværelset.', en: 'Toilets, sinks and other bathroom porcelain.' } },
+    { id: 'jord', color: 'darkgreen', aisle: 'right', spots: [[505, 228]],
+      name: { da: 'Jord', en: 'Soil' },
+      instructions: { da: 'Ren jord uden rødder, sten og byggeaffald.', en: 'Clean soil without roots, stones and construction waste.' } },
+    { id: 'kompost', color: 'darkgreen', aisle: 'right', spots: [[505, 342]],
+      name: { da: 'Kompost', en: 'Compost' },
+      instructions: { da: 'Haveaffald: grene, græs, blade og planter. Tøm sækkene.', en: 'Garden waste: branches, grass, leaves and plants. Empty the bags.' } },
+    { id: 'rest-efter-sortering', color: 'black', aisle: 'mid', spots: [[218, 514], [218, 574]],
+      name: { da: 'Rest efter sortering', en: 'Residual after sorting' },
+      instructions: { da: 'Det, der er tilbage, når alt andet er sorteret fra.', en: 'What is left when everything else has been sorted out.' } },
+    { id: 'stor-rest', color: 'black', aisle: 'mid', spots: [[218, 394]],
+      name: { da: 'Stor rest efter sortering', en: 'Large residual waste' },
+      instructions: { da: 'Store ting, der ikke kan genanvendes, fx madrasser og gulvtæpper.', en: 'Large items that cannot be recycled, e.g. mattresses and carpets.' } },
+    { id: 'til-nedgravning', color: 'black', aisle: 'mid', spots: [[218, 641]],
+      name: { da: 'Til nedgravning', en: 'For landfill' },
+      instructions: { da: 'Ikke-brændbart affald til deponi, fx keramik og porcelæn.', en: 'Non-combustible waste for landfill, e.g. ceramics and porcelain.' } },
+    { id: 'genbrug', color: 'lightgreen', aisle: 'inner', spots: [[445, 620]],
       name: { da: 'Direkte genbrug', en: 'Direct reuse' },
-      instructions: { da: 'Ting, der stadig kan bruges: møbler, service og legetøj. Stil dem i genbrugsområdet ved indgangen.', en: 'Things that can still be used: furniture, tableware and toys. Place them in the reuse area near the entrance.' },
-      keywords: ['genbrug', 'direkte genbrug', 'brugbart', 'reuse', 'second hand', 'usable'] }
+      instructions: { da: 'Ting, der stadig kan bruges – stil dem i GenTag-området.', en: 'Things that can still be used – place them in the GenTag area.' } },
+    { id: 'elektronik', color: 'orange', aisle: 'bottom', spots: [[562, 744]],
+      name: { da: 'Elektronik', en: 'Electronics' },
+      instructions: { da: 'Alt med ledning eller batteri: lamper, computere og småt elektronik.', en: 'Anything with a cord or battery: lamps, computers and small electronics.' } },
+    { id: 'koeleudstyr', color: 'orange', aisle: 'bottom', spots: [[562, 796]],
+      name: { da: 'Køleudstyr', en: 'Cooling appliances' },
+      instructions: { da: 'Køleskabe og frysere – stilles hele.', en: 'Fridges and freezers – place them whole.' } },
+    { id: 'hvidevarer', color: 'orange', aisle: 'bottom', spots: [[562, 848]],
+      name: { da: 'Hårde hvidevarer', en: 'White goods' },
+      instructions: { da: 'Vaskemaskiner, komfurer og opvaskemaskiner.', en: 'Washing machines, stoves and dishwashers.' } },
+    { id: 'farligt-affald', color: 'red', aisle: 'bottom', spots: [[412, 800]],
+      name: { da: 'Farligt affald', en: 'Hazardous waste' },
+      instructions: { da: 'Maling, kemikalier, spraydåser, batterier og olie. Afleveres til personalet i miljøhallen.', en: 'Paint, chemicals, spray cans, batteries and oil. Hand it to the staff in the hazardous waste hall.' } }
 ];
 
-/* ── Map & routing ─────────────────────────────────────────────
- * One predefined walking road from the entrance around the site.
- * A route to a container = the road up to the container's nearest
- * point on it, plus a short spur to the container itself. */
+/* ── Routing ───────────────────────────────────────────────────
+ * Roads on the schematic map: an entry road from the entrance, a bottom
+ * road, and four vertical aisles. Every container hangs off one aisle,
+ * so a route is always: entrance -> bottom road -> aisle -> container. */
 
-const ENTRANCE = [140, 640];
-const ROAD = [[140, 640], [140, 140], [860, 140], [860, 600]];
+const ENTRANCE = [240, 858];
+const ROAD_TOP = 150;
+const ROAD_BOTTOM = 700;
 
-function projectOnSegment(p, a, b) {
-    const abx = b[0] - a[0], aby = b[1] - a[1];
-    const len2 = abx * abx + aby * aby;
-    const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * abx + (p[1] - a[1]) * aby) / len2));
-    return { point: [a[0] + t * abx, a[1] + t * aby], t };
-}
-
-function routeTo(target) {
-    let best = { dist: Infinity, segIndex: 0, point: ROAD[0] };
-    for (let i = 0; i < ROAD.length - 1; i++) {
-        const { point } = projectOnSegment(target, ROAD[i], ROAD[i + 1]);
-        const dist = Math.hypot(point[0] - target[0], point[1] - target[1]);
-        if (dist < best.dist) {
-            best = { dist, segIndex: i, point };
-        }
+function routeTo(fraction) {
+    const [sx, sy] = fraction.spots[0];
+    const points = [ENTRANCE, [240, ROAD_BOTTOM]];
+    if (fraction.aisle === 'bottom') {
+        if (sx !== 240) points.push([sx, ROAD_BOTTOM]);
+        points.push([sx, sy]);
+        return points;
     }
-    return [...ROAD.slice(0, best.segIndex + 1), best.point, target];
+    const ax = AISLE[fraction.aisle];
+    const ay = Math.max(ROAD_TOP + 17, Math.min(ROAD_BOTTOM - 17, sy));
+    points.push([ax, ROAD_BOTTOM]);
+    points.push([ax, ay]);
+    points.push([sx, sy]);
+    return points;
 }
 
 /* ── i18n helpers ──────────────────────────────────────────── */
 
-function t(key, replacements = {}) {
+function t(key) {
     const dictionary = translations[currentLanguage] || translations.da;
-    const template = dictionary[key] ?? translations.da[key] ?? key;
-    if (typeof template !== 'string') return template;
-    return template.replace(/\{(\w+)\}/g, (_, token) => replacements[token] ?? `{${token}}`);
-}
-
-function containerLabel(fraction) {
-    return fraction.num ? t('containerLabel', { num: fraction.num }) : t('areaLabel');
+    return dictionary[key] ?? translations.da[key] ?? key;
 }
 
 function getPreferredLanguage() {
@@ -215,190 +240,218 @@ function applyTranslations() {
         element.textContent = t(element.dataset.i18n);
     });
 
-    document.getElementById('search-input').placeholder = t('searchPlaceholder');
-
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         const isActive = button.dataset.languageOption === currentLanguage;
         button.classList.toggle('active', isActive);
         button.setAttribute('aria-pressed', String(isActive));
     });
 
-    renderQuickPicks();
-    renderFractionGrid();
     renderMap();
-    if (currentResult) {
-        showResult(currentResult);
+    if (currentResult) showResult(currentResult, { scroll: false });
+}
+
+/* ── Image handling ────────────────────────────────────────── */
+
+function fileToBase64Jpeg(file, maxSize = 1024) {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            URL.revokeObjectURL(url);
+            resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad image')); };
+        img.src = url;
+    });
+}
+
+/* ── API (primary + Gemini worker fallback) ────────────────── */
+
+async function fetchWithTimeout(url, options) {
+    const abort = new AbortController();
+    const timer = setTimeout(() => abort.abort(), API_TIMEOUT_MS);
+    try {
+        return await fetch(url, { ...options, signal: abort.signal });
+    } finally {
+        clearTimeout(timer);
     }
 }
 
-/* ── API with local fallback ───────────────────────────────── */
-
-function localLookup(query) {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    const scored = FRACTIONS
-        .map((fraction) => {
-            const hit = fraction.keywords.some((kw) => q.includes(kw) || kw.includes(q));
-            return hit ? fraction.id : null;
-        })
-        .filter(Boolean);
-    return scored;
+function extractFractionIds(text) {
+    const found = [];
+    const lower = text.toLowerCase();
+    FRACTIONS.forEach((fraction) => {
+        const index = lower.indexOf(`"${fraction.id}"`) !== -1 ? lower.indexOf(`"${fraction.id}"`) : lower.indexOf(fraction.id);
+        if (index !== -1) found.push({ id: fraction.id, index });
+    });
+    return found.sort((a, b) => a.index - b.index).map((f) => f.id);
 }
 
-async function lookupFractions(query) {
+async function classifyImage(imageBase64) {
     try {
-        const abort = new AbortController();
-        const timer = setTimeout(() => abort.abort(), API_TIMEOUT_MS);
-        const response = await fetch(SORTING_API_URL, {
+        const response = await fetchWithTimeout(SORTING_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ site: SITE_ID, query, language: currentLanguage }),
-            signal: abort.signal
+            body: JSON.stringify({ site: SITE_ID, image: imageBase64, language: currentLanguage })
         });
-        clearTimeout(timer);
         const data = await response.json();
-        if (!response.ok || data.ok !== true || !Array.isArray(data.result?.fractionIds)) {
-            throw new Error('bad response');
+        if (response.ok && data.ok === true && Array.isArray(data.result?.fractionIds)) {
+            return data.result.fractionIds;
         }
-        return { fractionIds: data.result.fractionIds, note: data.result.note, offline: false };
+        throw new Error('bad response');
     } catch {
-        return { fractionIds: localLookup(query), offline: true };
+        // Fallback: existing Gemini worker
+        const ids = FRACTIONS.map((f) => f.id).join(', ');
+        const prompt = `You are a waste sorting assistant at a Danish recycling center (genbrugsplads). ` +
+            `Look at the photo and decide which waste fraction the main object belongs to. ` +
+            `Answer ONLY with a JSON array of 1-3 fraction ids, most likely first, chosen from: [${ids}]. ` +
+            `Example answer: ["pap", "rest-efter-sortering"]`;
+        const response = await fetchWithTimeout(FALLBACK_WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: imageBase64, text: prompt })
+        });
+        const data = await response.json();
+        const reply = data?.response || data?.result?.fraction || '';
+        return extractFractionIds(String(reply));
     }
 }
 
-/* ── Rendering ─────────────────────────────────────────────── */
-
-let currentResult = null;
-
-function renderQuickPicks() {
-    const wrap = document.getElementById('quick-picks');
-    wrap.innerHTML = '';
-    t('quickPicks').forEach((sample) => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = 'chip';
-        chip.textContent = sample;
-        chip.addEventListener('click', () => {
-            document.getElementById('search-input').value = sample;
-            handleSearch(sample);
-        });
-        wrap.appendChild(chip);
-    });
-}
-
-function renderFractionGrid() {
-    const grid = document.getElementById('fraction-grid');
-    grid.innerHTML = '';
-    FRACTIONS.forEach((fraction) => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'fraction-card';
-        card.innerHTML = `
-            <span class="fraction-num">${fraction.num ?? '★'}</span>
-            <span class="fraction-name">${fraction.name[currentLanguage]}</span>
-            <span class="fraction-where">${containerLabel(fraction)}</span>
-        `;
-        card.addEventListener('click', () => {
-            showResult({ query: fraction.name[currentLanguage], fractionIds: [fraction.id], offline: false });
-            document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-        grid.appendChild(card);
-    });
-}
+/* ── Map rendering ─────────────────────────────────────────── */
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+let currentResult = null;
 
-function svgEl(tag, attrs = {}) {
+function svgEl(tag, attrs = {}, text = null) {
     const el = document.createElementNS(SVG_NS, tag);
     Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+    if (text !== null) el.textContent = text;
     return el;
+}
+
+function wrapName(name) {
+    if (name.length <= 11) return [name];
+    const hyphen = name.indexOf('-');
+    if (hyphen > 2 && hyphen < name.length - 3) {
+        return [name.slice(0, hyphen + 1), name.slice(hyphen + 1)];
+    }
+    const words = name.split(' ');
+    if (words.length === 1) return [name];
+    let first = words[0];
+    let i = 1;
+    while (i < words.length - 1 && (first + ' ' + words[i]).length <= 12) {
+        first += ' ' + words[i];
+        i++;
+    }
+    return [first, words.slice(i).join(' ')];
 }
 
 function renderMap(activeFractionId = currentResult?.fractionIds?.[0] ?? null) {
     const svg = document.getElementById('site-map');
     svg.innerHTML = '';
 
-    svg.appendChild(svgEl('rect', { x: 8, y: 8, width: 984, height: 644, rx: 26, class: 'map-ground' }));
+    // Ground
+    svg.appendChild(svgEl('rect', { x: 6, y: 6, width: 608, height: 888, rx: 26, class: 'map-ground' }));
+    svg.appendChild(svgEl('text', { x: 310, y: 52, class: 'map-site-title' }, 'Vojens Genbrugsplads'));
 
-    const roadPoints = ROAD.map((p) => p.join(',')).join(' ');
-    svg.appendChild(svgEl('polyline', { points: roadPoints, class: 'map-road' }));
-    svg.appendChild(svgEl('polyline', { points: roadPoints, class: 'map-road-line' }));
+    // Platform islands (container rows)
+    [[36, 100, 54, 592], [191, 164, 54, 511], [325, 164, 54, 511], [418, 275, 54, 372], [478, 200, 54, 465], [518, 718, 88, 168]]
+        .forEach(([x, y, w, h]) => svg.appendChild(svgEl('rect', { x, y, width: w, height: h, rx: 14, class: 'map-island' })));
 
-    // Route from entrance to the active container
+    // Roads: loop + two inner aisles + entry road
+    const roads = [
+        `M ${AISLE.left} ${ROAD_TOP} H ${AISLE.right} V ${ROAD_BOTTOM} H ${AISLE.left} Z`,
+        `M ${AISLE.mid} ${ROAD_TOP} V ${ROAD_BOTTOM}`,
+        `M ${AISLE.inner} ${ROAD_TOP} V ${ROAD_BOTTOM}`,
+        `M 240 ${ROAD_BOTTOM} V 880`
+    ];
+    roads.forEach((d) => svg.appendChild(svgEl('path', { d, class: 'map-road' })));
+    roads.forEach((d) => svg.appendChild(svgEl('path', { d, class: 'map-road-line' })));
+
+    // Buildings
+    const staff = svgEl('g', { class: 'map-building' });
+    staff.appendChild(svgEl('rect', { x: 60, y: 762, width: 122, height: 86, rx: 12 }));
+    staff.appendChild(svgEl('text', { x: 121, y: 810 }, t('mapStaff')));
+    svg.appendChild(staff);
+
+    const hall = svgEl('g', { class: 'map-building' });
+    hall.appendChild(svgEl('rect', { x: 320, y: 748, width: 186, height: 100, rx: 12 }));
+    hall.appendChild(svgEl('text', { x: 413, y: 775 }, t('mapHall')));
+    svg.appendChild(hall);
+
+    // Route
     const activeFraction = FRACTIONS.find((f) => f.id === activeFractionId);
     if (activeFraction) {
-        const route = routeTo(activeFraction.pos);
+        const route = routeTo(activeFraction);
         svg.appendChild(svgEl('polyline', {
             points: route.map((p) => p.join(',')).join(' '),
             class: 'map-route'
         }));
+        const [dx, dy] = activeFraction.spots[0];
+        svg.appendChild(svgEl('circle', { cx: dx, cy: dy, r: 26, class: 'map-destination-pulse' }));
     }
 
-    // Containers
+    // Container tiles
     FRACTIONS.forEach((fraction) => {
-        const [x, y] = fraction.pos;
-        const isArea = fraction.num === null;
-        const w = isArea ? 150 : 96;
-        const h = isArea ? 78 : 60;
-        const group = svgEl('g', {
-            class: `map-container${fraction.id === activeFractionId ? ' active' : ''}`,
-            tabindex: 0,
-            role: 'button'
-        });
-        group.appendChild(svgEl('rect', { x: x - w / 2, y: y - h / 2, width: w, height: h, rx: 12 }));
-
-        const numText = svgEl('text', { x, y: y - (isArea ? 12 : 4), class: 'map-container-num' });
-        numText.textContent = fraction.num ?? '★';
-        group.appendChild(numText);
-
-        const nameText = svgEl('text', { x, y: y + (isArea ? 14 : 18), class: 'map-container-name' });
-        nameText.textContent = fraction.name[currentLanguage];
-        group.appendChild(nameText);
-
-        const select = () => {
-            showResult({ query: fraction.name[currentLanguage], fractionIds: [fraction.id], offline: false });
-        };
-        group.addEventListener('click', select);
-        group.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                select();
+        fraction.spots.forEach(([x, y], spotIndex) => {
+            const group = svgEl('g', {
+                class: `map-tile${fraction.id === activeFractionId ? ' active' : ''}`,
+                tabindex: 0,
+                role: 'button',
+                'aria-label': fraction.name[currentLanguage]
+            });
+            // generous invisible tap target
+            group.appendChild(svgEl('rect', { x: x - 26, y: y - 26, width: 52, height: 52, fill: 'transparent' }));
+            group.appendChild(svgEl('rect', {
+                x: x - 16, y: y - 16, width: 32, height: 32, rx: 7,
+                fill: COLORS[fraction.color], class: 'map-tile-box'
+            }));
+            if (spotIndex === 0) {
+                const lines = wrapName(fraction.name[currentLanguage]);
+                lines.forEach((line, li) => {
+                    group.appendChild(svgEl('text', {
+                        x, y: y + 27 + li * 10, class: 'map-tile-label'
+                    }, line));
+                });
             }
+            const select = () => showResult({ fractionIds: [fraction.id] }, { scroll: false });
+            group.addEventListener('click', select);
+            group.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    select();
+                }
+            });
+            svg.appendChild(group);
         });
-        svg.appendChild(group);
     });
 
-    // Entrance marker
+    // Entrance
     const entrance = svgEl('g', { class: 'map-entrance' });
-    entrance.appendChild(svgEl('circle', { cx: ENTRANCE[0], cy: ENTRANCE[1] - 18, r: 11 }));
-    const entranceLabel = svgEl('text', { x: ENTRANCE[0] + 24, y: ENTRANCE[1] - 12 });
-    entranceLabel.textContent = `${t('mapEntrance')} · ${t('mapYouAreHere')}`;
-    entrance.appendChild(entranceLabel);
+    entrance.appendChild(svgEl('circle', { cx: ENTRANCE[0], cy: ENTRANCE[1], r: 13 }));
+    entrance.appendChild(svgEl('path', {
+        d: `M ${ENTRANCE[0]} ${ENTRANCE[1] + 6} L ${ENTRANCE[0]} ${ENTRANCE[1] - 6} M ${ENTRANCE[0] - 5} ${ENTRANCE[1] - 1} L ${ENTRANCE[0]} ${ENTRANCE[1] - 6} L ${ENTRANCE[0] + 5} ${ENTRANCE[1] - 1}`,
+        class: 'map-entrance-arrow'
+    }));
+    entrance.appendChild(svgEl('text', { x: ENTRANCE[0] + 22, y: ENTRANCE[1] + 5 }, t('mapEntrance')));
     svg.appendChild(entrance);
 }
 
-function showResult(result) {
+/* ── Result card ───────────────────────────────────────────── */
+
+function showResult(result, { scroll = true } = {}) {
     currentResult = result;
     const card = document.getElementById('result-card');
     const primary = FRACTIONS.find((f) => f.id === result.fractionIds[0]);
-
-    document.getElementById('result-query').textContent = t('youSearchedFor', { query: result.query });
-
-    if (!primary) {
-        document.getElementById('result-fraction-name').textContent = '—';
-        document.getElementById('result-container').textContent = '';
-        document.getElementById('result-instructions').textContent = t('noMatch');
-        document.getElementById('result-alternates').hidden = true;
-        document.getElementById('result-source').hidden = !result.offline;
-        card.hidden = false;
-        renderMap(null);
-        return;
-    }
+    if (!primary) return;
 
     document.getElementById('result-fraction-name').textContent = primary.name[currentLanguage];
-    document.getElementById('result-container').textContent = containerLabel(primary);
-    document.getElementById('result-instructions').textContent = result.note || primary.instructions[currentLanguage];
-    document.getElementById('result-source').hidden = !result.offline;
+    document.getElementById('result-instructions').textContent = primary.instructions[currentLanguage];
 
     const alternates = result.fractionIds.slice(1)
         .map((id) => FRACTIONS.find((f) => f.id === id))
@@ -411,40 +464,70 @@ function showResult(result) {
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'chip';
-        chip.textContent = `${fraction.name[currentLanguage]} · ${containerLabel(fraction)}`;
+        chip.textContent = fraction.name[currentLanguage];
         chip.addEventListener('click', () => {
-            showResult({ ...result, fractionIds: [fraction.id, ...result.fractionIds.filter((id) => id !== fraction.id)] });
+            showResult({ fractionIds: [fraction.id, ...result.fractionIds.filter((id) => id !== fraction.id)] }, { scroll: false });
         });
         chips.appendChild(chip);
     });
 
     card.hidden = false;
     renderMap(primary.id);
+    if (scroll) {
+        document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
-/* ── Search flow ───────────────────────────────────────────── */
+/* ── Photo flow ────────────────────────────────────────────── */
 
-async function handleSearch(query) {
-    const trimmed = query.trim();
-    if (!trimmed) return;
+function setStatus(message, isError = false) {
+    const status = document.getElementById('photo-status');
+    status.textContent = message;
+    status.classList.toggle('error', isError);
+}
 
-    const button = document.getElementById('search-button');
-    button.disabled = true;
-    button.textContent = t('searching');
+async function handleFile(file) {
+    if (!file) return;
 
-    const result = await lookupFractions(trimmed);
-    showResult({ query: trimmed, ...result });
-    document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const preview = document.getElementById('photo-preview');
+    const previewImage = document.getElementById('preview-image');
+    previewImage.src = URL.createObjectURL(file);
+    preview.hidden = false;
 
-    button.disabled = false;
-    button.textContent = t('searchButton');
+    const photoButton = document.getElementById('photo-button');
+    photoButton.disabled = true;
+    setStatus(t('analyzing'));
+
+    try {
+        const imageBase64 = await fileToBase64Jpeg(file);
+        const fractionIds = await classifyImage(imageBase64);
+        const valid = fractionIds.filter((id) => FRACTIONS.some((f) => f.id === id));
+        if (valid.length === 0) {
+            setStatus(t('noMatch'), true);
+        } else {
+            setStatus('');
+            showResult({ fractionIds: valid });
+        }
+    } catch {
+        setStatus(t('analyzeFailed'), true);
+    } finally {
+        photoButton.disabled = false;
+    }
 }
 
 /* ── Init ──────────────────────────────────────────────────── */
 
-document.getElementById('search-form').addEventListener('submit', (event) => {
-    event.preventDefault();
-    handleSearch(document.getElementById('search-input').value);
+document.getElementById('photo-button').addEventListener('click', () => {
+    document.getElementById('camera-input').click();
+});
+document.getElementById('library-button').addEventListener('click', () => {
+    document.getElementById('library-input').click();
+});
+['camera-input', 'library-input'].forEach((id) => {
+    document.getElementById(id).addEventListener('change', (event) => {
+        handleFile(event.target.files[0]);
+        event.target.value = '';
+    });
 });
 
 document.querySelectorAll('[data-language-option]').forEach((button) => {
