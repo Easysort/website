@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banner-muligheder – vælg én</title>
+<style>
+    :root {
+        --pap: #b99b62;      /* sample fraction color (Pap / sand) */
+        --green: #16a34a;
+        --green-d: #15803d;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #eef1f4;
+        color: #1f2937;
+        padding: 32px 16px 80px;
+    }
+    .page-head {
+        max-width: 760px;
+        margin: 0 auto 28px;
+        text-align: center;
+    }
+    .page-head h1 { margin: 0 0 6px; font-size: 1.6rem; letter-spacing: -0.02em; }
+    .page-head p { margin: 0; color: #6b7280; font-size: 0.95rem; }
+    .options {
+        max-width: 760px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+    .option {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+    .option-tag {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f1f3;
+    }
+    .option-tag .num {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 26px; height: 26px; border-radius: 999px;
+        background: #111827; color: #fff; font-size: 0.8rem; font-weight: 800;
+        margin-right: 10px;
+    }
+    .option-tag .name { font-weight: 700; font-size: 0.95rem; }
+    .option-tag .desc { color: #9ca3af; font-size: 0.82rem; }
+    .replay {
+        border: 1px solid #e5e7eb; background: #fff; border-radius: 8px;
+        padding: 6px 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+        color: #374151;
+    }
+    .replay:hover { background: #f9fafb; }
+
+    /* A mock header, same proportions as the real guide header. */
+    .header {
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 18px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* shared bits */
+    .item { font-weight: 800; letter-spacing: -0.03em; }
+    .frac {
+        display: inline-flex; align-items: center;
+        font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+    .arrow { opacity: 0.65; font-weight: 700; }
+    .badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 999px; font-weight: 900; line-height: 1;
+    }
+
+    /* ── 1. Bold green take-over (current) ───────────── */
+    .b1 { background: linear-gradient(135deg, var(--green), var(--green-d)); gap: 14px; }
+    .b1 .badge { width: 40px; height: 40px; background: rgba(255,255,255,.95); color: var(--green-d); font-size: 1.3rem; }
+    .b1 .item { color: #fff; font-size: 1.7rem; text-shadow: 0 1px 2px rgba(0,0,0,.18); }
+    .b1 .arrow { color: rgba(255,255,255,.7); font-size: 1.4rem; }
+    .b1 .frac { min-height: 38px; padding: 0 18px; border-radius: 999px; background: var(--pap); color: #fff; border: 2px solid rgba(255,255,255,.6); font-size: 1rem; }
+
+    /* ── 2. Solid fraction-color bar ─────────────────── */
+    .b2 { background: var(--pap); gap: 16px; }
+    .b2 .badge { width: 42px; height: 42px; background: rgba(255,255,255,.25); color: #fff; font-size: 1.4rem; }
+    .b2 .item { color: rgba(255,255,255,.92); font-size: 1.25rem; font-weight: 700; }
+    .b2 .frac { color: #fff; font-size: 1.9rem; letter-spacing: -0.02em; text-transform: none; }
+
+    /* ── 3. Clean white + big colored chip + left accent ─ */
+    .b3 { background: #fff; gap: 14px; border-left: 8px solid var(--pap); justify-content: flex-start; padding-left: 22px; }
+    .b3 .badge { width: 38px; height: 38px; background: var(--pap); color: #fff; font-size: 1.2rem; }
+    .b3 .item { color: #111827; font-size: 1.5rem; }
+    .b3 .arrow { color: #cbd5e1; font-size: 1.3rem; }
+    .b3 .frac { min-height: 40px; padding: 0 20px; border-radius: 10px; background: var(--pap); color: #fff; font-size: 1.05rem; }
+
+    /* ── 4. Dark mode with glow ──────────────────────── */
+    .b4 { background: #0f172a; gap: 16px; }
+    .b4 .badge { width: 40px; height: 40px; background: var(--pap); color: #0f172a; font-size: 1.3rem; box-shadow: 0 0 20px var(--pap); }
+    .b4 .item { color: #e2e8f0; font-size: 1.5rem; }
+    .b4 .arrow { color: #475569; font-size: 1.3rem; }
+    .b4 .frac { min-height: 38px; padding: 0 18px; border-radius: 999px; background: transparent; color: var(--pap); border: 2px solid var(--pap); font-size: 1.05rem; text-shadow: 0 0 12px rgba(185,155,98,.6); }
+
+    /* ── 5. Big check block left, stacked text right ─── */
+    .b5 { background: linear-gradient(135deg, var(--green), var(--green-d)); gap: 0; justify-content: flex-start; padding: 0; }
+    .b5 .checkcol { width: 76px; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.15); }
+    .b5 .checkcol span { font-size: 2rem; color: #fff; font-weight: 900; }
+    .b5 .txtcol { display: flex; flex-direction: column; justify-content: center; padding-left: 18px; }
+    .b5 .kick { color: rgba(255,255,255,.8); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    .b5 .line { display: flex; align-items: baseline; gap: 10px; }
+    .b5 .item { color: #fff; font-size: 1.2rem; font-weight: 700; }
+    .b5 .frac { color: #fff; font-size: 1.5rem; text-transform: none; }
+
+    /* ── 6. Minimal – just big colored fraction ──────── */
+    .b6 { background: #fff; gap: 12px; }
+    .b6 .item { color: #9ca3af; font-size: 1.1rem; font-weight: 600; }
+    .b6 .arrow { color: #d1d5db; font-size: 1.3rem; }
+    .b6 .frac { color: var(--pap); font-size: 2.1rem; letter-spacing: -0.02em; text-transform: none; }
+
+    /* ── 7. Full-bleed, huge fraction + tiny item ────── */
+    .b7 { background: linear-gradient(135deg, var(--pap), #a08349); flex-direction: column; gap: 0; }
+    .b7 .item { color: rgba(255,255,255,.85); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .b7 .frac { color: #fff; font-size: 1.9rem; letter-spacing: -0.01em; text-transform: uppercase; line-height: 1; }
+
+    /* ── 8. Floating pill card ───────────────────────── */
+    .b8 { background: #f1f5f9; }
+    .b8 .pill {
+        display: flex; align-items: center; gap: 12px;
+        background: #fff; border-radius: 999px; padding: 8px 8px 8px 18px;
+        box-shadow: 0 10px 24px rgba(0,0,0,.12);
+    }
+    .b8 .badge { width: 30px; height: 30px; background: var(--green); color: #fff; font-size: 1rem; order: -1; }
+    .b8 .item { color: #111827; font-size: 1.2rem; }
+    .b8 .frac { min-height: 40px; padding: 0 20px; border-radius: 999px; background: var(--pap); color: #fff; font-size: 1rem; }
+
+    /* ── 9. Two-tone split ───────────────────────────── */
+    .b9 { background: #fff; gap: 0; padding: 0; }
+    .b9 .left { flex: 1; height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 20px; background: #fff; }
+    .b9 .right { height: 100%; display: flex; align-items: center; padding: 0 26px; background: var(--pap); }
+    .b9 .item { color: #111827; font-size: 1.4rem; }
+    .b9 .frac { color: #fff; font-size: 1.5rem; text-transform: none; }
+    .b9 .badge { width: 34px; height: 34px; background: var(--pap); color: #fff; font-size: 1.1rem; margin-right: 12px; }
+
+    /* ── 10. Playful rounded with emoji ──────────────── */
+    .b10 { background: #ecfdf5; gap: 14px; }
+    .b10 .emoji { font-size: 2rem; }
+    .b10 .item { color: #065f46; font-size: 1.35rem; }
+    .b10 .arrow { color: #6ee7b7; font-size: 1.4rem; }
+    .b10 .frac { min-height: 42px; padding: 0 22px; border-radius: 14px; background: var(--pap); color: #fff; font-size: 1.15rem; box-shadow: 0 6px 14px rgba(185,155,98,.4); }
+
+    /* animations (replayed on load / button) */
+    .animate.b1 .item, .animate.b1 .arrow, .animate.b1 .frac,
+    .animate.b3 *, .animate.b6 *, .animate.b8 .pill,
+    .animate.b2 *, .animate.b4 *, .animate.b7 *, .animate.b9 .right, .animate.b10 * { animation: pop .45s cubic-bezier(.18,.89,.32,1.28) both; }
+    .animate .badge, .animate .checkcol span, .animate .emoji { animation: badge .55s ease both; }
+    @keyframes pop { from { opacity: 0; transform: translateY(-10px) scale(.96);} to { opacity: 1; transform: none; } }
+    @keyframes badge { 0% { transform: scale(0);} 60% { transform: scale(1.25);} 100% { transform: scale(1);} }
+</style>
+</head>
+<body>
+    <div class="page-head">
+        <h1>Vælg et banner-design</h1>
+        <p>Sådan ser toppen ud, når noget er genkendt. Eksempel: <strong>Pizzabakke → PAP</strong>. Tryk “Afspil igen” for at se animationen.</p>
+    </div>
+
+    <div class="options" id="options">
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">1</span><span class="name">Grøn overtagelse</span> <span class="desc">nuværende – kraftig grøn med checkmark</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b1 animate">
+                <span class="badge">✓</span>
+                <span class="item">Pizzabakke</span>
+                <span class="arrow">→</span>
+                <span class="frac">Pap</span>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">2</span><span class="name">Fraktionsfarve</span> <span class="desc">hele baren i containerens farve</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b2 animate">
+                <span class="badge">✓</span>
+                <span class="item">Pizzabakke</span>
+                <span class="frac">Pap</span>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">3</span><span class="name">Ren hvid + chip</span> <span class="desc">lys med farvet kant og chip</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b3 animate">
+                <span class="badge">✓</span>
+                <span class="item">Pizzabakke</span>
+                <span class="arrow">→</span>
+                <span class="frac">Pap</span>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">4</span><span class="name">Mørk med glød</span> <span class="desc">mørk baggrund, neon-kant</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b4 animate">
+                <span class="badge">✓</span>
+                <span class="item">Pizzabakke</span>
+                <span class="arrow">→</span>
+                <span class="frac">Pap</span>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">5</span><span class="name">Check-blok</span> <span class="desc">stort ✓ til venstre, tekst stablet</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b5 animate">
+                <div class="checkcol"><span>✓</span></div>
+                <div class="txtcol">
+                    <span class="kick">Genkendt</span>
+                    <div class="line"><span class="item">Pizzabakke</span><span class="frac">Pap</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">6</span><span class="name">Minimal</span> <span class="desc">kun stor farvet fraktion</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b6 animate">
+                <span class="item">Pizzabakke</span>
+                <span class="arrow">→</span>
+                <span class="frac">Pap</span>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">7</span><span class="name">Kæmpe fraktion</span> <span class="desc">stor fraktion, lille vare over</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b7 animate">
+                <span class="item">Pizzabakke</span>
+                <span class="frac">Pap</span>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">8</span><span class="name">Svævende pille</span> <span class="desc">hvid pille-kort med skygge</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b8 animate">
+                <div class="pill">
+                    <span class="badge">✓</span>
+                    <span class="item">Pizzabakke</span>
+                    <span class="frac">Pap</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">9</span><span class="name">To-delt</span> <span class="desc">hvid venstre, farvet højre</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b9 animate">
+                <div class="left"><span class="badge">✓</span><span class="item">Pizzabakke</span></div>
+                <div class="right"><span class="frac">Pap</span></div>
+            </div>
+        </div>
+
+        <div class="option">
+            <div class="option-tag"><div><span class="num">10</span><span class="name">Legende</span> <span class="desc">blød, rund med emoji</span></div><button class="replay">Afspil igen</button></div>
+            <div class="header b10 animate">
+                <span class="emoji">♻️</span>
+                <span class="item">Pizzabakke</span>
+                <span class="arrow">→</span>
+                <span class="frac">Pap</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Replay the pop animation for a given header.
+        function replay(header) {
+            header.classList.remove('animate');
+            void header.offsetWidth;
+            header.classList.add('animate');
+        }
+        document.querySelectorAll('.replay').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                replay(btn.closest('.option').querySelector('.header'));
+            });
+        });
+        // Gentle staggered intro so the page feels alive on load.
+        document.querySelectorAll('.header').forEach((h, i) => {
+            h.classList.remove('animate');
+            setTimeout(() => h.classList.add('animate'), 120 * i);
+        });
+    </script>
+</body>
+</html>

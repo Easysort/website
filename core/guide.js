@@ -793,17 +793,15 @@ function flashDetection(result) {
     const what = result.description || result.item || '';
     const fractionName = fraction ? fraction.name[currentLanguage]
         : (result.catalogFraction || t('unassignedTitle'));
+    const color = fraction ? (COLORS[fraction.color] || fraction.color) : null;
 
     banner.innerHTML = '';
     banner.classList.toggle('unassigned', !fraction);
-    banner.appendChild(makeSpan('detection-icon', fraction ? '✓' : '!'));
-    if (what) {
-        banner.appendChild(makeSpan('detection-what', what));
-        banner.appendChild(makeSpan('detection-arrow', '→'));
-    }
-    const chip = makeSpan('detection-fraction', fractionName);
-    if (fraction && fraction.color) chip.style.setProperty('--chip-color', fraction.color);
-    banner.appendChild(chip);
+    if (what) banner.appendChild(makeSpan('detection-what', what));
+    banner.appendChild(makeSpan('detection-fraction', fractionName));
+
+    if (color) header.style.setProperty('--detection-color', color);
+    else header.style.removeProperty('--detection-color');
 
     banner.hidden = false;
     header.classList.add('showing-detection');
