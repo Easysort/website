@@ -1,26 +1,27 @@
-/* Sorting guide for Provas / Vojens Genbrugsplads.
+/* Shared sorting-guide engine for all Easysort genbrugsplads sites.
  *
  * Flow: live camera (like the easysort.org front page) -> take a photo ->
- * the genbrugsplads worker identifies the item and returns a catalog
- * fraction + item -> we map that fraction to a container and draw the
- * route from the entrance, respecting one-way roads. If the fraction has
- * no container on this site, we tell the user to ask the staff.
+ * the shared worker identifies the item and returns a catalog fraction +
+ * item -> we map that fraction to a container and draw the route from the
+ * entrance, respecting one-way roads. If the fraction has no container on
+ * this site, we tell the user to ask the staff.
  *
- * The map itself (roads, buildings, fractions, coordinates) is authored in
- * an external editor and loaded from vojens-genbrugsplads.json. This file
- * only knows how to render and route on it.
+ * Each site is just a folder with an index.html that sets `window.SITE_CONFIG`
+ * (site key, map JSON url, operator + site name) and its own map JSON. All the
+ * logic lives here so a change applies to every site at once.
  *
- * API (easysort-worker-genbrugsplads):
+ * API (shared worker):
  *   POST GENBRUGSPLADS_WORKER_URL
- *   body:     { image: <base64 jpeg>, language: "da" | "en" }
+ *   body:     { image: <base64 jpeg>, language: "da" | "en", site: "<key>" }
  *   response: { ok: true, result: { description, fraction, item, language } }
  */
 
-const MAP_URL = 'vojens-genbrugsplads.json?v=20260715';
+const CONFIG = window.SITE_CONFIG || {};
+const MAP_URL = CONFIG.mapUrl || 'map.json';
 // Update this after `wrangler deploy` if your worker URL differs.
-const GENBRUGSPLADS_WORKER_URL = 'https://website-workers.lucas-vilsen.workers.dev/classify';
+const GENBRUGSPLADS_WORKER_URL = CONFIG.workerUrl || 'https://website-workers.lucas-vilsen.workers.dev/classify';
 // Which site's catalog the shared worker should match against.
-const SITE = 'vojens';
+const SITE = CONFIG.site || 'vojens';
 const API_TIMEOUT_MS = 30000;
 
 const LANGUAGE_STORAGE_KEY = 'easysort-language';
@@ -98,6 +99,25 @@ const translations = {
         footerBackLink: 'Back to easysort.org'
     }
 };
+
+/* Site-specific texts are derived from the config (operator + site name) so a
+ * new site only needs to set those two, not edit every translation. */
+(function applySiteConfigTexts() {
+    const operator = CONFIG.operator || '';
+    const names = CONFIG.siteName || {};
+    const sep = operator ? `${operator} · ` : '';
+    ['da', 'en'].forEach((lang) => {
+        const name = names[lang] || names.da || '';
+        if (!name) return;
+        translations[lang].guideKicker = `${sep}${name}`;
+        translations[lang].pageTitle = lang === 'da'
+            ? `Sorteringsguide – ${name} | Easysort`
+            : `Sorting guide – ${name} | Easysort`;
+        translations[lang].footerSummary = lang === 'da'
+            ? `Sorteringsguide til ${name}${operator ? `, drevet af ${operator}` : ''}.`
+            : `Sorting guide for ${name}${operator ? `, operated by ${operator}` : ''}.`;
+    });
+})();
 
 /* ── Map data (loaded from JSON) ───────────────────────────── */
 
@@ -280,6 +300,33 @@ function dijkstra(g, start) {
     return { dist, prev };
 }
 
+/* The entrance may sit in the MIDDLE of a road (not on a vertex). Snap it onto
+ * the nearest road segment and wire up edges so you can actually drive off it,
+ * respecting one-way direction. Without this, routing starts from an isolated
+ * node and finds nothing. */
+function connectStart(g, point) {
+    let best = null;
+    g.segments.forEach((seg) => {
+        const p = projectOnSegment(point, g.nodes[seg.a], g.nodes[seg.b]);
+        const d = Math.hypot(p[0] - point[0], p[1] - point[1]);
+        if (!best || d < best.d) best = { seg, p, d };
+    });
+    if (!best) return g.nodeAt(point);
+
+    const { seg, p } = best;
+    const idx = g.nodeAt(p);
+    if (idx !== seg.a && idx !== seg.b) {
+        // Split the segment at the start point, keeping direction rules.
+        g.addEdge(seg.a, idx);
+        g.addEdge(idx, seg.b);
+        if (!seg.oneway) {
+            g.addEdge(seg.b, idx);
+            g.addEdge(idx, seg.a);
+        }
+    }
+    return idx;
+}
+
 function pickCandidate(candidates, dist) {
     let chosen = null;
     candidates.forEach((c) => {
@@ -316,7 +363,7 @@ function routeToPoint(target, roadHint = null) {
         candidates.push({ idx, spur: Math.hypot(p[0] - target[0], p[1] - target[1]), roadId });
     });
 
-    const start = g.nodeAt(ENTRANCE);
+    const start = connectStart(g, ENTRANCE);
     const { dist, prev } = dijkstra(g, start);
 
     const pool = roadHint ? candidates.filter((c) => c.roadId === roadHint) : candidates;
@@ -745,14 +792,21 @@ function flashDetection(result) {
 
     banner.innerHTML = '';
     banner.classList.toggle('unassigned', !fraction);
+    banner.appendChild(makeSpan('detection-icon', fraction ? '✓' : '!'));
     if (what) {
         banner.appendChild(makeSpan('detection-what', what));
         banner.appendChild(makeSpan('detection-arrow', '→'));
     }
-    banner.appendChild(makeSpan('detection-fraction', fractionName));
+    const chip = makeSpan('detection-fraction', fractionName);
+    if (fraction && fraction.color) chip.style.setProperty('--chip-color', fraction.color);
+    banner.appendChild(chip);
 
     banner.hidden = false;
     header.classList.add('showing-detection');
+    // Retrigger the entry animation even if the banner was already showing.
+    banner.classList.remove('detection-animate');
+    void banner.offsetWidth;
+    banner.classList.add('detection-animate');
 
     clearTimeout(detectionTimer);
     detectionTimer = setTimeout(hideDetectionBanner, DETECTION_BANNER_MS);
