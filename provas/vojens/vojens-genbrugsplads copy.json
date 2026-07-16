@@ -1,0 +1,893 @@
+{
+  "siteName": "Vojens Genbrugsplads",
+  "viewBox": [
+    620,
+    900
+  ],
+  "entrance": null,
+  "staff": {
+    "x": 50,
+    "y": 740,
+    "width": 150,
+    "height": 120,
+    "label": {
+      "da": "Personale",
+      "en": "Staff"
+    }
+  },
+  "buildings": [
+    {
+      "id": "building-akm172y",
+      "x": 320,
+      "y": 740,
+      "width": 177,
+      "height": 120,
+      "label": {
+        "da": "Miljøhal og opbevaring",
+        "en": "Hazardous waste hall & storage"
+      }
+    },
+    {
+      "id": "building-mpje2z1",
+      "x": 260,
+      "y": 620,
+      "width": 120,
+      "height": 40,
+      "label": {
+        "da": "Gentag",
+        "en": "Reuse (Gentag)"
+      }
+    }
+  ],
+  "islands": [],
+  "roads": [
+    {
+      "points": [
+        [
+          260,
+          850
+        ],
+        [
+          260,
+          690
+        ]
+      ],
+      "oneway": false
+    },
+    {
+      "points": [
+        [
+          260,
+          690
+        ],
+        [
+          410,
+          690
+        ],
+        [
+          410,
+          100
+        ],
+        [
+          110,
+          100
+        ],
+        [
+          110,
+          690
+        ],
+        [
+          260,
+          690
+        ]
+      ],
+      "oneway": true
+    },
+    {
+      "points": [
+        [
+          410,
+          100
+        ],
+        [
+          580,
+          100
+        ],
+        [
+          580,
+          620
+        ]
+      ],
+      "oneway": false
+    },
+    {
+      "points": [
+        [
+          410,
+          690
+        ],
+        [
+          570,
+          690
+        ]
+      ],
+      "oneway": false
+    }
+  ],
+  "fractions": [
+    {
+      "id": "fraktion-4",
+      "color": "red",
+      "spots": [
+        [
+          410,
+          740
+        ]
+      ],
+      "name": {
+        "da": "Miljøafald",
+        "en": "Hazardous waste"
+      },
+      "instructions": {
+        "da": "Maling, kemikalier, spraydåser, batterier og olie. Afleveres til personalet i miljøhallen.",
+        "en": "Paint, chemicals, spray cans, batteries and oil. Hand it to the staff in the hazardous waste hall."
+      }
+    },
+    {
+      "id": "fraktion-5",
+      "color": "lightgreen",
+      "spots": [
+        [
+          460,
+          620
+        ]
+      ],
+      "name": {
+        "da": "Direkte Genbrug",
+        "en": "Direct reuse"
+      },
+      "instructions": {
+        "da": "Ting, der stadig kan bruges – stil dem i Gentag-området.",
+        "en": "Things that can still be used – place them in the reuse (Gentag) area."
+      }
+    },
+    {
+      "id": "fraktion-6",
+      "color": "lightgreen",
+      "spots": [
+        [
+          460,
+          530
+        ]
+      ],
+      "name": {
+        "da": "Tøj",
+        "en": "Clothes"
+      },
+      "instructions": {
+        "da": "Rent og brugbart tøj til genbrug – aflever i poser.",
+        "en": "Clean, usable clothes for reuse – hand in in bags."
+      }
+    },
+    {
+      "id": "fraktion-7",
+      "color": "lightgreen",
+      "spots": [
+        [
+          460,
+          480
+        ]
+      ],
+      "name": {
+        "da": "Sko",
+        "en": "Shoes"
+      },
+      "instructions": {
+        "da": "Brugbare sko – bind dem parvis sammen.",
+        "en": "Usable shoes – tie them together in pairs."
+      }
+    },
+    {
+      "id": "fraktion-8",
+      "color": "darkred",
+      "spots": [
+        [
+          460,
+          390
+        ]
+      ],
+      "name": {
+        "da": "Tekstilaffald",
+        "en": "Textile waste"
+      },
+      "instructions": {
+        "da": "Ødelagte tekstiler og tøj – rent og tørt i poser.",
+        "en": "Damaged textiles and clothes – clean and dry in bags."
+      }
+    },
+    {
+      "id": "fraktion-9",
+      "color": "brown",
+      "spots": [
+        [
+          460,
+          330
+        ]
+      ],
+      "name": {
+        "da": "Paller",
+        "en": "Pallets"
+      },
+      "instructions": {
+        "da": "Hele paller og pallerammer.",
+        "en": "Whole pallets and pallet collars."
+      }
+    },
+    {
+      "id": "fraktion-10",
+      "color": "lightblue",
+      "spots": [
+        [
+          460,
+          250
+        ]
+      ],
+      "name": {
+        "da": "Tagpap",
+        "en": "Roofing felt"
+      },
+      "instructions": {
+        "da": "Tagpap uden større mængder træ og søm.",
+        "en": "Roofing felt without large amounts of wood and nails."
+      }
+    },
+    {
+      "id": "fraktion-11",
+      "color": "darkgreen",
+      "spots": [
+        [
+          540,
+          170
+        ]
+      ],
+      "name": {
+        "da": "Jord",
+        "en": "Soil"
+      },
+      "instructions": {
+        "da": "Ren jord uden rødder, sten og byggeaffald.",
+        "en": "Clean soil without roots, stones and construction waste."
+      }
+    },
+    {
+      "id": "fraktion-12",
+      "color": "darkgreen",
+      "spots": [
+        [
+          540,
+          270
+        ]
+      ],
+      "name": {
+        "da": "Kompost",
+        "en": "Garden waste"
+      },
+      "instructions": {
+        "da": "Haveaffald: grene, græs, blade og planter. Tøm sækkene.",
+        "en": "Garden waste: branches, grass, leaves and plants. Empty the bags."
+      }
+    },
+    {
+      "id": "fraktion-13",
+      "color": "lightblue",
+      "spots": [
+        [
+          540,
+          580
+        ]
+      ],
+      "name": {
+        "da": "Beton",
+        "en": "Concrete"
+      },
+      "instructions": {
+        "da": "Beton og murbrokker uden armering og træ.",
+        "en": "Concrete and rubble without rebar and wood."
+      }
+    },
+    {
+      "id": "fraktion-14",
+      "color": "lightblue",
+      "spots": [
+        [
+          540,
+          480
+        ]
+      ],
+      "name": {
+        "da": "Mursten & Tegl",
+        "en": "Bricks & tiles"
+      },
+      "instructions": {
+        "da": "Rene mursten og tegl uden puds og beton.",
+        "en": "Clean bricks and roof tiles without plaster and concrete."
+      }
+    },
+    {
+      "id": "fraktion-15",
+      "color": "lightblue",
+      "spots": [
+        [
+          540,
+          380
+        ]
+      ],
+      "name": {
+        "da": "Sanitet",
+        "en": "Sanitary ware"
+      },
+      "instructions": {
+        "da": "Toiletter, håndvaske og andet porcelæn fra badeværelset.",
+        "en": "Toilets, sinks and other bathroom porcelain."
+      }
+    },
+    {
+      "id": "fraktion-16",
+      "color": "lightblue",
+      "spots": [
+        [
+          60,
+          80
+        ]
+      ],
+      "name": {
+        "da": "Mineraluld",
+        "en": "Mineral wool"
+      },
+      "instructions": {
+        "da": "Isolering som rockwool og glasuld – gerne i lukkede sække.",
+        "en": "Insulation such as rockwool and glass wool – preferably in closed bags."
+      }
+    },
+    {
+      "id": "fraktion-17",
+      "color": "lightblue",
+      "spots": [
+        [
+          60,
+          150
+        ]
+      ],
+      "name": {
+        "da": "Gips",
+        "en": "Plasterboard"
+      },
+      "instructions": {
+        "da": "Gipsplader uden fliser og træ. Skruer må gerne sidde i.",
+        "en": "Plasterboard without tiles and wood. Screws can stay in."
+      }
+    },
+    {
+      "id": "fraktion-18",
+      "color": "darkred",
+      "spots": [
+        [
+          60,
+          220
+        ]
+      ],
+      "name": {
+        "da": "Polstrede Møbler",
+        "en": "Upholstered furniture"
+      },
+      "instructions": {
+        "da": "Sofaer, lænestole og andre polstrede møbler.",
+        "en": "Sofas, armchairs and other upholstered furniture."
+      }
+    },
+    {
+      "id": "fraktion-19",
+      "color": "brown",
+      "spots": [
+        [
+          60,
+          290
+        ]
+      ],
+      "name": {
+        "da": "Tryk-imprægneret",
+        "en": "Pressure-treated wood"
+      },
+      "instructions": {
+        "da": "Trykimprægneret træ, hegn og terrassebrædder.",
+        "en": "Pressure-treated wood, fencing and decking boards."
+      }
+    },
+    {
+      "id": "fraktion-20",
+      "color": "brown",
+      "spots": [
+        [
+          60,
+          350
+        ]
+      ],
+      "name": {
+        "da": "Indendørs træ",
+        "en": "Indoor wood"
+      },
+      "instructions": {
+        "da": "Rent træ og møbler af træ. Søm og skruer må gerne sidde i.",
+        "en": "Clean wood and wooden furniture. Nails and screws can stay in."
+      }
+    },
+    {
+      "id": "fraktion-21",
+      "color": "brown",
+      "spots": [
+        [
+          60,
+          420
+        ]
+      ],
+      "name": {
+        "da": "Indendørs træ",
+        "en": "Indoor wood"
+      },
+      "instructions": {
+        "da": "Rent træ og møbler af træ. Søm og skruer må gerne sidde i.",
+        "en": "Clean wood and wooden furniture. Nails and screws can stay in."
+      }
+    },
+    {
+      "id": "fraktion-22",
+      "color": "sand",
+      "spots": [
+        [
+          60,
+          490
+        ]
+      ],
+      "name": {
+        "da": "Pap",
+        "en": "Cardboard"
+      },
+      "instructions": {
+        "da": "Rent og tørt pap. Slå kasserne flade.",
+        "en": "Clean, dry cardboard. Flatten the boxes."
+      }
+    },
+    {
+      "id": "f",
+      "color": "orange",
+      "spots": [
+        [
+          530,
+          800
+        ]
+      ],
+      "name": {
+        "da": "Køleudstyr",
+        "en": "Cooling appliances"
+      },
+      "instructions": {
+        "da": "Køleskabe og frysere – stilles hele.",
+        "en": "Fridges and freezers – place them whole."
+      }
+    },
+    {
+      "id": "fraktion-23",
+      "color": "sand",
+      "spots": [
+        [
+          60,
+          550
+        ]
+      ],
+      "name": {
+        "da": "Pap",
+        "en": "Cardboard"
+      },
+      "instructions": {
+        "da": "Rent og tørt pap. Slå kasserne flade.",
+        "en": "Clean, dry cardboard. Flatten the boxes."
+      }
+    },
+    {
+      "id": "fraktion-25",
+      "color": "black",
+      "spots": [
+        [
+          170,
+          550
+        ]
+      ],
+      "name": {
+        "da": "Rest efter sortering",
+        "en": "Residual after sorting"
+      },
+      "instructions": {
+        "da": "Det, der er tilbage, når alt andet er sorteret fra.",
+        "en": "What is left when everything else has been sorted out."
+      }
+    },
+    {
+      "id": "fraktion-27",
+      "color": "purple",
+      "spots": [
+        [
+          60,
+          610
+        ]
+      ],
+      "name": {
+        "da": "Hård PVC",
+        "en": "Rigid PVC"
+      },
+      "instructions": {
+        "da": "Rør, tagrender og kabelbakker af hård PVC.",
+        "en": "Pipes, gutters and cable trays of rigid PVC."
+      }
+    },
+    {
+      "id": "fraktion-28",
+      "color": "purple",
+      "spots": [
+        [
+          60,
+          670
+        ]
+      ],
+      "name": {
+        "da": "Dæk",
+        "en": "Tyres"
+      },
+      "instructions": {
+        "da": "Dæk med og uden fælge.",
+        "en": "Tyres with and without rims."
+      }
+    },
+    {
+      "id": "T",
+      "color": "black",
+      "spots": [
+        [
+          170,
+          620
+        ]
+      ],
+      "name": {
+        "da": "Til Nedgravning",
+        "en": "For landfill"
+      },
+      "instructions": {
+        "da": "Ikke-brændbart affald til deponi, fx keramik og porcelæn.",
+        "en": "Non-combustible waste for landfill, e.g. ceramics and porcelain."
+      }
+    },
+    {
+      "id": "fraktion-34",
+      "color": "slate",
+      "spots": [
+        [
+          170,
+          230
+        ]
+      ],
+      "name": {
+        "da": "Metal",
+        "en": "Metal"
+      },
+      "instructions": {
+        "da": "Alt af metal: rør, gryder, cykler og havemøbler i metal.",
+        "en": "Anything metal: pipes, pots, bikes and metal garden furniture."
+      }
+    },
+    {
+      "id": "fraktion-35",
+      "color": "slate",
+      "spots": [
+        [
+          170,
+          170
+        ]
+      ],
+      "name": {
+        "da": "Metal",
+        "en": "Metal"
+      },
+      "instructions": {
+        "da": "Alt af metal: rør, gryder, cykler og havemøbler i metal.",
+        "en": "Anything metal: pipes, pots, bikes and metal garden furniture."
+      }
+    },
+    {
+      "id": "fraktion-36",
+      "color": "teal",
+      "spots": [
+        [
+          330,
+          140
+        ]
+      ],
+      "name": {
+        "da": "Fladt Glas",
+        "en": "Flat glass"
+      },
+      "instructions": {
+        "da": "Planglas og spejle uden rammer.",
+        "en": "Flat glass and mirrors without frames."
+      }
+    },
+    {
+      "id": "fraktion-37",
+      "color": "navy",
+      "spots": [
+        [
+          330,
+          190
+        ]
+      ],
+      "name": {
+        "da": "Vinduer",
+        "en": "Windows"
+      },
+      "instructions": {
+        "da": "Hele vinduer med ramme og karm.",
+        "en": "Whole windows with frame and casing."
+      }
+    },
+    {
+      "id": "fraktion-38",
+      "color": "purple",
+      "spots": [
+        [
+          330,
+          240
+        ]
+      ],
+      "name": {
+        "da": "Plast-havemøbler",
+        "en": "Plastic garden furniture"
+      },
+      "instructions": {
+        "da": "Havemøbler af plast – tømte og uden hynder.",
+        "en": "Plastic garden furniture – emptied and without cushions."
+      }
+    },
+    {
+      "id": "fraktion-39",
+      "color": "teal",
+      "spots": [
+        [
+          330,
+          290
+        ]
+      ],
+      "name": {
+        "da": "Glas",
+        "en": "Glass"
+      },
+      "instructions": {
+        "da": "Flasker og emballageglas. Tøm dem – skyl gerne.",
+        "en": "Bottles and packaging glass. Empty them – rinse if possible."
+      }
+    },
+    {
+      "id": "fraktion-40",
+      "color": "purple",
+      "spots": [
+        [
+          330,
+          340
+        ]
+      ],
+      "name": {
+        "da": "Flamingo",
+        "en": "Styrofoam"
+      },
+      "instructions": {
+        "da": "Ren flamingo (EPS) fra emballage.",
+        "en": "Clean styrofoam (EPS) from packaging."
+      }
+    },
+    {
+      "id": "fraktion-41",
+      "color": "sand",
+      "spots": [
+        [
+          330,
+          390
+        ]
+      ],
+      "name": {
+        "da": "Pap",
+        "en": "Cardboard"
+      },
+      "instructions": {
+        "da": "Rent og tørt pap. Slå kasserne flade.",
+        "en": "Clean, dry cardboard. Flatten the boxes."
+      }
+    },
+    {
+      "id": "fraktion-42",
+      "color": "lightblue",
+      "spots": [
+        [
+          330,
+          440
+        ]
+      ],
+      "name": {
+        "da": "Papir",
+        "en": "Paper"
+      },
+      "instructions": {
+        "da": "Aviser, reklamer og kontorpapir.",
+        "en": "Newspapers, flyers and office paper."
+      }
+    },
+    {
+      "id": "B",
+      "color": "lightblue",
+      "spots": [
+        [
+          330,
+          490
+        ]
+      ],
+      "name": {
+        "da": "Bøger",
+        "en": "Books"
+      },
+      "instructions": {
+        "da": "Bøger i alle former – også med stift ryg.",
+        "en": "Books of all kinds – hardcovers too."
+      }
+    },
+    {
+      "id": "fraktion-44",
+      "color": "purple",
+      "spots": [
+        [
+          330,
+          540
+        ]
+      ],
+      "name": {
+        "da": "Blød plast",
+        "en": "Soft plastic"
+      },
+      "instructions": {
+        "da": "Ren og tør folie, poser og bobleplast.",
+        "en": "Clean, dry film, bags and bubble wrap."
+      }
+    },
+    {
+      "id": "fraktion-45",
+      "color": "purple",
+      "spots": [
+        [
+          330,
+          590
+        ]
+      ],
+      "name": {
+        "da": "Hård Plast",
+        "en": "Hard plastic"
+      },
+      "instructions": {
+        "da": "Spande, kasser og legetøj uden elektronik.",
+        "en": "Buckets, crates and toys without electronics."
+      }
+    },
+    {
+      "id": "fraktion-46",
+      "color": "orange",
+      "spots": [
+        [
+          580,
+          800
+        ]
+      ],
+      "name": {
+        "da": "Hårde Hvidevarer",
+        "en": "White goods"
+      },
+      "instructions": {
+        "da": "Vaskemaskiner, komfurer og opvaskemaskiner.",
+        "en": "Washing machines, stoves and dishwashers."
+      }
+    },
+    {
+      "id": "fraktion-47",
+      "color": "orange",
+      "spots": [
+        [
+          530,
+          670
+        ]
+      ],
+      "name": {
+        "da": "Elektronik",
+        "en": "Electronics"
+      },
+      "instructions": {
+        "da": "Alt med ledning eller batteri: lamper, computere og småt elektronik.",
+        "en": "Anything with a cord or battery: lamps, computers and small electronics."
+      }
+    },
+    {
+      "id": "fraktion-48",
+      "color": "brown",
+      "spots": [
+        [
+          170,
+          290
+        ]
+      ],
+      "name": {
+        "da": "Tryk-imprægneret",
+        "en": "Pressure-treated wood"
+      },
+      "instructions": {
+        "da": "Trykimprægneret træ, hegn og terrassebrædder.",
+        "en": "Pressure-treated wood, fencing and decking boards."
+      }
+    },
+    {
+      "id": "fraktion-49",
+      "color": "black",
+      "spots": [
+        [
+          170,
+          350
+        ]
+      ],
+      "name": {
+        "da": "Stor rest efter sortering",
+        "en": "Large residual waste"
+      },
+      "instructions": {
+        "da": "Store ting, der ikke kan genanvendes, fx madrasser og gulvtæpper.",
+        "en": "Large items that cannot be recycled, e.g. mattresses and carpets."
+      }
+    },
+    {
+      "id": "fraktion-50",
+      "color": "brown",
+      "spots": [
+        [
+          170,
+          420
+        ]
+      ],
+      "name": {
+        "da": "Indendørs træ",
+        "en": "Indoor wood"
+      },
+      "instructions": {
+        "da": "Rent træ og møbler af træ. Søm og skruer må gerne sidde i.",
+        "en": "Clean wood and wooden furniture. Nails and screws can stay in."
+      }
+    },
+    {
+      "id": "fraktion-51",
+      "color": "black",
+      "spots": [
+        [
+          170,
+          490
+        ]
+      ],
+      "name": {
+        "da": "Rest efter sortering",
+        "en": "Residual after sorting"
+      },
+      "instructions": {
+        "da": "Det, der er tilbage, når alt andet er sorteret fra.",
+        "en": "What is left when everything else has been sorted out."
+      }
+    }
+  ]
+}

@@ -1,0 +1,507 @@
+/* Sorting guide page – builds on style2.css theme, mobile-first */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* Leave room at the bottom for the fixed "scan again" bar while a result is up. */
+body.scanning {
+    padding-bottom: 96px;
+}
+
+/* Detection banner – temporarily replaces the logo + language switch in the
+ * header to announce what was just scanned. */
+
+.detection-banner {
+    flex: 1 1 auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 52px;
+    flex-wrap: wrap;
+    text-align: center;
+    animation: detection-pop 0.35s ease both;
+}
+
+.detection-banner .detection-what {
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #14532d;
+}
+
+.detection-banner .detection-arrow {
+    color: #9ca3af;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.detection-banner .detection-fraction {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.detection-banner.unassigned .detection-what {
+    color: #92400e;
+}
+
+.detection-banner.unassigned .detection-fraction {
+    background: #f59e0b;
+}
+
+#main-header.showing-detection .logo-link,
+#main-header.showing-detection .social-links {
+    display: none;
+}
+
+@keyframes detection-pop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.guide-main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.guide-hero {
+    padding-top: 170px;
+    padding-bottom: 36px;
+    text-align: center;
+}
+
+.guide-title {
+    font-size: clamp(2.4rem, 9vw, 4.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 14px;
+}
+
+.guide-subtitle {
+    font-size: 1.05rem;
+    color: #4b5563;
+    max-width: 46ch;
+    margin: 0 auto 28px;
+}
+
+/* Camera capture (same look as the front page demo) */
+
+.camera-card {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 16px;
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
+    text-align: left;
+}
+
+.camera-card .webcam-area {
+    height: 300px;
+    margin-bottom: 14px;
+    border-radius: 18px;
+}
+
+.camera-card #webcam-video,
+.camera-card #frozen-frame {
+    border-radius: 18px;
+}
+
+/* Hide any native play/pause overlay the browser adds to the live camera. */
+#webcam-video::-webkit-media-controls,
+#webcam-video::-webkit-media-controls-panel,
+#webcam-video::-webkit-media-controls-play-button,
+#webcam-video::-webkit-media-controls-overlay-play-button,
+#webcam-video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.camera-card .camera-switch-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+}
+
+.camera-card .camera-switch-btn svg {
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+}
+
+.photo-status {
+    min-height: 1.3em;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+}
+
+.photo-status.error {
+    color: #b91c1c;
+}
+
+/* Result card */
+
+.map-section {
+    padding-bottom: 72px;
+}
+
+.result-card {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid #d1fae5;
+    background: #f0fdf4;
+    box-shadow: 0 18px 44px rgba(17, 24, 39, 0.06);
+}
+
+.result-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.result-fraction {
+    font-size: 1.5rem;
+    letter-spacing: -0.04em;
+    color: #14532d;
+}
+
+.container-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 13px;
+    border-radius: 999px;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.result-identified {
+    margin-bottom: 10px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #15803d;
+}
+
+.result-instructions {
+    font-size: 1rem;
+    color: #374151;
+}
+
+.scan-again-btn {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 999px;
+    border: 1px solid rgba(17, 24, 39, 0.14);
+    background: #ffffff;
+    color: #111827;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+}
+
+.scan-again-btn:hover {
+    background: #f0fdf4;
+    border-color: #22c55e;
+}
+
+.scan-again-btn:active {
+    transform: scale(0.98);
+}
+
+/* Prominent "scan something else" – sticks to the bottom of the viewport so
+ * it's always reachable without scrolling. */
+
+.scan-again-bottom {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    display: flex;
+    justify-content: center;
+    margin-top: 0;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-top: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.scan-again-btn--bottom {
+    margin-top: 0;
+    width: 100%;
+    max-width: 420px;
+    min-height: 54px;
+    font-size: 1.05rem;
+    background: #16a34a;
+    color: #ffffff;
+    border-color: #16a34a;
+}
+
+.scan-again-btn--bottom:hover {
+    background: #15803d;
+    border-color: #15803d;
+}
+
+/* "Ask the staff" state – no container for this item on site */
+
+.result-card.unassigned {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.result-card.unassigned .result-identified {
+    color: #92400e;
+}
+
+.result-card.unassigned .result-fraction {
+    color: #92400e;
+}
+
+.result-card.unassigned .container-pill {
+    background: #f59e0b;
+}
+
+/* Map */
+
+.map-card {
+    padding: 8px;
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
+}
+
+#site-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: manipulation;
+}
+
+.map-ground {
+    fill: #eef2ee;
+}
+
+.map-site-title {
+    text-anchor: middle;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    fill: #111827;
+}
+
+.map-island {
+    fill: #dbe1db;
+}
+
+.map-road {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 44;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.map-road-line {
+    fill: none;
+    stroke: #d7ddd7;
+    stroke-width: 1.6;
+    stroke-dasharray: 9 11;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.map-oneway-arrow {
+    fill: none;
+    stroke: #9aa79a;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.map-route {
+    fill: none;
+    stroke: #22c55e;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 14 11;
+    animation: route-march 1.2s linear infinite;
+}
+
+@keyframes route-march {
+    to { stroke-dashoffset: -25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-route {
+        animation: none;
+    }
+    .map-destination-pulse {
+        animation: none;
+    }
+}
+
+.map-destination-pulse {
+    fill: none;
+    stroke: #22c55e;
+    stroke-width: 3;
+    opacity: 0.7;
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: destination-pulse 1.6s ease-out infinite;
+}
+
+@keyframes destination-pulse {
+    0%   { transform: scale(0.55); opacity: 0.85; }
+    100% { transform: scale(1.25); opacity: 0; }
+}
+
+.map-tile {
+    cursor: pointer;
+}
+
+.map-tile:focus-visible {
+    outline: none;
+}
+
+.map-tile-box {
+    stroke: #ffffff;
+    stroke-width: 2;
+    transition: transform 0.15s ease;
+    transform-origin: center;
+    transform-box: fill-box;
+}
+
+.map-tile:hover .map-tile-box,
+.map-tile:focus-visible .map-tile-box {
+    transform: scale(1.14);
+}
+
+.map-tile.active .map-tile-box {
+    stroke: #111827;
+    stroke-width: 3;
+    transform: scale(1.2);
+}
+
+.map-tile-label {
+    text-anchor: middle;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    fill: #4b5563;
+    pointer-events: none;
+}
+
+.map-tile.active + .map-tile-label,
+.map-tile.active .map-tile-label {
+    fill: #111827;
+}
+
+.map-building rect {
+    fill: #ffffff;
+    stroke: #c9d2c9;
+    stroke-width: 1.5;
+}
+
+.map-building text {
+    text-anchor: middle;
+    font-size: 13px;
+    font-weight: 600;
+    fill: #6b7280;
+}
+
+.map-entrance circle {
+    fill: #111827;
+}
+
+.map-entrance-arrow {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.map-entrance text {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+    fill: #111827;
+}
+
+.map-caption {
+    margin-top: 12px;
+    font-size: 0.86rem;
+    color: #6b7280;
+    text-align: center;
+}
+
+/* Footer tweak */
+
+.guide-footer {
+    margin-top: 0;
+}
+
+/* Larger screens */
+
+@media (min-width: 769px) {
+    .guide-hero {
+        padding-top: 160px;
+        padding-bottom: 44px;
+    }
+}
+
+@media (max-width: 768px) {
+    .guide-hero {
+        padding-top: 150px;
+    }
+
+    .map-card {
+        border-radius: 20px;
+    }
+}

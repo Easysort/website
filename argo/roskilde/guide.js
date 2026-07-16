@@ -16,11 +16,11 @@
  *   response: { ok: true, result: { description, fraction, item, language } }
  */
 
-const MAP_URL = 'vojens-genbrugsplads.json?v=20260715';
+const MAP_URL = 'roskilde-genbrugsplads.json?v=20260716';
 // Update this after `wrangler deploy` if your worker URL differs.
 const GENBRUGSPLADS_WORKER_URL = 'https://website-workers.lucas-vilsen.workers.dev/classify';
 // Which site's catalog the shared worker should match against.
-const SITE = 'vojens';
+const SITE = 'roskilde';
 const API_TIMEOUT_MS = 30000;
 
 const LANGUAGE_STORAGE_KEY = 'easysort-language';
@@ -38,8 +38,8 @@ const COLORS = {
 
 const translations = {
     da: {
-        pageTitle: 'Sorteringsguide – Vojens Genbrugsplads | Easysort',
-        guideKicker: 'Provas · Vojens Genbrugsplads',
+        pageTitle: 'Sorteringsguide – Roskilde Genbrugsplads | Easysort',
+        guideKicker: 'Argo · Roskilde Genbrugsplads',
         guideTitle: 'Hvad skal du af med?',
         guideSubtitle: 'Tag et billede af dit affald, så finder vi den rigtige container.',
         placeholderDefault: 'Giv kameraadgang for at komme i gang',
@@ -63,13 +63,13 @@ const translations = {
         multiSpotNote: 'Findes flere steder – ruten går til den nærmeste.',
         mapCaption: 'Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.',
         mapEntrance: 'Indgang',
-        footerSummary: 'Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.',
+        footerSummary: 'Sorteringsguide til Roskilde Genbrugsplads, drevet af Argo.',
         footerContactLabel: 'Kontakt:',
         footerBackLink: 'Tilbage til easysort.org'
     },
     en: {
-        pageTitle: 'Sorting guide – Vojens Recycling Center | Easysort',
-        guideKicker: 'Provas · Vojens Recycling Center',
+        pageTitle: 'Sorting guide – Roskilde Recycling Center | Easysort',
+        guideKicker: 'Argo · Roskilde Recycling Center',
         guideTitle: 'What are you dropping off?',
         guideSubtitle: 'Take a photo of your waste and we will find the right container.',
         placeholderDefault: 'Allow camera access to get started',
@@ -93,7 +93,7 @@ const translations = {
         multiSpotNote: 'Available in several places – the route goes to the nearest one.',
         mapCaption: 'Tap a container to see the route. The map is indicative – ask the staff if in doubt.',
         mapEntrance: 'Entrance',
-        footerSummary: 'Sorting guide for Vojens Recycling Center, operated by Provas.',
+        footerSummary: 'Sorting guide for Roskilde Recycling Center, operated by Argo.',
         footerContactLabel: 'Contact:',
         footerBackLink: 'Back to easysort.org'
     }
