@@ -368,12 +368,16 @@ function routeToPoint(target, roadHint = null) {
 
     const pool = roadHint ? candidates.filter((c) => c.roadId === roadHint) : candidates;
     let chosen = pickCandidate(pool, dist);
+    // When a road is explicitly specified we route to the closest point on THAT
+    // road and stop there – we do NOT draw the final leg over to the (possibly
+    // far-away) container spot, which would cut a long line across the site.
+    const stopOnRoad = !!chosen && !!roadHint;
     if (!chosen && roadHint) chosen = pickCandidate(candidates, dist);
     if (!chosen) return { path: [ENTRANCE, target], cost: Infinity };
 
     const path = [];
     for (let u = chosen.idx; u !== -1; u = prev[u]) path.unshift(g.nodes[u]);
-    path.push(target);
+    if (!stopOnRoad) path.push(target);
     return { path, cost: chosen.total };
 }
 
