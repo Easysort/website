@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockups – QR-klistermærke & metalskilt</title>
+<style>
+    :root {
+        --green: #16a34a;
+        --green-dark: #15803d;
+        --ink: #111827;
+        --grey: #4b5563;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+        background: #e5e7eb;
+        color: var(--ink);
+        padding: 48px 24px 96px;
+    }
+    .intro { max-width: 900px; margin: 0 auto 48px; }
+    .intro h1 { font-size: 28px; margin-bottom: 8px; }
+    .intro p { color: var(--grey); }
+    .section-label {
+        max-width: 900px;
+        margin: 56px auto 16px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--grey);
+    }
+
+    /* ---------- QR-klistermærke (ca. 9 × 13 cm ved 96 dpi ≈ 340 × 490 px) ---------- */
+    .sticker {
+        width: 340px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 28px 26px 22px;
+        text-align: center;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+        border: 6px solid var(--green);
+    }
+    .sticker h2 {
+        font-size: 30px;
+        line-height: 1.1;
+        margin-bottom: 16px;
+        color: var(--ink);
+    }
+    .sticker img.qr {
+        width: 190px;
+        height: 190px;
+        display: block;
+        margin: 0 auto 16px;
+    }
+    .sticker .how {
+        font-size: 15.5px;
+        line-height: 1.45;
+        color: var(--grey);
+        margin-bottom: 14px;
+    }
+    .sticker .url {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--green-dark);
+        letter-spacing: 0.01em;
+    }
+    .sticker .brand {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e5e7eb;
+        font-size: 12px;
+        color: #9ca3af;
+        font-weight: 600;
+    }
+
+    /* ---------- Metalskilt (ca. 120 × 60 cm → vist i 900 × 450 px) ---------- */
+    .sign-wrap { max-width: 900px; margin: 0 auto; }
+    .sign {
+        width: 100%;
+        aspect-ratio: 2 / 1;
+        color: #fff;
+        background: linear-gradient(172deg, #16a34a 0%, #128a41 70%, #107038 100%);
+        border-radius: 14px;
+        box-shadow: 0 22px 55px rgba(11, 31, 19, 0.35), inset 0 0 0 3px rgba(255,255,255,0.14);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+    }
+    /* skruehuller for metal-fornemmelse */
+    .sign::before, .sign::after,
+    .sign .screw-bl, .sign .screw-br {
+        content: "";
+        position: absolute;
+        width: 14px; height: 14px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #f1f5f9, #94a3b8);
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+    }
+    .sign::before { top: 14px; left: 14px; }
+    .sign::after { top: 14px; right: 14px; }
+    .sign .screw-bl { bottom: 14px; left: 14px; }
+    .sign .screw-br { bottom: 14px; right: 14px; }
+
+    .sign-top {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 36px 42px 30px;
+    }
+    .sign .eyebrow {
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        opacity: 0.75;
+        margin-bottom: 18px;
+    }
+    .sign h2 {
+        font-size: 86px;
+        font-weight: 800;
+        letter-spacing: -0.005em;
+        line-height: 0.98;
+        margin-bottom: 18px;
+        white-space: nowrap;
+        text-shadow: 0 2px 0 rgba(0,0,0,0.08);
+    }
+    .sign .sub {
+        font-size: 27px;
+        font-weight: 500;
+        opacity: 0.96;
+        white-space: nowrap;
+        margin-bottom: 20px;
+    }
+    .sign .sub strong { font-weight: 800; }
+    .sign .chevrons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+    .sign .chevrons svg {
+        width: 76px;
+        display: block;
+        fill: none;
+        stroke: #fff;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .sign .chevrons svg:last-child { opacity: 0.45; }
+    .sign-brand {
+        max-width: 900px;
+        margin: 10px auto 0;
+        text-align: right;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    @media (max-width: 760px) {
+        .sign { aspect-ratio: auto; }
+        .sign h2 { font-size: 44px; white-space: normal; }
+    }
+</style>
+</head>
+<body>
+
+<div class="intro">
+    <h1>Mockups – Vojens Genbrugsplads</h1>
+    <p>Størrelsesforholdet er vejledende: klistermærket er tænkt som ca. 9 × 13 cm, skiltet som ca. 120 × 60 cm. Byt QR-kode og URL ud pr. plads (Vojens/Roskilde).</p>
+</div>
+
+<p class="section-label">1 · QR-klistermærke (lille)</p>
+<div class="sticker">
+    <h2>Tag billede og få hjælp på få sekunder</h2>
+    <img class="qr" src="qr-provas-vojens.png" alt="QR-kode til sorteringsguiden">
+    <p class="how">Scan koden og tag et billede af dit affald, så viser guiden den rigtige container.</p>
+    <p class="url">easysort.org/provas/vojens</p>
+    <p class="brand">Provas · Easysort</p>
+</div>
+
+<p class="section-label">2 · Metalskilt ved sorteringsguiden (stort, rektangulært)</p>
+<div class="sign-wrap">
+    <div class="sign">
+        <span class="screw-bl"></span><span class="screw-br"></span>
+        <div class="sign-top">
+            <p class="eyebrow">Vojens Genbrugsplads</p>
+            <h2>SORTERINGSGUIDE</h2>
+            <p class="sub">Vis dit affald til kameraet og få svar på <strong>8 sekunder</strong></p>
+            <div class="chevrons" aria-hidden="true">
+                <svg viewBox="0 0 92 34"><path d="M8 6 46 28 84 6"/></svg>
+                <svg viewBox="0 0 92 34"><path d="M8 6 46 28 84 6"/></svg>
+            </div>
+        </div>
+    </div>
+    <p class="sign-brand">Provas · Easysort</p>
+</div>
+
+</body>
+</html>

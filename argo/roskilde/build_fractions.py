@@ -73,6 +73,12 @@ ITEM_OVERRIDES = {
     "Køleskab": "Kølemøbler",
     "Køleboks med ledning": "Kølemøbler",
     "Hårde hvidevarer, køleudstyr": "Kølemøbler",
+    # Argo's own guide files laptops/computers under småt elektronik, not
+    # the mellemstort category they sit in here.
+    "Bærbar computer": "Små husholdnings apparater",
+    "Computer": "Små husholdnings apparater",
+    "PC": "Små husholdnings apparater",
+    "Computerudstyr": "Små husholdnings apparater",
     "Jord": "Jord",
     "Blomstermuld": "Jord",
     "Aske": "Aske",

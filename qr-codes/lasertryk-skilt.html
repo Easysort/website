@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Metalskilt 120x50 cm – trykfil med 3 mm beskæring</title>
+<style>
+    /* Færdigt mål: 1200 x 500 mm. Dokument inkl. 3 mm beskæring: 1206 x 506 mm. */
+    @page { size: 1206mm 506mm; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 1206mm; height: 506mm; overflow: hidden; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+        /* Ensfarvet baggrund (ren vektor, ingen rasterisering) der dækker hele dokumentet inkl. beskæringszonen */
+        background: #16a34a;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        /* 3 mm beskæring + god sikkerhedsmargin til tekst */
+        padding: 30mm 40mm;
+    }
+    h1 {
+        font-size: 112mm;
+        font-weight: 800;
+        letter-spacing: -0.005em;
+        line-height: 1;
+        white-space: nowrap;
+        margin-bottom: 26mm;
+    }
+    .sub {
+        font-size: 40mm;
+        font-weight: 500;
+        white-space: nowrap;
+        margin-bottom: 28mm;
+    }
+    .sub strong { font-weight: 800; }
+    .chevrons { display: flex; flex-direction: column; align-items: center; gap: 6mm; }
+    .chevrons svg {
+        width: 100mm;
+        display: block;
+        fill: none;
+        stroke: #fff;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .chevrons svg:last-child { opacity: 0.45; }
+</style>
+</head>
+<body>
+    <h1>SORTERINGSGUIDE</h1>
+    <p class="sub">Vis dit affald til kameraet og få svar <strong>med det samme</strong></p>
+    <div class="chevrons" aria-hidden="true">
+        <svg viewBox="0 0 92 34"><path d="M8 6 46 28 84 6"/></svg>
+        <svg viewBox="0 0 92 34"><path d="M8 6 46 28 84 6"/></svg>
+    </div>
+</body>
+</html>

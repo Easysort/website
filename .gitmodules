@@ -1,0 +1,3 @@
+[submodule "norfors-demo"]
+	path = norfors-demo
+	url = git@github.com:Easysort/norfors-demo.git

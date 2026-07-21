@@ -2,5 +2,5 @@
 
 import qrcode
 
-img = qrcode.make("https://easysort.org/provas/vojens")
-img.save("qr-codes/qr-provas-vojens.png")
+img = qrcode.make("https://easysort.org/argo/roskilde")
+img.save("qr-codes/qr-argo-roskilde.png")
