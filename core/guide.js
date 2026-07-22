@@ -578,7 +578,13 @@ async function classifyImage(imageBase64) {
     const response = await fetchWithTimeout(GENBRUGSPLADS_WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageBase64, language: currentLanguage, site: SITE })
+        body: JSON.stringify({
+            image: imageBase64,
+            language: currentLanguage,
+            site: SITE,
+            source: 'web',
+            client: 'guide.js',
+        })
     });
     const data = await response.json();
     if (!response.ok || data.ok !== true || !data.result) {
