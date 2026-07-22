@@ -584,6 +584,8 @@ async function classifyImage(imageBase64) {
             site: SITE,
             source: 'web',
             client: 'guide.js',
+            // Explicit path — Referer is often origin-only on cross-origin worker calls
+            page: typeof location !== 'undefined' ? location.pathname : null,
         })
     });
     const data = await response.json();
