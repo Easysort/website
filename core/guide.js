@@ -13,7 +13,10 @@
  * API (shared worker):
  *   POST GENBRUGSPLADS_WORKER_URL
  *   body:     { image: <base64 jpeg>, language: "da" | "en", site: "<key>" }
- *   response: { ok: true, result: { description, fraction, item, language } }
+ *   response: { ok: true, result: {
+ *     description, fraction, item, confidence, askStaff,
+ *     alternative, directReuse, language
+ *   } }
  */
 
 const CONFIG = window.SITE_CONFIG || {};
@@ -60,13 +63,20 @@ const translations = {
         askStaffPill: 'Til personalet',
         unassignedTitle: 'Spørg personalet',
         unassignedBody: 'Vi har ikke en fast container til dette her. Vis det til personalet – de hjælper dig med at komme af med det på det rigtige sted.',
+        alternativePrefix: 'Det kan også være:',
+        alternativeAdvice: 'Spørg personalet, hvis du er i tvivl mellem de to.',
+        directReuseTitle: 'Kan måske bruges igen',
+        directReuseBody: 'Hvis genstanden er hel, ren og virker, kan du aflevere den til Direkte Genbrug.',
         scanAgain: 'Scan noget andet',
         multiSpotNote: 'Findes flere steder – ruten går til den nærmeste.',
         mapCaption: 'Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.',
         mapEntrance: 'Indgang',
         footerSummary: 'Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.',
         footerContactLabel: 'Kontakt:',
-        footerBackLink: 'Tilbage til easysort.org'
+        footerBackLink: 'Tilbage til easysort.org',
+        privacyNotice: 'Når du analyserer, sendes ét billede sikkert til analyse og kvalitetskontrol.',
+        privacyLink: 'Læs om privatliv',
+        footerPrivacyLink: 'Privatliv'
     },
     en: {
         pageTitle: 'Sorting guide – Vojens Recycling Center | Easysort',
@@ -90,13 +100,20 @@ const translations = {
         askStaffPill: 'Ask the staff',
         unassignedTitle: 'Ask the staff',
         unassignedBody: 'We do not have a fixed container for this on site. Show it to the staff – they will help you drop it in the right place.',
+        alternativePrefix: 'It could also be:',
+        alternativeAdvice: 'Ask the staff if you are unsure which of the two applies.',
+        directReuseTitle: 'It may be reusable',
+        directReuseBody: 'If the item is complete, clean and working, you can leave it at Direkte Genbrug.',
         scanAgain: 'Scan something else',
         multiSpotNote: 'Available in several places – the route goes to the nearest one.',
         mapCaption: 'Tap a container to see the route. The map is indicative – ask the staff if in doubt.',
         mapEntrance: 'Entrance',
         footerSummary: 'Sorting guide for Vojens Recycling Center, operated by Provas.',
         footerContactLabel: 'Contact:',
-        footerBackLink: 'Back to easysort.org'
+        footerBackLink: 'Back to easysort.org',
+        privacyNotice: 'When you analyse, one image is sent securely for analysis and quality control.',
+        privacyLink: 'Read about privacy',
+        footerPrivacyLink: 'Privacy'
     }
 };
 
@@ -573,7 +590,7 @@ async function fetchWithTimeout(url, options) {
     }
 }
 
-/* Returns { description, fraction, item } or throws on failure. */
+/* Returns the shared worker's classification decision or throws on failure. */
 async function classifyImage(imageBase64) {
     const response = await fetchWithTimeout(GENBRUGSPLADS_WORKER_URL, {
         method: 'POST',
@@ -595,7 +612,11 @@ async function classifyImage(imageBase64) {
     return {
         description: data.result.description || '',
         fraction: data.result.fraction || '',
-        item: data.result.item || ''
+        item: data.result.item || '',
+        confidence: data.result.confidence || 'high',
+        askStaff: data.result.askStaff === true,
+        alternative: data.result.alternative || null,
+        directReuse: data.result.directReuse === true
     };
 }
 
@@ -754,8 +775,12 @@ function showResult(result, { scroll = true } = {}) {
     const nameEl = document.getElementById('result-fraction-name');
     const pillEl = document.getElementById('result-pill');
     const instructionsEl = document.getElementById('result-instructions');
+    const alternativeEl = document.getElementById('result-alternative');
+    const alternativeTitle = document.getElementById('result-alternative-title');
+    const reuseEl = document.getElementById('result-reuse');
+    const askStaff = result.askStaff === true || !primary;
 
-    if (primary) {
+    if (!askStaff) {
         card.classList.remove('unassigned');
         nameEl.textContent = primary.name[currentLanguage];
         pillEl.textContent = t('resultPill');
@@ -765,11 +790,32 @@ function showResult(result, { scroll = true } = {}) {
         renderMap(primary.key);
     } else {
         card.classList.add('unassigned');
-        nameEl.textContent = result.catalogFraction || t('unassignedTitle');
+        nameEl.textContent = t('unassignedTitle');
         pillEl.textContent = t('askStaffPill');
         instructionsEl.textContent = t('unassignedBody');
         renderMap(null);
     }
+
+    const alternativeFraction = result.alternative?.fraction || '';
+    if (!askStaff && alternativeFraction) {
+        const alternativeKey = resolveMapKey(alternativeFraction);
+        const alternativeMapFraction = alternativeKey
+            ? FRACTION_BY_KEY.get(alternativeKey)
+            : null;
+        const alternativeName = alternativeMapFraction
+            ? alternativeMapFraction.name[currentLanguage]
+            : alternativeFraction;
+        alternativeTitle.textContent = `${t('alternativePrefix')} ${alternativeName}`;
+        alternativeEl.hidden = false;
+    } else {
+        alternativeEl.hidden = true;
+    }
+
+    reuseEl.hidden = !(
+        !askStaff &&
+        CONFIG.features?.directReuse === true &&
+        result.directReuse === true
+    );
 
     card.hidden = false;
     document.getElementById('scan-again-bottom').hidden = false;
@@ -797,7 +843,9 @@ function flashDetection(result) {
     const header = document.getElementById('main-header');
     const banner = document.getElementById('detection-banner');
     const mapKey = result.keys && result.keys[0];
-    const fraction = mapKey ? FRACTION_BY_KEY.get(mapKey) : null;
+    const fraction = result.askStaff === true
+        ? null
+        : (mapKey ? FRACTION_BY_KEY.get(mapKey) : null);
     const what = result.description || result.item || '';
     const fractionName = fraction ? fraction.name[currentLanguage]
         : (result.catalogFraction || t('unassignedTitle'));
@@ -865,10 +913,14 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
         } else {
             const mapKey = resolveMapKey(result.fraction);
             const payload = {
-                keys: mapKey ? [mapKey] : [],
+                keys: mapKey && !result.askStaff ? [mapKey] : [],
                 description: result.description,
                 item: result.item,
-                catalogFraction: result.fraction
+                catalogFraction: result.fraction,
+                confidence: result.confidence,
+                askStaff: result.askStaff,
+                alternative: result.alternative,
+                directReuse: result.directReuse
             };
             showResult(payload);
             flashDetection(payload);

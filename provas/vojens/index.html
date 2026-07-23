@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Sorteringsguide – Vojens Genbrugsplads | Easysort</title>
     <link rel="stylesheet" href="../../style2.css?v=20260715">
-    <link rel="stylesheet" href="../../core/guide.css?v=20260716e">
+    <link rel="stylesheet" href="../../core/guide.css?v=20260723b">
 </head>
 <body id="top">
 
@@ -42,6 +42,10 @@
                     </button>
                 </div>
                 <button id="identify-btn" class="analyze-button" disabled>Analyser affald</button>
+                <p class="capture-privacy">
+                    <span data-i18n="privacyNotice">Når du analyserer, sendes ét billede sikkert til analyse og kvalitetskontrol.</span>
+                    <a href="../../privacy.html" data-i18n="privacyLink">Læs om privatliv</a>
+                </p>
                 <p class="photo-status" id="photo-status"></p>
             </div>
         </section>
@@ -54,6 +58,14 @@
                     <span class="container-pill" id="result-pill" data-i18n="resultPill">Følg den grønne rute</span>
                 </div>
                 <p class="result-instructions" id="result-instructions"></p>
+                <aside class="result-notice result-alternative" id="result-alternative" hidden>
+                    <strong id="result-alternative-title"></strong>
+                    <span data-i18n="alternativeAdvice">Spørg personalet, hvis du er i tvivl mellem de to.</span>
+                </aside>
+                <aside class="result-notice result-reuse" id="result-reuse" hidden>
+                    <strong data-i18n="directReuseTitle">Kan måske bruges igen</strong>
+                    <span data-i18n="directReuseBody">Hvis genstanden er hel, ren og virker, kan du aflevere den til Direkte Genbrug.</span>
+                </aside>
             </div>
 
             <div class="map-card">
@@ -77,6 +89,7 @@
                 </div>
             </div>
             <div class="footer-links">
+                <a href="../../privacy.html" class="footer-link" data-i18n="footerPrivacyLink">Privatliv</a>
                 <a href="../../" class="footer-link" data-i18n="footerBackLink">Tilbage til easysort.org</a>
                 <a href="https://www.provas.dk" class="footer-link" target="_blank" rel="noreferrer">provas.dk</a>
             </div>
@@ -91,6 +104,6 @@
             siteName: { da: 'Vojens Genbrugsplads', en: 'Vojens Recycling Center' }
         };
     </script>
-    <script src="../../core/guide.js?v=20260722a"></script>
+    <script src="../../core/guide.js?v=20260723b"></script>
 </body>
 </html>

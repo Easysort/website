@@ -175,6 +175,26 @@ body.scanning {
     color: #b91c1c;
 }
 
+.capture-privacy {
+    margin: 11px auto 0;
+    color: #6b7280;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.capture-privacy a {
+    color: #32734b;
+    font-weight: 700;
+    text-underline-offset: 2px;
+    white-space: nowrap;
+}
+
+.capture-privacy a:hover {
+    color: #14532d;
+}
+
 /* Result card */
 
 .map-section {
@@ -229,6 +249,36 @@ body.scanning {
 .result-instructions {
     font-size: 1rem;
     color: #374151;
+}
+
+.result-notice {
+    display: grid;
+    gap: 3px;
+    margin-top: 14px;
+    padding: 13px 15px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.result-notice[hidden] {
+    display: none;
+}
+
+.result-notice strong {
+    font-size: 1rem;
+}
+
+.result-alternative {
+    color: #78350f;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+}
+
+.result-reuse {
+    color: #14532d;
+    background: #dcfce7;
+    border: 1px solid #86efac;
 }
 
 .scan-again-btn {
