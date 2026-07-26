@@ -113,7 +113,7 @@ const translations = {
         project2Description: 'Hjælp besøgende til den rigtige container på få sekunder.',
         project3Tag: 'Affaldsanlæg',
         project3Title: 'Kontrol af indkommende affald',
-        project3Description: 'Analyser læs og marker fejlsortering med dokumentation.',
+        project3Description: 'Analyser, læs og marker fejlsortering med dokumentation.',
         project4Tag: 'Affaldsanlæg',
         project4Title: 'Optimering af anlæg',
         project4Description: 'Overvåg brovægt og flow i anlægget med bedre kontrol.',
