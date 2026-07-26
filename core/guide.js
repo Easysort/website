@@ -15,7 +15,7 @@
  *   body:     { image: <base64 jpeg>, language: "da" | "en", site: "<key>" }
  *   response: { ok: true, result: {
  *     description, fraction, item, confidence, askStaff,
- *     alternative, directReuse, language
+ *     alternative, separate, multipleItems, directReuse, language
  *   } }
  */
 
@@ -58,13 +58,17 @@ const translations = {
         cameraNotFound: 'Intet kamera fundet. Tryk for at prøve igen.',
         analyzeFailed: 'Vi kunne ikke analysere billedet. Prøv igen, eller spørg personalet.',
         noMatch: 'Vi er ikke sikre på, hvad det er. Prøv et billede tættere på, eller spørg personalet.',
-        identifiedLabel: 'Vi tror, det er:',
+        identifiedLabel: 'Vi analyserer:',
         resultPill: 'Følg den grønne rute',
         askStaffPill: 'Til personalet',
         unassignedTitle: 'Spørg personalet',
         unassignedBody: 'Vi har ikke en fast container til dette her. Vis det til personalet – de hjælper dig med at komme af med det på det rigtige sted.',
+        multipleItemsTitle: 'Flere genstande på billedet',
+        multipleItemsBody: 'Resultatet gælder kun den valgte genstand. Scan de andre genstande hver for sig.',
         alternativePrefix: 'Det kan også være:',
         alternativeAdvice: 'Spørg personalet, hvis du er i tvivl mellem de to.',
+        separatePrefix: 'Skil fra:',
+        separateAdvice: 'Den største del følger ruten ovenfor. Afmontér kun delen, hvis det kan gøres sikkert.',
         directReuseTitle: 'Kan måske bruges igen',
         directReuseBody: 'Hvis genstanden er hel, ren og virker, kan du aflevere den til Direkte Genbrug.',
         scanAgain: 'Scan noget andet',
@@ -95,13 +99,17 @@ const translations = {
         cameraNotFound: 'No camera found. Tap to try again.',
         analyzeFailed: 'We could not analyze the photo. Try again, or ask the staff.',
         noMatch: 'We are not sure what this is. Try a closer photo, or ask the staff.',
-        identifiedLabel: 'We think this is:',
+        identifiedLabel: 'We are analyzing:',
         resultPill: 'Follow the green route',
         askStaffPill: 'Ask the staff',
         unassignedTitle: 'Ask the staff',
         unassignedBody: 'We do not have a fixed container for this on site. Show it to the staff – they will help you drop it in the right place.',
+        multipleItemsTitle: 'Multiple items in the photo',
+        multipleItemsBody: 'This result only applies to the selected item. Scan the other items separately.',
         alternativePrefix: 'It could also be:',
         alternativeAdvice: 'Ask the staff if you are unsure which of the two applies.',
+        separatePrefix: 'Separate:',
+        separateAdvice: 'The largest part follows the route above. Only remove the part if it can be done safely.',
         directReuseTitle: 'It may be reusable',
         directReuseBody: 'If the item is complete, clean and working, you can leave it at Direkte Genbrug.',
         scanAgain: 'Scan something else',
@@ -368,16 +376,24 @@ function pickCandidate(candidates, dist) {
  * road – used when the truly nearest road isn't the right one to stop at.
  * If that road can't be reached we fall back to the nearest road overall. */
 function routeToPoint(target, roadHint = null) {
+    const destination = [target[0], target[1]];
     const g = buildGraph();
     const candidates = [];
     g.segments.forEach(({ a, b, oneway, roadId }) => {
-        const p = projectOnSegment(target, g.nodes[a], g.nodes[b]);
+        const p = projectOnSegment(destination, g.nodes[a], g.nodes[b]);
         const idx = g.nodeAt(p);
         if (idx !== a && idx !== b) {
             g.addEdge(a, idx);
             if (!oneway) g.addEdge(b, idx);
         }
-        candidates.push({ idx, spur: Math.hypot(p[0] - target[0], p[1] - target[1]), roadId });
+        candidates.push({
+            idx,
+            spur: Math.hypot(
+                p[0] - destination[0],
+                p[1] - destination[1],
+            ),
+            roadId,
+        });
     });
 
     const start = connectStart(g, ENTRANCE);
@@ -385,16 +401,15 @@ function routeToPoint(target, roadHint = null) {
 
     const pool = roadHint ? candidates.filter((c) => c.roadId === roadHint) : candidates;
     let chosen = pickCandidate(pool, dist);
-    // When a road is explicitly specified we route to the closest point on THAT
-    // road and stop there – we do NOT draw the final leg over to the (possibly
-    // far-away) container spot, which would cut a long line across the site.
-    const stopOnRoad = !!chosen && !!roadHint;
     if (!chosen && roadHint) chosen = pickCandidate(candidates, dist);
-    if (!chosen) return { path: [ENTRANCE, target], cost: Infinity };
+    if (!chosen) return { path: [ENTRANCE, destination], cost: Infinity };
 
     const path = [];
     for (let u = chosen.idx; u !== -1; u = prev[u]) path.unshift(g.nodes[u]);
-    if (!stopOnRoad) path.push(target);
+    const last = path[path.length - 1];
+    if (!last || last[0] !== destination[0] || last[1] !== destination[1]) {
+        path.push(destination);
+    }
     return { path, cost: chosen.total };
 }
 
@@ -616,6 +631,8 @@ async function classifyImage(imageBase64) {
         confidence: data.result.confidence || 'high',
         askStaff: data.result.askStaff === true,
         alternative: data.result.alternative || null,
+        separate: data.result.separate || null,
+        multipleItems: data.result.multipleItems === true,
         directReuse: data.result.directReuse === true
     };
 }
@@ -775,8 +792,12 @@ function showResult(result, { scroll = true } = {}) {
     const nameEl = document.getElementById('result-fraction-name');
     const pillEl = document.getElementById('result-pill');
     const instructionsEl = document.getElementById('result-instructions');
+    const multipleEl = document.getElementById('result-multiple');
+    const multipleBody = document.getElementById('result-multiple-body');
     const alternativeEl = document.getElementById('result-alternative');
     const alternativeTitle = document.getElementById('result-alternative-title');
+    const separateEl = document.getElementById('result-separate');
+    const separateTitle = document.getElementById('result-separate-title');
     const reuseEl = document.getElementById('result-reuse');
     const askStaff = result.askStaff === true || !primary;
 
@@ -796,6 +817,9 @@ function showResult(result, { scroll = true } = {}) {
         renderMap(null);
     }
 
+    multipleEl.hidden = result.multipleItems !== true;
+    if (!multipleEl.hidden) multipleBody.textContent = t('multipleItemsBody');
+
     const alternativeFraction = result.alternative?.fraction || '';
     if (!askStaff && alternativeFraction) {
         const alternativeKey = resolveMapKey(alternativeFraction);
@@ -811,8 +835,29 @@ function showResult(result, { scroll = true } = {}) {
         alternativeEl.hidden = true;
     }
 
+    const separateFraction = !result.alternative && result.separate?.fraction
+        ? result.separate.fraction
+        : '';
+    if (!askStaff && separateFraction) {
+        const separateKey = resolveMapKey(separateFraction);
+        const separateMapFraction = separateKey
+            ? FRACTION_BY_KEY.get(separateKey)
+            : null;
+        const separateName = separateMapFraction
+            ? separateMapFraction.name[currentLanguage]
+            : separateFraction;
+        const separateItem = result.separate.item || (
+            currentLanguage === 'da' ? 'den anden del' : 'the other part'
+        );
+        separateTitle.textContent = `${t('separatePrefix')} ${separateItem} → ${separateName}`;
+        separateEl.hidden = false;
+    } else {
+        separateEl.hidden = true;
+    }
+
     reuseEl.hidden = !(
         !askStaff &&
+        !separateFraction &&
         CONFIG.features?.directReuse === true &&
         result.directReuse === true
     );
@@ -920,6 +965,8 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
                 confidence: result.confidence,
                 askStaff: result.askStaff,
                 alternative: result.alternative,
+                separate: result.separate,
+                multipleItems: result.multipleItems,
                 directReuse: result.directReuse
             };
             showResult(payload);

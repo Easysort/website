@@ -275,6 +275,18 @@ body.scanning {
     border: 1px solid #fcd34d;
 }
 
+.result-multiple {
+    color: #312e81;
+    background: #e0e7ff;
+    border: 1px solid #a5b4fc;
+}
+
+.result-separate {
+    color: #1e3a5f;
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+}
+
 .result-reuse {
     color: #14532d;
     background: #dcfce7;

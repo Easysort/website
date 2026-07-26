@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Sorteringsguide – Roskilde Genbrugsplads | Easysort</title>
     <link rel="stylesheet" href="../../style2.css?v=20260715">
-    <link rel="stylesheet" href="../../core/guide.css?v=20260723b">
+    <link rel="stylesheet" href="../../core/guide.css?v=20260724">
 </head>
 <body id="top">
 
@@ -58,9 +58,17 @@
                     <span class="container-pill" id="result-pill" data-i18n="resultPill">Følg den grønne rute</span>
                 </div>
                 <p class="result-instructions" id="result-instructions"></p>
+                <aside class="result-notice result-multiple" id="result-multiple" hidden>
+                    <strong data-i18n="multipleItemsTitle">Flere genstande på billedet</strong>
+                    <span id="result-multiple-body"></span>
+                </aside>
                 <aside class="result-notice result-alternative" id="result-alternative" hidden>
                     <strong id="result-alternative-title"></strong>
                     <span data-i18n="alternativeAdvice">Spørg personalet, hvis du er i tvivl mellem de to.</span>
+                </aside>
+                <aside class="result-notice result-separate" id="result-separate" hidden>
+                    <strong id="result-separate-title"></strong>
+                    <span data-i18n="separateAdvice">Den største del følger ruten ovenfor. Afmontér kun delen, hvis det kan gøres sikkert.</span>
                 </aside>
                 <aside class="result-notice result-reuse" id="result-reuse" hidden>
                     <strong data-i18n="directReuseTitle">Kan måske bruges igen</strong>
@@ -105,6 +113,6 @@
             features: { directReuse: true }
         };
     </script>
-    <script src="../../core/guide.js?v=20260723b"></script>
+    <script src="../../core/guide.js?v=20260724a"></script>
 </body>
 </html>
