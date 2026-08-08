@@ -80,7 +80,10 @@ const translations = {
         footerBackLink: 'Tilbage til easysort.org',
         privacyNotice: 'Når du analyserer, sendes ét billede sikkert til analyse og kvalitetskontrol.',
         privacyLink: 'Læs om privatliv',
-        footerPrivacyLink: 'Privatliv'
+        footerPrivacyLink: 'Privatliv',
+        installAction: 'Tilføj som app',
+        installedAction: 'Tilføjet',
+        installHint: 'Tryk på {share} nederst i browseren, og vælg "Føj til hjemmeskærm".'
     },
     en: {
         pageTitle: 'Sorting guide – Vojens Recycling Center | Easysort',
@@ -121,7 +124,10 @@ const translations = {
         footerBackLink: 'Back to easysort.org',
         privacyNotice: 'When you analyse, one image is sent securely for analysis and quality control.',
         privacyLink: 'Read about privacy',
-        footerPrivacyLink: 'Privacy'
+        footerPrivacyLink: 'Privacy',
+        installAction: 'Add as app',
+        installedAction: 'Added',
+        installHint: 'Tap {share} at the bottom of the browser, then choose "Add to Home Screen".'
     }
 };
 
@@ -462,6 +468,7 @@ function applyTranslations() {
     });
 
     updateAnalyzeButton(currentAnalyzeState);
+    updateInstallTexts();
     if (currentPlaceholderKey) setPlaceholder(currentPlaceholderIcon, currentPlaceholderKey);
     if (MAP) renderMap();
     if (currentResult) showResult(currentResult, { scroll: false });
@@ -865,6 +872,7 @@ function showResult(result, { scroll = true } = {}) {
     card.hidden = false;
     document.getElementById('scan-again-bottom').hidden = false;
     document.body.classList.add('scanning');
+    hideInstallHint();
     if (scroll) {
         document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -980,6 +988,130 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
     }
 });
 
+/* ── Add to home screen ──────────────────────────────────── */
+
+/* On phones a small standalone button appears beside the language switch,
+ * offering to install the guide as an app, so visitors can open it from the
+ * home screen without the browser chrome.
+ *
+ * Android fires `beforeinstallprompt`, which we save and replay when the
+ * user taps the button. iOS has no install API at all, so there the button
+ * folds out the Share → Add to Home Screen steps instead. Either way the
+ * guide confirms once it is installed: Android through `appinstalled`, iOS
+ * the first time it starts from the home screen. */
+
+const INSTALL_CONFIRMED_KEY = 'easysort-install-confirmed';
+const INSTALL_CONFIRM_MS = 6000;
+const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+    + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    + '<path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
+
+let installPrompt = null;
+let installButton = null;
+let installHint = null;
+
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function isIos() {
+    return /iphone|ipad|ipod/i.test(navigator.userAgent)
+        /* iPadOS 13+ reports itself as a Mac, but a touch-capable one. */
+        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function buildInstallUi() {
+    if (installButton) return;
+    const socialLinks = document.querySelector('.social-links');
+    if (!socialLinks) return;
+
+    /* A standalone pill that sits beside the language switch. */
+    installButton = document.createElement('button');
+    installButton.type = 'button';
+    installButton.className = 'install-app';
+    installButton.addEventListener('click', startInstall);
+    socialLinks.appendChild(installButton);
+
+    /* The iOS how-to folds out below the header controls. */
+    installHint = document.createElement('p');
+    installHint.className = 'install-hint';
+    installHint.hidden = true;
+    document.getElementById('main-header').appendChild(installHint);
+
+    updateInstallTexts();
+}
+
+function updateInstallTexts() {
+    if (!installButton) return;
+    const done = installButton.classList.contains('installed');
+    installButton.textContent = done ? t('installedAction') : t('installAction');
+    installHint.innerHTML = t('installHint').replace('{share}', SHARE_ICON);
+}
+
+function hideInstallHint() {
+    if (installHint) installHint.hidden = true;
+}
+
+function offerInstall() {
+    if (isStandalone()) return;
+    buildInstallUi();
+    if (installButton) installButton.classList.add('available');
+}
+
+function startInstall() {
+    if (installButton.classList.contains('installed')) return;
+    if (installPrompt) {
+        const prompt = installPrompt;
+        /* Chrome only lets a saved prompt be used once. */
+        installPrompt = null;
+        prompt.prompt();
+        prompt.userChoice.then(({ outcome }) => {
+            /* Declined: withdraw the offer for this visit. Chrome fires a
+             * fresh prompt event on the next one, which brings it back. */
+            if (outcome !== 'accepted') installButton.classList.remove('available');
+        });
+        return;
+    }
+    /* iOS: no API to call, so fold the how-to in and out. */
+    installHint.hidden = !installHint.hidden;
+}
+
+function confirmInstalled() {
+    localStorage.setItem(INSTALL_CONFIRMED_KEY, String(Date.now()));
+    buildInstallUi();
+    if (!installButton) return;
+    installButton.classList.add('installed', 'available');
+    hideInstallHint();
+    updateInstallTexts();
+    window.setTimeout(() => installButton.classList.remove('available'), INSTALL_CONFIRM_MS);
+}
+
+window.addEventListener('beforeinstallprompt', (event) => {
+    /* Keep the event so our own button can trigger the real prompt later. */
+    event.preventDefault();
+    installPrompt = event;
+    offerInstall();
+});
+
+window.addEventListener('appinstalled', () => {
+    installPrompt = null;
+    confirmInstalled();
+});
+
+function initInstall() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+    if (isStandalone()) {
+        /* First launch from the home screen: tell them it worked. iOS never
+         * fires `appinstalled`, so this is the only confirmation it gets. */
+        if (!localStorage.getItem(INSTALL_CONFIRMED_KEY)) confirmInstalled();
+        return;
+    }
+    /* Android waits for `beforeinstallprompt`; iOS has to be offered directly. */
+    if (isIos()) offerInstall();
+}
+
 /* ── Init ──────────────────────────────────────────────────── */
 
 document.getElementById('camera-switch-btn').addEventListener('click', switchCamera);
@@ -996,6 +1128,7 @@ window.addEventListener('beforeunload', () => {
 currentLanguage = getPreferredLanguage();
 setPlaceholder('📷', 'placeholderDefault');
 updateAnalyzeButton('disabled');
+initInstall();
 
 loadMap()
     .then(() => { applyTranslations(); })

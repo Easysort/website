@@ -556,6 +556,90 @@ body.scanning {
     margin-top: 0;
 }
 
+/* Slightly larger flags in the language switch than on the main site. */
+.language-flag {
+    font-size: 1.25rem;
+}
+
+/* "Add to home screen" – a standalone pill beside the header language
+ * switch that installs the guide as an app. Injected by guide.js and only
+ * revealed on phones when installing is actually possible, so desktop and
+ * the installed app never see it. */
+
+.install-app {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 999px;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.22);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.install-app:hover {
+    background: #15803d;
+}
+
+.install-app:active {
+    transform: scale(0.97);
+}
+
+.install-app:focus-visible {
+    outline: 2px solid rgba(34, 197, 94, 0.4);
+    outline-offset: 2px;
+}
+
+/* Confirmation once it is on the home screen. */
+.install-app.installed {
+    background: #dcfce7;
+    color: #15803d;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* iOS has no install API, so this folds out the Share → Add to Home Screen
+ * steps below the header controls. */
+.install-hint {
+    width: 100%;
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 18px 44px rgba(17, 24, 39, 0.18);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #374151;
+}
+
+.install-hint svg {
+    width: 15px;
+    height: 15px;
+    vertical-align: -3px;
+    color: #2e7fb4;
+}
+
+@media (max-width: 768px) {
+    .install-app.available {
+        display: inline-flex;
+    }
+
+    /* style2.css gives the language switch the full row on phones; when the
+     * install pill is there, they share the row instead. */
+    .social-links:has(.install-app.available) .language-switch {
+        width: auto;
+        flex: 1 1 auto;
+    }
+}
+
 /* Larger screens */
 
 @media (min-width: 769px) {
