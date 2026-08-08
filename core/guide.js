@@ -13,7 +13,10 @@
  * API (shared worker):
  *   POST GENBRUGSPLADS_WORKER_URL
  *   body:     { image: <base64 jpeg>, language: "da" | "en", site: "<key>" }
- *   response: { ok: true, result: { description, fraction, item, language } }
+ *   response: { ok: true, result: {
+ *     description, fraction, item, confidence, askStaff,
+ *     alternative, separate, multipleItems, directReuse, language
+ *   } }
  */
 
 const CONFIG = window.SITE_CONFIG || {};
@@ -55,18 +58,29 @@ const translations = {
         cameraNotFound: 'Intet kamera fundet. Tryk for at prøve igen.',
         analyzeFailed: 'Vi kunne ikke analysere billedet. Prøv igen, eller spørg personalet.',
         noMatch: 'Vi er ikke sikre på, hvad det er. Prøv et billede tættere på, eller spørg personalet.',
-        identifiedLabel: 'Vi tror, det er:',
+        identifiedLabel: 'Vi analyserer:',
         resultPill: 'Følg den grønne rute',
         askStaffPill: 'Til personalet',
         unassignedTitle: 'Spørg personalet',
         unassignedBody: 'Vi har ikke en fast container til dette her. Vis det til personalet – de hjælper dig med at komme af med det på det rigtige sted.',
+        multipleItemsTitle: 'Flere genstande på billedet',
+        multipleItemsBody: 'Resultatet gælder kun den valgte genstand. Scan de andre genstande hver for sig.',
+        alternativePrefix: 'Det kan også være:',
+        alternativeAdvice: 'Spørg personalet, hvis du er i tvivl mellem de to.',
+        separatePrefix: 'Skil fra:',
+        separateAdvice: 'Den største del følger ruten ovenfor. Afmontér kun delen, hvis det kan gøres sikkert.',
+        directReuseTitle: 'Kan måske bruges igen',
+        directReuseBody: 'Hvis genstanden er hel, ren og virker, kan du aflevere den til Direkte Genbrug.',
         scanAgain: 'Scan noget andet',
         multiSpotNote: 'Findes flere steder – ruten går til den nærmeste.',
         mapCaption: 'Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.',
         mapEntrance: 'Indgang',
         footerSummary: 'Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.',
         footerContactLabel: 'Kontakt:',
-        footerBackLink: 'Tilbage til easysort.org'
+        footerBackLink: 'Tilbage til easysort.org',
+        privacyNotice: 'Når du analyserer, sendes ét billede sikkert til analyse og kvalitetskontrol.',
+        privacyLink: 'Læs om privatliv',
+        footerPrivacyLink: 'Privatliv'
     },
     en: {
         pageTitle: 'Sorting guide – Vojens Recycling Center | Easysort',
@@ -85,18 +99,29 @@ const translations = {
         cameraNotFound: 'No camera found. Tap to try again.',
         analyzeFailed: 'We could not analyze the photo. Try again, or ask the staff.',
         noMatch: 'We are not sure what this is. Try a closer photo, or ask the staff.',
-        identifiedLabel: 'We think this is:',
+        identifiedLabel: 'We are analyzing:',
         resultPill: 'Follow the green route',
         askStaffPill: 'Ask the staff',
         unassignedTitle: 'Ask the staff',
         unassignedBody: 'We do not have a fixed container for this on site. Show it to the staff – they will help you drop it in the right place.',
+        multipleItemsTitle: 'Multiple items in the photo',
+        multipleItemsBody: 'This result only applies to the selected item. Scan the other items separately.',
+        alternativePrefix: 'It could also be:',
+        alternativeAdvice: 'Ask the staff if you are unsure which of the two applies.',
+        separatePrefix: 'Separate:',
+        separateAdvice: 'The largest part follows the route above. Only remove the part if it can be done safely.',
+        directReuseTitle: 'It may be reusable',
+        directReuseBody: 'If the item is complete, clean and working, you can leave it at Direkte Genbrug.',
         scanAgain: 'Scan something else',
         multiSpotNote: 'Available in several places – the route goes to the nearest one.',
         mapCaption: 'Tap a container to see the route. The map is indicative – ask the staff if in doubt.',
         mapEntrance: 'Entrance',
         footerSummary: 'Sorting guide for Vojens Recycling Center, operated by Provas.',
         footerContactLabel: 'Contact:',
-        footerBackLink: 'Back to easysort.org'
+        footerBackLink: 'Back to easysort.org',
+        privacyNotice: 'When you analyse, one image is sent securely for analysis and quality control.',
+        privacyLink: 'Read about privacy',
+        footerPrivacyLink: 'Privacy'
     }
 };
 
@@ -351,16 +376,24 @@ function pickCandidate(candidates, dist) {
  * road – used when the truly nearest road isn't the right one to stop at.
  * If that road can't be reached we fall back to the nearest road overall. */
 function routeToPoint(target, roadHint = null) {
+    const destination = [target[0], target[1]];
     const g = buildGraph();
     const candidates = [];
     g.segments.forEach(({ a, b, oneway, roadId }) => {
-        const p = projectOnSegment(target, g.nodes[a], g.nodes[b]);
+        const p = projectOnSegment(destination, g.nodes[a], g.nodes[b]);
         const idx = g.nodeAt(p);
         if (idx !== a && idx !== b) {
             g.addEdge(a, idx);
             if (!oneway) g.addEdge(b, idx);
         }
-        candidates.push({ idx, spur: Math.hypot(p[0] - target[0], p[1] - target[1]), roadId });
+        candidates.push({
+            idx,
+            spur: Math.hypot(
+                p[0] - destination[0],
+                p[1] - destination[1],
+            ),
+            roadId,
+        });
     });
 
     const start = connectStart(g, ENTRANCE);
@@ -368,16 +401,15 @@ function routeToPoint(target, roadHint = null) {
 
     const pool = roadHint ? candidates.filter((c) => c.roadId === roadHint) : candidates;
     let chosen = pickCandidate(pool, dist);
-    // When a road is explicitly specified we route to the closest point on THAT
-    // road and stop there – we do NOT draw the final leg over to the (possibly
-    // far-away) container spot, which would cut a long line across the site.
-    const stopOnRoad = !!chosen && !!roadHint;
     if (!chosen && roadHint) chosen = pickCandidate(candidates, dist);
-    if (!chosen) return { path: [ENTRANCE, target], cost: Infinity };
+    if (!chosen) return { path: [ENTRANCE, destination], cost: Infinity };
 
     const path = [];
     for (let u = chosen.idx; u !== -1; u = prev[u]) path.unshift(g.nodes[u]);
-    if (!stopOnRoad) path.push(target);
+    const last = path[path.length - 1];
+    if (!last || last[0] !== destination[0] || last[1] !== destination[1]) {
+        path.push(destination);
+    }
     return { path, cost: chosen.total };
 }
 
@@ -573,12 +605,20 @@ async function fetchWithTimeout(url, options) {
     }
 }
 
-/* Returns { description, fraction, item } or throws on failure. */
+/* Returns the shared worker's classification decision or throws on failure. */
 async function classifyImage(imageBase64) {
     const response = await fetchWithTimeout(GENBRUGSPLADS_WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageBase64, language: currentLanguage, site: SITE })
+        body: JSON.stringify({
+            image: imageBase64,
+            language: currentLanguage,
+            site: SITE,
+            source: 'web',
+            client: 'guide.js',
+            // Explicit path — Referer is often origin-only on cross-origin worker calls
+            page: typeof location !== 'undefined' ? location.pathname : null,
+        })
     });
     const data = await response.json();
     if (!response.ok || data.ok !== true || !data.result) {
@@ -587,7 +627,13 @@ async function classifyImage(imageBase64) {
     return {
         description: data.result.description || '',
         fraction: data.result.fraction || '',
-        item: data.result.item || ''
+        item: data.result.item || '',
+        confidence: data.result.confidence || 'high',
+        askStaff: data.result.askStaff === true,
+        alternative: data.result.alternative || null,
+        separate: data.result.separate || null,
+        multipleItems: data.result.multipleItems === true,
+        directReuse: data.result.directReuse === true
     };
 }
 
@@ -746,8 +792,16 @@ function showResult(result, { scroll = true } = {}) {
     const nameEl = document.getElementById('result-fraction-name');
     const pillEl = document.getElementById('result-pill');
     const instructionsEl = document.getElementById('result-instructions');
+    const multipleEl = document.getElementById('result-multiple');
+    const multipleBody = document.getElementById('result-multiple-body');
+    const alternativeEl = document.getElementById('result-alternative');
+    const alternativeTitle = document.getElementById('result-alternative-title');
+    const separateEl = document.getElementById('result-separate');
+    const separateTitle = document.getElementById('result-separate-title');
+    const reuseEl = document.getElementById('result-reuse');
+    const askStaff = result.askStaff === true || !primary;
 
-    if (primary) {
+    if (!askStaff) {
         card.classList.remove('unassigned');
         nameEl.textContent = primary.name[currentLanguage];
         pillEl.textContent = t('resultPill');
@@ -757,11 +811,56 @@ function showResult(result, { scroll = true } = {}) {
         renderMap(primary.key);
     } else {
         card.classList.add('unassigned');
-        nameEl.textContent = result.catalogFraction || t('unassignedTitle');
+        nameEl.textContent = t('unassignedTitle');
         pillEl.textContent = t('askStaffPill');
         instructionsEl.textContent = t('unassignedBody');
         renderMap(null);
     }
+
+    multipleEl.hidden = result.multipleItems !== true;
+    if (!multipleEl.hidden) multipleBody.textContent = t('multipleItemsBody');
+
+    const alternativeFraction = result.alternative?.fraction || '';
+    if (!askStaff && alternativeFraction) {
+        const alternativeKey = resolveMapKey(alternativeFraction);
+        const alternativeMapFraction = alternativeKey
+            ? FRACTION_BY_KEY.get(alternativeKey)
+            : null;
+        const alternativeName = alternativeMapFraction
+            ? alternativeMapFraction.name[currentLanguage]
+            : alternativeFraction;
+        alternativeTitle.textContent = `${t('alternativePrefix')} ${alternativeName}`;
+        alternativeEl.hidden = false;
+    } else {
+        alternativeEl.hidden = true;
+    }
+
+    const separateFraction = !result.alternative && result.separate?.fraction
+        ? result.separate.fraction
+        : '';
+    if (!askStaff && separateFraction) {
+        const separateKey = resolveMapKey(separateFraction);
+        const separateMapFraction = separateKey
+            ? FRACTION_BY_KEY.get(separateKey)
+            : null;
+        const separateName = separateMapFraction
+            ? separateMapFraction.name[currentLanguage]
+            : separateFraction;
+        const separateItem = result.separate.item || (
+            currentLanguage === 'da' ? 'den anden del' : 'the other part'
+        );
+        separateTitle.textContent = `${t('separatePrefix')} ${separateItem} → ${separateName}`;
+        separateEl.hidden = false;
+    } else {
+        separateEl.hidden = true;
+    }
+
+    reuseEl.hidden = !(
+        !askStaff &&
+        !separateFraction &&
+        CONFIG.features?.directReuse === true &&
+        result.directReuse === true
+    );
 
     card.hidden = false;
     document.getElementById('scan-again-bottom').hidden = false;
@@ -789,7 +888,9 @@ function flashDetection(result) {
     const header = document.getElementById('main-header');
     const banner = document.getElementById('detection-banner');
     const mapKey = result.keys && result.keys[0];
-    const fraction = mapKey ? FRACTION_BY_KEY.get(mapKey) : null;
+    const fraction = result.askStaff === true
+        ? null
+        : (mapKey ? FRACTION_BY_KEY.get(mapKey) : null);
     const what = result.description || result.item || '';
     const fractionName = fraction ? fraction.name[currentLanguage]
         : (result.catalogFraction || t('unassignedTitle'));
@@ -857,10 +958,16 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
         } else {
             const mapKey = resolveMapKey(result.fraction);
             const payload = {
-                keys: mapKey ? [mapKey] : [],
+                keys: mapKey && !result.askStaff ? [mapKey] : [],
                 description: result.description,
                 item: result.item,
-                catalogFraction: result.fraction
+                catalogFraction: result.fraction,
+                confidence: result.confidence,
+                askStaff: result.askStaff,
+                alternative: result.alternative,
+                separate: result.separate,
+                multipleItems: result.multipleItems,
+                directReuse: result.directReuse
             };
             showResult(payload);
             flashDetection(payload);

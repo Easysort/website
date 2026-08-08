@@ -1,5 +1,8 @@
 easysort-worker/
+.DS_Store
 easysort-worker-genbrugsplads/
+website-workers/
+workers/
 cloudflare_worker.js
 api-contract.md
 editor/
