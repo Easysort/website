@@ -950,7 +950,13 @@ function scanAgain() {
     hideDetectionBanner();
     currentResult = null;
     renderMap(null);
-    scrollBelowHeader(document.querySelector('.camera-card'));
+    /* Scroll up just enough that the analyze button sits near the bottom of
+     * the screen (image above it). Not to the very top: iPhone re-shows its
+     * URL bar on upward scrolls, which shrinks the viewport, so leave room
+     * for it or the button would get pushed back out of view. */
+    const analyzeButton = document.getElementById('identify-btn');
+    const buttonBottom = analyzeButton.getBoundingClientRect().bottom + window.scrollY;
+    window.scrollTo({ top: Math.max(buttonBottom - window.innerHeight + 100, 0), behavior: 'smooth' });
 }
 
 /* ── Analyze flow ──────────────────────────────────────────── */
