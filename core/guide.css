@@ -663,7 +663,9 @@ body.scanning {
     color: #111827;
 }
 
-@media (orientation: landscape) and (max-height: 500px) {
+/* Height cap keeps tablets and desktop windows out; every phone in
+ * landscape is well under it, installed app included. */
+@media (orientation: landscape) and (max-height: 600px) {
     .rotate-overlay {
         display: flex;
     }

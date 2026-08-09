@@ -9,7 +9,7 @@
  * up immediately, and only fall back to the cache when the request fails.
  */
 
-const CACHE = 'easysort-guide-v1';
+const CACHE = 'easysort-guide-v2';
 
 /* Relative to the importing sw.js, i.e. the site folder. The map JSON is not
  * listed because its filename differs per site; it gets cached on first load. */
