@@ -640,6 +640,40 @@ body.scanning {
     }
 }
 
+/* Portrait lock: phones held sideways get a note instead of a broken
+ * layout. Height-capped so tablets and desktops are unaffected. */
+
+.rotate-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #f9fafb;
+    text-align: center;
+}
+
+.rotate-overlay p {
+    max-width: 420px;
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    .rotate-overlay {
+        display: flex;
+    }
+
+    /* Freeze the page behind the note. */
+    body {
+        overflow: hidden;
+    }
+}
+
 /* Larger screens */
 
 @media (min-width: 769px) {

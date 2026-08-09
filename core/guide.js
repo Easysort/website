@@ -83,7 +83,8 @@ const translations = {
         footerPrivacyLink: 'Privatliv',
         installAction: 'Tilføj som app',
         installedAction: 'Tilføjet',
-        installHint: 'Tryk på {share} nederst i browseren, og vælg "Føj til hjemmeskærm".'
+        installHint: 'Tryk på {share} nederst i browseren, og vælg "Føj til hjemmeskærm".',
+        rotateNotice: 'Vend telefonen på højkant for at bruge guiden.'
     },
     en: {
         pageTitle: 'Sorting guide – Vojens Recycling Center | Easysort',
@@ -127,7 +128,8 @@ const translations = {
         footerPrivacyLink: 'Privacy',
         installAction: 'Add as app',
         installedAction: 'Added',
-        installHint: 'Tap {share} at the bottom of the browser, then choose "Add to Home Screen".'
+        installHint: 'Tap {share} at the bottom of the browser, then choose "Add to Home Screen".',
+        rotateNotice: 'Turn your phone upright to use the guide.'
     }
 };
 
@@ -1128,6 +1130,16 @@ function initInstall() {
     /* Android waits for `beforeinstallprompt`; iOS has to be offered directly. */
     if (isIos()) offerInstall();
 }
+
+/* ── Portrait lock ─────────────────────────────────────── */
+
+/* The layout is built for portrait phones. The manifest locks the installed
+ * app, but a browser tab cannot be locked, so there a full-screen note asks
+ * the user to turn back whenever the phone goes landscape (CSS-driven). */
+const rotateOverlay = document.createElement('div');
+rotateOverlay.className = 'rotate-overlay';
+rotateOverlay.innerHTML = '<p data-i18n="rotateNotice"></p>';
+document.body.appendChild(rotateOverlay);
 
 /* ── Init ──────────────────────────────────────────────────── */
 
