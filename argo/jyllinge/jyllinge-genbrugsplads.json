@@ -1,0 +1,958 @@
+{
+  "siteName": "Jyllinge Genbrugsplads",
+  "viewBox": [
+    750,
+    900
+  ],
+  "entrance": [
+    340,
+    860
+  ],
+  "staff": {
+    "x": 220,
+    "y": 760,
+    "width": 70,
+    "height": 110,
+    "label": {
+      "da": "Personale",
+      "en": "Staff"
+    }
+  },
+  "buildings": [
+    {
+      "id": "building-p5lbcpg",
+      "x": 380,
+      "y": 450,
+      "width": 120,
+      "height": 200,
+      "label": {
+        "da": "Direkte Genbrug",
+        "en": "Direct Reuse"
+      }
+    }
+  ],
+  "islands": [
+    {
+      "id": "island-78odr2s",
+      "x": 100,
+      "y": 750,
+      "width": 110,
+      "height": 130
+    },
+    {
+      "id": "island-ke1phzn",
+      "x": 190,
+      "y": 60,
+      "width": 270,
+      "height": 60
+    },
+    {
+      "id": "island-v3r3f2x",
+      "x": 370,
+      "y": 740,
+      "width": 340,
+      "height": 150
+    }
+  ],
+  "roads": [
+    {
+      "id": "road-dxsa463",
+      "points": [
+        [
+          340,
+          860
+        ],
+        [
+          340,
+          710
+        ]
+      ],
+      "oneway": false
+    },
+    {
+      "id": "road-09gwhi7",
+      "points": [
+        [
+          340,
+          710
+        ],
+        [
+          340,
+          150
+        ]
+      ],
+      "oneway": false
+    },
+    {
+      "id": "road-gl7u4ps",
+      "points": [
+        [
+          340,
+          710
+        ],
+        [
+          540,
+          710
+        ],
+        [
+          540,
+          150
+        ],
+        [
+          340,
+          150
+        ]
+      ],
+      "oneway": true
+    },
+    {
+      "id": "road-nip2w92",
+      "points": [
+        [
+          540,
+          150
+        ],
+        [
+          630,
+          150
+        ]
+      ],
+      "oneway": false
+    },
+    {
+      "id": "road-mec4tfp",
+      "points": [
+        [
+          340,
+          150
+        ],
+        [
+          120,
+          150
+        ],
+        [
+          120,
+          710
+        ],
+        [
+          340,
+          710
+        ]
+      ],
+      "oneway": true
+    }
+  ],
+  "fractions": [
+    {
+      "id": "fraktion-1",
+      "color": "purple",
+      "spots": [
+        [
+          60,
+          750
+        ]
+      ],
+      "name": {
+        "da": "Dæk",
+        "en": "Tyres"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-2",
+      "color": "slate",
+      "spots": [
+        [
+          60,
+          670
+        ]
+      ],
+      "name": {
+        "da": "Metal",
+        "en": "Metal"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-3",
+      "color": "navy",
+      "spots": [
+        [
+          60,
+          590
+        ]
+      ],
+      "name": {
+        "da": "Mineral- og glasuld",
+        "en": "Mineral & glass wool"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-4",
+      "color": "brown",
+      "spots": [
+        [
+          60,
+          500
+        ]
+      ],
+      "name": {
+        "da": "Udendørs træ",
+        "en": "Outdoor wood"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-5",
+      "color": "brown",
+      "spots": [
+        [
+          60,
+          410
+        ]
+      ],
+      "name": {
+        "da": "Udendørs træ",
+        "en": "Outdoor wood"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-6",
+      "color": "purple",
+      "spots": [
+        [
+          60,
+          320
+        ]
+      ],
+      "name": {
+        "da": "Hård plast og PVC",
+        "en": "Hard plastic & PVC"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-7",
+      "color": "brown",
+      "spots": [
+        [
+          60,
+          240
+        ]
+      ],
+      "name": {
+        "da": "Indendørs træ",
+        "en": "Indoor wood"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-8",
+      "color": "brown",
+      "spots": [
+        [
+          60,
+          170
+        ]
+      ],
+      "name": {
+        "da": "Indendørs træ",
+        "en": "Indoor wood"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-9",
+      "color": "darkred",
+      "spots": [
+        [
+          60,
+          90
+        ]
+      ],
+      "name": {
+        "da": "Polstrede møbler",
+        "en": "Upholstered furniture"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-10",
+      "color": "sand",
+      "spots": [
+        [
+          150,
+          90
+        ]
+      ],
+      "name": {
+        "da": "Pap",
+        "en": "Cardboard"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-11",
+      "color": "darkgreen",
+      "spots": [
+        [
+          260,
+          90
+        ]
+      ],
+      "name": {
+        "da": "Haveaffald",
+        "en": "Garden waste"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-12",
+      "color": "navy",
+      "spots": [
+        [
+          490,
+          90
+        ]
+      ],
+      "name": {
+        "da": "Mursten og tegl",
+        "en": "Bricks & tiles"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-13",
+      "color": "darkgreen",
+      "spots": [
+        [
+          390,
+          90
+        ]
+      ],
+      "name": {
+        "da": "Haveaffald",
+        "en": "Garden waste"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-14",
+      "color": "navy",
+      "spots": [
+        [
+          560,
+          90
+        ]
+      ],
+      "name": {
+        "da": "Beton",
+        "en": "Concrete"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-15",
+      "color": "navy",
+      "spots": [
+        [
+          690,
+          150
+        ]
+      ],
+      "name": {
+        "da": "Gips",
+        "en": "Plasterboard"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-16",
+      "color": "teal",
+      "spots": [
+        [
+          450,
+          210
+        ]
+      ],
+      "name": {
+        "da": "Fladt glas",
+        "en": "Sheet glass"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-17",
+      "color": "darkgreen",
+      "spots": [
+        [
+          200,
+          360
+        ]
+      ],
+      "name": {
+        "da": "Jord",
+        "en": "Soil"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-18",
+      "color": "darkgreen",
+      "spots": [
+        [
+          260,
+          360
+        ]
+      ],
+      "name": {
+        "da": "Jord",
+        "en": "Soil"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-19",
+      "color": "navy",
+      "spots": [
+        [
+          260,
+          510
+        ]
+      ],
+      "name": {
+        "da": "Sanitet",
+        "en": "Sanitary ware & porcelain"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-20",
+      "color": "navy",
+      "spots": [
+        [
+          450,
+          270
+        ]
+      ],
+      "name": {
+        "da": "Vinduer i ramme",
+        "en": "Windows in frames"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-21",
+      "color": "lightblue",
+      "spots": [
+        [
+          430,
+          330
+        ]
+      ],
+      "name": {
+        "da": "Papir",
+        "en": "Paper"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-22",
+      "color": "lightblue",
+      "spots": [
+        [
+          470,
+          330
+        ]
+      ],
+      "name": {
+        "da": "Bøger",
+        "en": "Books"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-23",
+      "color": "darkred",
+      "spots": [
+        [
+          450,
+          390
+        ]
+      ],
+      "name": {
+        "da": "Tekstiler",
+        "en": "Textiles"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-24",
+      "color": "sand",
+      "spots": [
+        [
+          610,
+          480
+        ]
+      ],
+      "name": {
+        "da": "Pap",
+        "en": "Cardboard"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-25",
+      "color": "purple",
+      "spots": [
+        [
+          610,
+          600
+        ]
+      ],
+      "name": {
+        "da": "Flamingo",
+        "en": "Styrofoam"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-26",
+      "color": "teal",
+      "spots": [
+        [
+          610,
+          540
+        ]
+      ],
+      "name": {
+        "da": "Glas",
+        "en": "Glass"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-27",
+      "color": "purple",
+      "spots": [
+        [
+          610,
+          350
+        ]
+      ],
+      "name": {
+        "da": "Blød plast og plastikdunke",
+        "en": "Soft plastic & plastic containers"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-29",
+      "color": "orange",
+      "spots": [
+        [
+          610,
+          280
+        ]
+      ],
+      "name": {
+        "da": "Stort elektronik",
+        "en": "Large electronics"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-30",
+      "color": "navy",
+      "spots": [
+        [
+          610,
+          420
+        ]
+      ],
+      "name": {
+        "da": "Asbest",
+        "en": "Asbestos"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-32",
+      "color": "black",
+      "spots": [
+        [
+          610,
+          660
+        ]
+      ],
+      "name": {
+        "da": "Uegnet til genbrug",
+        "en": "Non-recyclable waste"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-35",
+      "color": "orange",
+      "spots": [
+        [
+          610,
+          210
+        ]
+      ],
+      "name": {
+        "da": "Køleudstyr",
+        "en": "Cooling appliances"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-36",
+      "color": "red",
+      "spots": [
+        [
+          700,
+          490
+        ]
+      ],
+      "name": {
+        "da": "Maling",
+        "en": "Paint"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-37",
+      "color": "black",
+      "spots": [
+        [
+          700,
+          590
+        ]
+      ],
+      "name": {
+        "da": "Deponi",
+        "en": "Landfill waste"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-38",
+      "color": "navy",
+      "spots": [
+        [
+          700,
+          690
+        ]
+      ],
+      "name": {
+        "da": "Asfalt",
+        "en": "Asphalt"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-39",
+      "color": "black",
+      "spots": [
+        [
+          390,
+          820
+        ]
+      ],
+      "name": {
+        "da": "Aske",
+        "en": "Ash"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-40",
+      "color": "orange",
+      "spots": [
+        [
+          390,
+          760
+        ]
+      ],
+      "name": {
+        "da": "Lysstofrør",
+        "en": "Fluorescent tubes"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-41",
+      "color": "orange",
+      "spots": [
+        [
+          440,
+          760
+        ]
+      ],
+      "name": {
+        "da": "Elpærer",
+        "en": "Light bulbs"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-42",
+      "color": "orange",
+      "spots": [
+        [
+          620,
+          820
+        ]
+      ],
+      "name": {
+        "da": "Småt elektronik",
+        "en": "Small electronics"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-43",
+      "color": "red",
+      "spots": [
+        [
+          500,
+          760
+        ]
+      ],
+      "name": {
+        "da": "Bilbatterier",
+        "en": "Car batteries"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-44",
+      "color": "red",
+      "spots": [
+        [
+          440,
+          820,
+          "road-gl7u4ps"
+        ]
+      ],
+      "name": {
+        "da": "Små batterier",
+        "en": "Small batteries"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-45",
+      "color": "red",
+      "spots": [
+        [
+          560,
+          760
+        ]
+      ],
+      "name": {
+        "da": "Trykflasker",
+        "en": "Pressure cylinders"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-46",
+      "color": "orange",
+      "spots": [
+        [
+          620,
+          760
+        ]
+      ],
+      "name": {
+        "da": "Skærme og TV",
+        "en": "Screens & TVs"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-47",
+      "color": "orange",
+      "spots": [
+        [
+          560,
+          820
+        ]
+      ],
+      "name": {
+        "da": "Ledning og kabler",
+        "en": "Electrical wires & cables"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-48",
+      "color": "red",
+      "spots": [
+        [
+          500,
+          820
+        ]
+      ],
+      "name": {
+        "da": "Printerpatroner",
+        "en": "Printer cartridges"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    },
+    {
+      "id": "fraktion-49",
+      "color": "orange",
+      "spots": [
+        [
+          680,
+          760
+        ]
+      ],
+      "name": {
+        "da": "Mellemstort elektronik",
+        "en": "Medium-sized electronics"
+      },
+      "instructions": {
+        "da": "",
+        "en": ""
+      }
+    }
+  ]
+}

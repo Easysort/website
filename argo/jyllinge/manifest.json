@@ -1,0 +1,26 @@
+{
+    "name": "Sorteringsguide – Jyllinge Genbrugsplads",
+    "short_name": "Sorteringsguide",
+    "description": "Tag et billede af dit affald, så finder vi den rigtige container på Jyllinge Genbrugsplads.",
+    "lang": "da",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "../../icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "../../icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
