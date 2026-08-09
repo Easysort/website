@@ -779,6 +779,16 @@ function renderMap(activeKey = currentResult?.keys?.[0] ?? null) {
     svg.appendChild(entrance);
 }
 
+/* Scroll so `el` sits right below the fixed header. Measured a frame later
+ * so header changes made by the caller (detection banner) are in the layout. */
+function scrollBelowHeader(el) {
+    requestAnimationFrame(() => {
+        const headerHeight = document.getElementById('main-header').offsetHeight;
+        const top = el.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+        window.scrollTo({ top, behavior: 'smooth' });
+    });
+}
+
 /* ── Result card ───────────────────────────────────────────── */
 
 function showResult(result, { scroll = true } = {}) {
@@ -874,14 +884,8 @@ function showResult(result, { scroll = true } = {}) {
     document.body.classList.add('scanning');
     hideInstallHint();
     if (scroll) {
-        /* Land with the result card (“We are analyzing: …”) right below the
-         * fixed header. Measured a frame later so the detection banner the
-         * caller may toggle is already in the layout. */
-        requestAnimationFrame(() => {
-            const headerHeight = document.getElementById('main-header').offsetHeight;
-            const top = card.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
-            window.scrollTo({ top, behavior: 'smooth' });
-        });
+        /* Land with the result card (“We are analyzing: …”) on top. */
+        scrollBelowHeader(card);
     }
 }
 
@@ -946,7 +950,7 @@ function scanAgain() {
     hideDetectionBanner();
     currentResult = null;
     renderMap(null);
-    document.getElementById('top').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollBelowHeader(document.querySelector('.camera-card'));
 }
 
 /* ── Analyze flow ──────────────────────────────────────────── */
