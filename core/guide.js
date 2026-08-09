@@ -874,7 +874,14 @@ function showResult(result, { scroll = true } = {}) {
     document.body.classList.add('scanning');
     hideInstallHint();
     if (scroll) {
-        document.getElementById('map-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        /* Land with the result card (“We are analyzing: …”) right below the
+         * fixed header. Measured a frame later so the detection banner the
+         * caller may toggle is already in the layout. */
+        requestAnimationFrame(() => {
+            const headerHeight = document.getElementById('main-header').offsetHeight;
+            const top = card.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+            window.scrollTo({ top, behavior: 'smooth' });
+        });
     }
 }
 
