@@ -1155,6 +1155,25 @@ rotateOverlay.className = 'rotate-overlay';
 rotateOverlay.innerHTML = '<p data-i18n="rotateNotice"></p>';
 document.body.appendChild(rotateOverlay);
 
+/* Phones only – tablets and desktops have room for the layout either way.
+ * The decision is made on the device's short side rather than the viewport,
+ * because viewport height shifts with the browser bars and is different
+ * again in the installed app, which is exactly where the old height cap
+ * let landscape through. */
+function isPhoneSized() {
+    return Math.min(screen.width, screen.height) <= 500;
+}
+
+function syncOrientationNotice() {
+    const landscape = window.matchMedia('(orientation: landscape)').matches;
+    document.body.classList.toggle('landscape-blocked', landscape && isPhoneSized());
+}
+
+/* Both events: `orientationchange` can fire before the new size is readable,
+ * and `resize` alone misses nothing but arrives late on some browsers. */
+window.addEventListener('orientationchange', syncOrientationNotice);
+window.addEventListener('resize', syncOrientationNotice);
+
 /* ── Init ──────────────────────────────────────────────────── */
 
 document.getElementById('camera-switch-btn').addEventListener('click', switchCamera);
@@ -1170,6 +1189,7 @@ window.addEventListener('beforeunload', () => {
 
 currentLanguage = getPreferredLanguage();
 lockPortrait();
+syncOrientationNotice();
 setPlaceholder('📷', 'placeholderDefault');
 updateAnalyzeButton('disabled');
 initInstall();

@@ -641,7 +641,8 @@ body.scanning {
 }
 
 /* Portrait lock: phones held sideways get a note instead of a broken
- * layout. Height-capped so tablets and desktops are unaffected. */
+ * layout. guide.js decides when, because viewport height is unreliable
+ * in the installed app. */
 
 .rotate-overlay {
     display: none;
@@ -663,17 +664,13 @@ body.scanning {
     color: #111827;
 }
 
-/* Height cap keeps tablets and desktop windows out; every phone in
- * landscape is well under it, installed app included. */
-@media (orientation: landscape) and (max-height: 600px) {
-    .rotate-overlay {
-        display: flex;
-    }
+body.landscape-blocked .rotate-overlay {
+    display: flex;
+}
 
-    /* Freeze the page behind the note. */
-    body {
-        overflow: hidden;
-    }
+/* Freeze the page behind the note. */
+body.landscape-blocked {
+    overflow: hidden;
 }
 
 /* Larger screens */
