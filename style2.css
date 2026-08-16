@@ -152,6 +152,11 @@ a {
     transform: translateY(-1px);
 }
 
+.social-link[aria-current="page"] {
+    background: #f3f4f6;
+    border-color: rgba(17, 24, 39, 0.22);
+}
+
 .header-cta {
     background: #111827;
     color: #ffffff;
@@ -865,6 +870,12 @@ a {
         align-items: flex-start;
     }
 
+    /* The guide pages measure a fixed header and offset scrolling themselves. On the
+     * content pages the header wraps tall enough to cover what is underneath it. */
+    .content-page #main-header {
+        position: sticky;
+    }
+
     .social-links {
         width: 100%;
         justify-content: flex-start;
@@ -880,7 +891,7 @@ a {
     }
 
     .hero-section {
-        padding-top: 188px;
+        padding-top: 40px;
         padding-bottom: 60px;
     }
 
