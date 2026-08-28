@@ -1133,13 +1133,46 @@ function initInstall() {
 
 /* ── Portrait lock ─────────────────────────────────────── */
 
-/* The layout is built for portrait phones. The manifest locks the installed
- * app, but a browser tab cannot be locked, so there a full-screen note asks
- * the user to turn back whenever the phone goes landscape (CSS-driven). */
+/* The layout is built for portrait phones, so we keep them upright two ways.
+ *
+ * A real lock is only possible in the installed app, and only on Android:
+ * the manifest asks for portrait and the call below enforces it. iOS ignores
+ * both, and a browser tab can never be locked, so everywhere else a
+ * full-screen note (CSS-driven) asks the user to turn back. */
+
+function lockPortrait() {
+    /* Absent on iOS; in a browser tab it rejects, and some engines throw
+     * outright. Nothing to do in either case – the notice takes over. */
+    try {
+        screen.orientation?.lock?.('portrait')?.catch(() => {});
+    } catch {
+        /* not lockable here */
+    }
+}
+
 const rotateOverlay = document.createElement('div');
 rotateOverlay.className = 'rotate-overlay';
 rotateOverlay.innerHTML = '<p data-i18n="rotateNotice"></p>';
 document.body.appendChild(rotateOverlay);
+
+/* Phones only – tablets and desktops have room for the layout either way.
+ * The decision is made on the device's short side rather than the viewport,
+ * because viewport height shifts with the browser bars and is different
+ * again in the installed app, which is exactly where the old height cap
+ * let landscape through. */
+function isPhoneSized() {
+    return Math.min(screen.width, screen.height) <= 500;
+}
+
+function syncOrientationNotice() {
+    const landscape = window.matchMedia('(orientation: landscape)').matches;
+    document.body.classList.toggle('landscape-blocked', landscape && isPhoneSized());
+}
+
+/* Both events: `orientationchange` can fire before the new size is readable,
+ * and `resize` alone misses nothing but arrives late on some browsers. */
+window.addEventListener('orientationchange', syncOrientationNotice);
+window.addEventListener('resize', syncOrientationNotice);
 
 /* ── Init ──────────────────────────────────────────────────── */
 
@@ -1155,9 +1188,14 @@ window.addEventListener('beforeunload', () => {
 });
 
 currentLanguage = getPreferredLanguage();
+lockPortrait();
+syncOrientationNotice();
 setPlaceholder('📷', 'placeholderDefault');
 updateAnalyzeButton('disabled');
 initInstall();
+/* Translate up front: the pass after loadMap() is for the map itself, and a
+ * failed map must not leave the page – or the rotate notice – untranslated. */
+applyTranslations();
 
 loadMap()
     .then(() => { applyTranslations(); })
