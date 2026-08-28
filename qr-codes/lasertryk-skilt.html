@@ -30,13 +30,19 @@
         margin-bottom: 26mm;
     }
     .sub {
-        font-size: 40mm;
-        font-weight: 500;
+        font-size: 60mm;
+        font-weight: 600;
+        line-height: 1.05;
         white-space: nowrap;
         margin-bottom: 28mm;
     }
-    .sub strong { font-weight: 800; }
-    .chevrons { display: flex; flex-direction: column; align-items: center; gap: 6mm; }
+    .chevrons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6mm;
+        transform: translateY(calc(10mm + 70px));
+    }
     .chevrons svg {
         width: 100mm;
         display: block;
@@ -51,7 +57,7 @@
 </head>
 <body>
     <h1>SORTERINGSGUIDE</h1>
-    <p class="sub">Vis dit affald til kameraet og få svar <strong>med det samme</strong></p>
+    <p class="sub">Vis dit affald. Få den rigtige container.</p>
     <div class="chevrons" aria-hidden="true">
         <svg viewBox="0 0 92 34"><path d="M8 6 46 28 84 6"/></svg>
         <svg viewBox="0 0 92 34"><path d="M8 6 46 28 84 6"/></svg>

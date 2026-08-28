@@ -4,59 +4,60 @@
 <meta charset="UTF-8">
 <title>A4 QR-plakat</title>
 <style>
-    @page { size: A4 portrait; margin: 0; }
+    /* 210 × 297 mm finished sticker plus 3 mm bleed on every side. */
+    @page { size: 216mm 303mm; margin: 0; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 210mm; height: 297mm; }
+    html, body { width: 216mm; height: 303mm; }
     body {
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
         color: #111827;
     }
     .page {
-        width: 210mm;
-        height: 297mm;
-        padding: 14mm;
+        width: 216mm;
+        height: 303mm;
+        padding: 6mm;
     }
     .frame {
         width: 100%;
         height: 100%;
-        border: 4mm solid #16a34a;
-        border-radius: 10mm;
-        padding: 16mm 14mm 12mm;
+        border: 2.5mm solid #16a34a;
+        border-radius: 4mm;
+        padding: 8mm 4mm 6mm;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
     }
     h1 {
-        font-size: 12mm;
-        line-height: 1.2;
+        font-size: 11.8mm;
+        line-height: 1.08;
         text-transform: uppercase;
         letter-spacing: 0.2mm;
         white-space: nowrap;
     }
     .qr {
-        width: 138mm;
-        height: 138mm;
-        margin: 8mm 0 7mm;
+        width: 186mm;
+        height: 186mm;
+        margin: 3mm 0 6mm;
     }
     .how {
-        font-size: 8mm;
-        line-height: 1.4;
+        font-size: 8.2mm;
+        line-height: 1.25;
         color: #4b5563;
-        max-width: 140mm;
+        max-width: 186mm;
     }
     .url {
-        margin-top: 5mm;
-        font-size: 7mm;
+        margin-top: 8mm;
+        font-size: 6.5mm;
         font-weight: 600;
         color: #15803d;
     }
     .brand {
         margin-top: auto;
-        padding-top: 4mm;
+        padding-top: 3mm;
         border-top: 0.5mm solid #e5e7eb;
         width: 100%;
-        font-size: 5.5mm;
+        font-size: 5mm;
         font-weight: 600;
         color: #9ca3af;
     }
@@ -65,9 +66,9 @@
 <body>
 <div class="page">
     <div class="frame">
-        <h1>Tag billede og få<br>hjælp på få sekunder</h1>
+        <h1>Tag billede af dit affald<br>og få den rigtige container.</h1>
         <img class="qr" src="__QR__" alt="QR-kode til sorteringsguiden">
-        <p class="how">Scan koden og tag et billede af dit affald, så viser guiden den rigtige container.</p>
+        <p class="how">Scan koden og tag et billede af dit affald,<br>så viser guiden den rigtige container.</p>
         <p class="url">__URL__</p>
         <p class="brand">__BRAND__</p>
     </div>
