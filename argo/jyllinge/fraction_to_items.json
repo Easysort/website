@@ -394,10 +394,10 @@
       "Køleskab"
     ],
     "Ledning og kabler": [
-      "Elkabler",
-      "Forlængerledning",
-      "Kabel",
-      "Ledning"
+      "El-kabel uden stik",
+      "Installationskabel",
+      "Kobberkabel uden stik",
+      "Ledning uden stik"
     ],
     "Lysstofrør": [
       "Armatur, f.eks. til lysstofrør",
@@ -828,6 +828,16 @@
       "Knapcellebatteri"
     ],
     "Småt elektronik": [
+      "USB-kabel",
+      "Datakabel",
+      "HDMI-kabel",
+      "Ladekabel",
+      "Opladerkabel",
+      "Netværkskabel",
+      "Ethernetkabel",
+      "Forlængerledning",
+      "Kabel med stik",
+      "Ledning med stik",
       "Adapter",
       "Afbryderpanel",
       "Affugter, lille model",

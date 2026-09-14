@@ -95,10 +95,10 @@
       "Spejl"
     ],
     "El-ledninger og el-kabler": [
-      "Elkabler",
-      "Forlængerledning",
-      "Kabel",
-      "Ledning"
+      "El-kabel uden stik",
+      "Installationskabel",
+      "Kobberkabel uden stik",
+      "Ledning uden stik"
     ],
     "Eternit": [
       "Altankasse, asbest",
@@ -733,11 +733,21 @@
       "Smartboard",
       "TV"
     ],
-    "Små husholdnings apparater": [
+    "Småt elektronik": [
       "Bærbar computer",
       "Computer",
       "Computerudstyr",
       "PC",
+      "USB-kabel",
+      "Datakabel",
+      "HDMI-kabel",
+      "Ladekabel",
+      "Opladerkabel",
+      "Netværkskabel",
+      "Ethernetkabel",
+      "Forlængerledning",
+      "Kabel med stik",
+      "Ledning med stik",
       "Adapter",
       "Afbryderpanel",
       "Affugter, lille model",
@@ -972,7 +982,7 @@
       "Farvepatron",
       "Printerpatron"
     ],
-    "Trykbeholdere": [
+    "Trykflasker": [
       "Acetylenflaske",
       "Campinggas",
       "CO2-patron til danskvand",

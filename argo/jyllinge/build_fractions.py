@@ -74,6 +74,16 @@ ITEM_OVERRIDES = {
     "Aske": "Aske",
     "Asfalt": "Asfalt",
     "Vindue": "Vinduer i ramme",
+    "USB-kabel": "Småt elektronik",
+    "Datakabel": "Småt elektronik",
+    "HDMI-kabel": "Småt elektronik",
+    "Ladekabel": "Småt elektronik",
+    "Opladerkabel": "Småt elektronik",
+    "Netværkskabel": "Småt elektronik",
+    "Ethernetkabel": "Småt elektronik",
+    "Forlængerledning": "Småt elektronik",
+    "Kabel med stik": "Småt elektronik",
+    "Ledning med stik": "Småt elektronik",
 }
 
 LINE_RE = re.compile(r"^-\s*\*\*(.+?)\s*\((.*?)\):\*\*\s*(.*)$")

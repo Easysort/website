@@ -180,6 +180,7 @@ const FRACTION_ALIASES = {
     'toej-og-sko': 'toej',
     'bloed-folie': 'bloed-plast',
     'smaat-elektronik': 'elektronik',
+    'sma-husholdnings-apparater': 'smaat-elektronik',
     'mellemstor-elektronik': 'elektronik',
     'mursten-og-tegl': 'mursten-tegl',
     'plasthavemoebler': 'plast-havemoebler',
