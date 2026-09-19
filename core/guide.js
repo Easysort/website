@@ -159,6 +159,7 @@ let FRACTIONS = [];          // grouped by key, each { key, color, name, instruc
 let FRACTION_BY_KEY = new Map();
 let ROADS = [];
 let ENTRANCE = null;
+let BINDINGS = null;
 
 function slugify(text) {
     return text.toLowerCase().trim()
@@ -194,6 +195,12 @@ const FRACTION_ALIASES = {
  * the fraction has no dedicated container here (then: ask the staff). */
 function resolveMapKey(fractionName) {
     if (!fractionName) return null;
+    if (BINDINGS && Object.prototype.hasOwnProperty.call(BINDINGS, fractionName)) {
+        const mapped = BINDINGS[fractionName];
+        if (!mapped) return null;
+        const mappedSlug = slugify(mapped);
+        if (FRACTION_BY_KEY.has(mappedSlug)) return mappedSlug;
+    }
     const slug = slugify(fractionName);
     if (FRACTION_BY_KEY.has(slug)) return slug;
     const alias = FRACTION_ALIASES[slug];
@@ -228,9 +235,54 @@ function buildFractions(rawFractions) {
     return [...groups.values()];
 }
 
-async function loadMap() {
+function sitePackUrl() {
+    if (CONFIG.sitePackUrl) return CONFIG.sitePackUrl;
+    try {
+        const worker = new URL(GENBRUGSPLADS_WORKER_URL, window.location.href);
+        worker.pathname = worker.pathname.replace(/\/classify\/?$/, '/site-pack');
+        if (!worker.pathname.endsWith('/site-pack')) worker.pathname = '/site-pack';
+        worker.search = `site=${encodeURIComponent(SITE)}`;
+        return worker.toString();
+    } catch {
+        return null;
+    }
+}
+
+async function loadPublishedMap() {
+    const url = sitePackUrl();
+    if (!url) return null;
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) return null;
+    const body = await response.json();
+    const pack = body?.pack;
+    if (!pack?.map) return null;
+    BINDINGS = pack.bindings || null;
+    if (pack.features && typeof pack.features === 'object') {
+        CONFIG.features = { ...(CONFIG.features || {}), ...pack.features };
+    }
+    window.__EASYSORT_GUIDE__ = {
+        site: SITE,
+        source: 'sitepack',
+        revision: body.revision ?? null,
+    };
+    return pack.map;
+}
+
+async function loadStaticMap() {
+    BINDINGS = null;
+    window.__EASYSORT_GUIDE__ = { site: SITE, source: 'bundled', revision: 0 };
     const response = await fetch(MAP_URL);
-    MAP = await response.json();
+    return response.json();
+}
+
+async function loadMap() {
+    try {
+        MAP = await loadPublishedMap();
+    } catch (error) {
+        console.warn('Published SitePack map failed, using static map', error);
+        MAP = null;
+    }
+    if (!MAP) MAP = await loadStaticMap();
     ROADS = MAP.roads || [];
     ENTRANCE = Array.isArray(MAP.entrance) ? MAP.entrance
         : (MAP.entrance && typeof MAP.entrance === 'object') ? [MAP.entrance.x, MAP.entrance.y]

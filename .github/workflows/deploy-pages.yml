@@ -30,6 +30,7 @@ jobs:
 
       - name: Prepare site
         run: |
+          printf '%s\n' "{\"commit\":\"$GITHUB_SHA\",\"builtAt\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > version.json
           rm -rf .git .github norfors-demo
 
       - name: Setup Pages
