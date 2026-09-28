@@ -246,6 +246,13 @@ body.scanning {
     color: #15803d;
 }
 
+.result-timing {
+    margin: 12px 0 0;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: #6b7280;
+}
+
 .result-instructions {
     font-size: 1rem;
     color: #374151;

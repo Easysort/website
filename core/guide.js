@@ -25,7 +25,8 @@ const MAP_URL = CONFIG.mapUrl || 'map.json';
 const GENBRUGSPLADS_WORKER_URL = CONFIG.workerUrl || 'https://website-workers.lucas-vilsen.workers.dev/classify';
 // Which site's catalog the shared worker should match against.
 const SITE = CONFIG.site || 'vojens';
-const API_TIMEOUT_MS = 30000;
+const configuredTimeout = Number(CONFIG.apiTimeoutMs);
+const API_TIMEOUT_MS = configuredTimeout > 0 ? configuredTimeout : 30000;
 
 const LANGUAGE_STORAGE_KEY = 'easysort-language';
 const SUPPORTED_LANGUAGES = ['da', 'en'];
@@ -59,6 +60,10 @@ const translations = {
         analyzeFailed: 'Vi kunne ikke analysere billedet. Prøv igen, eller spørg personalet.',
         noMatch: 'Vi er ikke sikre på, hvad det er. Prøv et billede tættere på, eller spørg personalet.',
         identifiedLabel: 'Vi analyserer:',
+        timingMoondream: 'Moondream',
+        timingJev: 'JEV',
+        timingWorker: 'Worker',
+        timingTotal: 'Total',
         resultPill: 'Følg den grønne rute',
         askStaffPill: 'Til personalet',
         unassignedTitle: 'Spørg personalet',
@@ -104,6 +109,10 @@ const translations = {
         analyzeFailed: 'We could not analyze the photo. Try again, or ask the staff.',
         noMatch: 'We are not sure what this is. Try a closer photo, or ask the staff.',
         identifiedLabel: 'We are analyzing:',
+        timingMoondream: 'Moondream',
+        timingJev: 'JEV',
+        timingWorker: 'Worker',
+        timingTotal: 'Total',
         resultPill: 'Follow the green route',
         askStaffPill: 'Ask the staff',
         unassignedTitle: 'Ask the staff',
@@ -149,6 +158,8 @@ const translations = {
         translations[lang].footerSummary = lang === 'da'
             ? `Sorteringsguide til ${name}${operator ? `, drevet af ${operator}` : ''}.`
             : `Sorting guide for ${name}${operator ? `, operated by ${operator}` : ''}.`;
+        if (CONFIG.kicker) translations[lang].guideKicker = CONFIG.kicker[lang] || CONFIG.kicker.da;
+        if (CONFIG.subtitle) translations[lang].guideSubtitle = CONFIG.subtitle[lang] || CONFIG.subtitle.da;
     });
 })();
 
@@ -669,6 +680,7 @@ async function fetchWithTimeout(url, options) {
 
 /* Returns the shared worker's classification decision or throws on failure. */
 async function classifyImage(imageBase64) {
+    const started = performance.now();
     const response = await fetchWithTimeout(GENBRUGSPLADS_WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -695,8 +707,35 @@ async function classifyImage(imageBase64) {
         alternative: data.result.alternative || null,
         separate: data.result.separate || null,
         multipleItems: data.result.multipleItems === true,
-        directReuse: data.result.directReuse === true
+        directReuse: data.result.directReuse === true,
+        timing: data.timing && typeof data.timing === 'object' ? data.timing : null,
+        browserMs: Math.round(performance.now() - started)
     };
+}
+
+function formatSeconds(ms) {
+    if (typeof ms !== 'number' || !Number.isFinite(ms)) return '—';
+    return `${(ms / 1000).toFixed(1)} s`;
+}
+
+function renderResultTiming(result) {
+    let line = document.getElementById('result-timing');
+    const timing = result && result.timing;
+    const show = CONFIG.showTiming === true && timing;
+    if (!show) {
+        if (line) line.hidden = true;
+        return;
+    }
+    const card = document.getElementById('result-card');
+    if (!line) {
+        line = document.createElement('p');
+        line.id = 'result-timing';
+        line.className = 'result-timing';
+        card.appendChild(line);
+    }
+    const totalMs = typeof result.browserMs === 'number' ? result.browserMs : timing.workerMs;
+    line.hidden = false;
+    line.textContent = `${t('timingMoondream')} ${formatSeconds(timing.moondreamMs)} · ${t('timingJev')} ${formatSeconds(timing.jevMs)} · ${t('timingWorker')} ${formatSeconds(timing.workerMs)} · ${t('timingTotal')} ${formatSeconds(totalMs)}`;
 }
 
 /* ── Map rendering ─────────────────────────────────────────── */
@@ -934,6 +973,7 @@ function showResult(result, { scroll = true } = {}) {
         result.directReuse === true
     );
 
+    renderResultTiming(result);
     card.hidden = false;
     document.getElementById('scan-again-bottom').hidden = false;
     document.body.classList.add('scanning');
@@ -1047,7 +1087,9 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
                 alternative: result.alternative,
                 separate: result.separate,
                 multipleItems: result.multipleItems,
-                directReuse: result.directReuse
+                directReuse: result.directReuse,
+                timing: result.timing,
+                browserMs: result.browserMs
             };
             showResult(payload);
             flashDetection(payload);
