@@ -1,0 +1,175 @@
+/* ARGO sorting guides keep the shared guide layout. This sheet only
+   replaces the Easysort green with the ARGO Designguide 2017 palette.
+   Circular is the identity face; it is not licensed in this repo, so
+   Nunito Sans stands in. Calibri is the guide's own fallback. */
+
+@font-face {
+    font-family: "Argo Sans";
+    src: url("fonts/NunitoSans-Book.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Argo Sans";
+    src: url("fonts/NunitoSans-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Argo Sans";
+    src: url("fonts/NunitoSans-Black.ttf") format("truetype");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+html.argo {
+    --argo-blue: #00387b;
+    --argo-blue-light: #0075bc;
+    --argo-red: #fc5e54;
+}
+
+html.argo body,
+html.argo button,
+html.argo input {
+    font-family: "Argo Sans", Calibri, "Segoe UI", sans-serif;
+}
+
+html.argo .logo {
+    width: 168px;
+    height: auto;
+    max-width: none;
+}
+
+@media (max-width: 768px) {
+    html.argo .guide-hero {
+        padding-top: 196px;
+    }
+}
+
+html.argo .guide-title,
+html.argo .result-fraction,
+html.argo .detection-banner .detection-fraction,
+html.argo .footer-brand,
+html.argo .container-pill,
+html.argo .analyze-button,
+html.argo .scan-again-btn,
+html.argo .install-app {
+    font-weight: 900;
+    line-height: 1;
+}
+
+html.argo .hero-kicker {
+    color: var(--argo-blue);
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+html.argo .guide-subtitle,
+html.argo .result-instructions,
+html.argo .capture-privacy,
+html.argo .footer-summary,
+html.argo .map-caption {
+    line-height: 1.4;
+}
+
+html.argo .analyze-button,
+html.argo .install-app {
+    background: var(--argo-blue);
+}
+
+html.argo .analyze-button:hover,
+html.argo .install-app:hover {
+    background: var(--argo-blue-light);
+    box-shadow: 0 12px 28px rgba(0, 56, 123, 0.24);
+}
+
+html.argo .analyze-button:disabled {
+    background: #d1d5db;
+    box-shadow: none;
+}
+
+html.argo .capture-privacy a,
+html.argo .footer-link:hover,
+html.argo .footer-contact a:hover {
+    color: var(--argo-blue);
+}
+
+html.argo .capture-privacy a:hover {
+    color: var(--argo-blue-light);
+}
+
+html.argo .result-card {
+    border-color: #d3e2f2;
+    background: #f3f7fb;
+}
+
+html.argo .result-fraction,
+html.argo .result-identified {
+    color: var(--argo-blue);
+}
+
+html.argo .container-pill {
+    background: var(--argo-blue);
+}
+
+html.argo .scan-again-btn:hover {
+    background: #f3f7fb;
+    border-color: var(--argo-blue-light);
+}
+
+html.argo .scan-again-btn--bottom,
+html.argo .scan-again-btn--bottom:hover {
+    background: var(--argo-blue);
+    border-color: var(--argo-blue);
+}
+
+html.argo .scan-again-btn--bottom:hover {
+    background: var(--argo-blue-light);
+    border-color: var(--argo-blue-light);
+}
+
+html.argo .result-reuse {
+    color: var(--argo-blue);
+    background: #e7f1f8;
+    border-color: #9ec3e0;
+}
+
+html.argo .map-route,
+html.argo .map-destination-pulse {
+    stroke: var(--argo-blue);
+}
+
+html.argo .language-option:focus-visible,
+html.argo .install-app:focus-visible {
+    outline-color: rgba(0, 56, 123, 0.4);
+}
+
+html.argo .install-app.installed {
+    background: #e7f1f8;
+    color: var(--argo-blue);
+}
+
+/* Red is ARGO's emphasis colour. Same banner and card as the amber state. */
+html.argo #main-header.showing-detection:has(.detection-banner.unassigned) {
+    background: linear-gradient(90deg, #ff5541 0%, #fc5e54 100%);
+    box-shadow: 0 10px 30px rgba(252, 94, 84, 0.35);
+}
+
+html.argo .result-card.unassigned {
+    border-color: #ffc9c4;
+    background: #fff6f5;
+}
+
+html.argo .result-card.unassigned .result-identified,
+html.argo .result-card.unassigned .result-fraction {
+    color: #c43b32;
+}
+
+html.argo .result-card.unassigned .container-pill {
+    background: var(--argo-red);
+}

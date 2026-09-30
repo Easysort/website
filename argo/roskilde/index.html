@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="da" class="argo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,13 +17,13 @@
 
     <link rel="stylesheet" href="../../style2.css?v=20260715">
     <link rel="stylesheet" href="../../core/guide.css?v=20260810">
+    <link rel="stylesheet" href="../../core/argo.css?v=20260928">
 </head>
 <body id="top">
 
     <header id="main-header">
-        <a href="../../" class="logo-link">
-            <img src="../../logo.png" alt="Easysort Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
-            <span class="logo-fallback">Easysort</span>
+        <a href="#top" class="logo-link">
+            <img src="../../core/argo-logo.png" alt="ARGO. Affald, ressourcer, genbrug, overskud." class="logo">
         </a>
         <div class="social-links">
             <div class="language-switch" aria-label="Sprogskifter">
@@ -101,7 +101,7 @@
     <footer class="footer guide-footer">
         <div class="footer-content">
             <div class="footer-intro">
-                <a href="../../" class="footer-brand">Easysort</a>
+                <a href="#top" class="footer-brand">ARGO</a>
                 <p class="footer-summary" data-i18n="footerSummary">Sorteringsguide til Roskilde Genbrugsplads, drevet af Argo.</p>
                 <div class="footer-contact">
                     <span data-i18n="footerContactLabel">Kontakt:</span> <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
@@ -120,10 +120,12 @@
             site: 'roskilde',
             mapUrl: 'roskilde-genbrugsplads.json?v=20260914b',
             operator: 'Argo',
+            brand: 'ARGO',
+            routePill: { da: 'Følg den blå rute', en: 'Follow the blue route' },
             siteName: { da: 'Roskilde Genbrugsplads', en: 'Roskilde Recycling Center' },
             features: { directReuse: true }
         };
     </script>
-    <script src="../../core/guide.js?v=20260919"></script>
+    <script src="../../core/guide.js?v=20260928"></script>
 </body>
 </html>

@@ -151,16 +151,20 @@ const translations = {
     ['da', 'en'].forEach((lang) => {
         const name = names[lang] || names.da || '';
         if (!name) return;
+        const brand = CONFIG.brand || 'Easysort';
         translations[lang].guideKicker = `${sep}${name}`;
         translations[lang].pageTitle = lang === 'da'
-            ? `Sorteringsguide – ${name} | Easysort`
-            : `Sorting guide – ${name} | Easysort`;
+            ? `Sorteringsguide – ${name} | ${brand}`
+            : `Sorting guide – ${name} | ${brand}`;
         translations[lang].footerSummary = lang === 'da'
             ? `Sorteringsguide til ${name}${operator ? `, drevet af ${operator}` : ''}.`
             : `Sorting guide for ${name}${operator ? `, operated by ${operator}` : ''}.`;
         if (CONFIG.kicker) translations[lang].guideKicker = CONFIG.kicker[lang] || CONFIG.kicker.da;
         if (CONFIG.subtitle) translations[lang].guideSubtitle = CONFIG.subtitle[lang] || CONFIG.subtitle.da;
     });
+    const pill = CONFIG.routePill || {};
+    if (pill.da) translations.da.resultPill = pill.da;
+    if (pill.en) translations.en.resultPill = pill.en;
 })();
 
 /* ── Map data (loaded from JSON) ───────────────────────────── */
