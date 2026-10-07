@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
     <link rel="stylesheet" href="../../style2.css?v=20260715">
     <link rel="stylesheet" href="../../core/guide.css?v=20260810">
-    <link rel="stylesheet" href="../../core/argo.css?v=20260928">
+    <link rel="stylesheet" href="../../core/argo.css?v=20261007">
 </head>
 <body id="top">
     <header id="main-header">
@@ -23,8 +23,8 @@
         </a>
         <div class="social-links">
             <div class="language-switch" aria-label="Sprogskifter">
-                <button type="button" class="language-option" data-language-option="da" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇩🇰</span>DA</button>
-                <button type="button" class="language-option" data-language-option="en" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇬🇧</span>EN</button>
+                <button type="button" class="language-option" data-language-option="da" aria-pressed="true">Dansk</button>
+                <button type="button" class="language-option" data-language-option="en" aria-pressed="false">English</button>
             </div>
         </div>
         <div class="detection-banner" id="detection-banner" role="status" aria-live="polite" hidden></div>
@@ -33,7 +33,7 @@
     <main class="guide-main">
         <section class="guide-hero">
             <p class="hero-kicker" data-i18n="guideKicker">Argo · Jyllinge Genbrugsplads</p>
-            <h1 class="guide-title" data-i18n="guideTitle">Hvad skal du af med?</h1>
+            <h1 class="guide-title" data-i18n="guideTitle">Hvordan skal mit affald sorteres på genbrugspladsen?</h1>
             <p class="guide-subtitle" data-i18n="guideSubtitle">Tag et billede af dit affald, så finder vi den rigtige container.</p>
             <div class="camera-card">
                 <div class="webcam-area" id="webcam-area">
@@ -49,7 +49,7 @@
                 </div>
                 <button id="identify-btn" class="analyze-button" disabled>Analyser affald</button>
                 <p class="capture-privacy">
-                    <span data-i18n="privacyNotice">Når du analyserer, sendes ét billede sikkert til analyse og kvalitetskontrol.</span>
+                    <span data-i18n="privacyNotice">Når du tager et billede, så sender vi kun dette ene billede til analyse og kvalitetskontrol.</span>
                     <a href="../../privacy.html" data-i18n="privacyLink">Læs om privatliv</a>
                 </p>
                 <p class="photo-status" id="photo-status"></p>
@@ -96,14 +96,14 @@
         <div class="footer-content">
             <div class="footer-intro">
                 <a href="#top" class="footer-brand">ARGO</a>
-                <p class="footer-summary" data-i18n="footerSummary">Sorteringsguide til Jyllinge Genbrugsplads, drevet af Argo.</p>
+                <p class="footer-summary" data-i18n="footerSummary">Sorteringsvejledning til ARGOs genbrugsplads i Jyllinge</p>
+                <p class="footer-address"><span data-i18n="footerAddressLine1">Brohaven 2</span><br><span data-i18n="footerAddressLine2">4040 Jyllinge</span></p>
                 <div class="footer-contact">
-                    <span data-i18n="footerContactLabel">Kontakt:</span> <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+                    <span data-i18n="footerContactLabel">Kontakt ved tekniske problemer:</span> <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
                 </div>
             </div>
             <div class="footer-links">
                 <a href="../../privacy.html" class="footer-link" data-i18n="footerPrivacyLink">Privatliv</a>
-                <a href="../../" class="footer-link" data-i18n="footerBackLink">Tilbage til easysort.org</a>
                 <a href="https://www.argo.dk" class="footer-link" target="_blank" rel="noreferrer">argo.dk</a>
             </div>
         </div>
@@ -117,9 +117,33 @@
             brand: 'ARGO',
             routePill: { da: 'Følg den blå rute', en: 'Follow the blue route' },
             siteName: { da: 'Jyllinge Genbrugsplads', en: 'Jyllinge Recycling Center' },
+            copy: {
+                da: {
+                    guideTitle: 'Hvordan skal mit affald sorteres på genbrugspladsen?',
+                    multiSpotNote: 'Findes flere steder – ruten går til den nærmeste container',
+                    privacyNotice: 'Når du tager et billede, så sender vi kun dette ene billede til analyse og kvalitetskontrol.',
+                    directReuseTitle: 'Giv til genbrug!',
+                    directReuseBody: 'Genstanden ser hel og brugbar ud. Aflevér den til Direkte Genbrug, så andre kan få glæde af den.',
+                    footerSummary: 'Sorteringsvejledning til ARGOs genbrugsplads i Jyllinge',
+                    footerAddressLine1: 'Brohaven 2',
+                    footerAddressLine2: '4040 Jyllinge',
+                    footerContactLabel: 'Kontakt ved tekniske problemer:'
+                },
+                en: {
+                    guideTitle: 'How should I sort my waste at the recycling centre?',
+                    multiSpotNote: 'Available in several places – the route goes to the nearest container.',
+                    privacyNotice: 'When you take a photo, we only send this one photo for analysis and quality control.',
+                    directReuseTitle: 'Give it for reuse!',
+                    directReuseBody: 'The item looks intact and usable. Leave it at Direkte Genbrug so someone else can enjoy it.',
+                    footerSummary: 'Sorting guide for ARGO’s recycling centre in Jyllinge',
+                    footerAddressLine1: 'Brohaven 2',
+                    footerAddressLine2: '4040 Jyllinge',
+                    footerContactLabel: 'Technical support:'
+                }
+            },
             features: { directReuse: true }
         };
     </script>
-    <script src="../../core/guide.js?v=20260928"></script>
+    <script src="../../core/guide.js?v=20261007"></script>
 </body>
 </html>
