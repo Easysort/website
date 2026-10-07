@@ -63,6 +63,43 @@ html.argo .install-app {
     line-height: 1;
 }
 
+html.argo .guide-title {
+    color: var(--argo-blue);
+}
+
+html.argo .language-switch {
+    padding: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background: #ffffff;
+    box-shadow: none;
+    overflow: hidden;
+}
+
+html.argo .language-option {
+    min-width: auto;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 0;
+    color: var(--argo-blue);
+    font-family: "Argo Sans", Calibri, "Segoe UI", sans-serif;
+    letter-spacing: 0;
+}
+
+html.argo .language-option + .language-option {
+    border-left: 1px solid #cbd5e1;
+}
+
+html.argo .language-option.active {
+    background: var(--argo-blue);
+    color: #ffffff;
+    box-shadow: none;
+}
+
+html.argo .language-option.active:hover {
+    transform: none;
+}
+
 html.argo .hero-kicker {
     color: var(--argo-blue);
     font-weight: 900;
@@ -74,6 +111,16 @@ html.argo .result-instructions,
 html.argo .capture-privacy,
 html.argo .footer-summary,
 html.argo .map-caption {
+    line-height: 1.4;
+}
+
+html.argo .footer-summary {
+    margin-bottom: 6px;
+}
+
+html.argo .footer-address {
+    margin: 0 0 18px;
+    color: #6b7280;
     line-height: 1.4;
 }
 
