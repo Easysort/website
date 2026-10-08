@@ -154,7 +154,6 @@
         document.documentElement.style.setProperty('--trip-header-h', headerHeight + 'px');
         if (screen === 'tour' && !tourScreen.hidden) {
             document.documentElement.style.setProperty('--trip-sheet-h', tourScreen.offsetHeight + 'px');
-            focusCurrentStop();
         }
     }
 
@@ -169,16 +168,6 @@
         const headerHeight = header ? header.offsetHeight : 0;
         const top = card.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
         window.scrollTo({ top: Math.max(top, 0), behavior: 'auto' });
-    }
-
-    function focusCurrentStop() {
-        const pane = document.getElementById('map-section');
-        const mark = document.querySelector('.map-stop.current');
-        if (!pane || !mark) return;
-        const paneBox = pane.getBoundingClientRect();
-        const markBox = mark.getBoundingClientRect();
-        const delta = (markBox.top + markBox.height / 2) - (paneBox.top + paneBox.height / 2);
-        pane.scrollTop += delta;
     }
 
     function paintMode() {

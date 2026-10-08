@@ -82,6 +82,7 @@ const translations = {
         multiSpotNote: 'Findes flere steder – ruten går til den nærmeste.',
         mapCaption: 'Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.',
         mapEntrance: 'Indgang',
+        youAreHere: 'Du er her',
         footerSummary: 'Sorteringsguide til Vojens Genbrugsplads, drevet af Provas.',
         footerContactLabel: 'Kontakt:',
         footerBackLink: 'Tilbage til easysort.org',
@@ -131,6 +132,7 @@ const translations = {
         multiSpotNote: 'Available in several places – the route goes to the nearest one.',
         mapCaption: 'Tap a container to see the route. The map is indicative – ask the staff if in doubt.',
         mapEntrance: 'Entrance',
+        youAreHere: 'You are here',
         footerSummary: 'Sorting guide for Vojens Recycling Center, operated by Provas.',
         footerContactLabel: 'Contact:',
         footerBackLink: 'Back to easysort.org',
@@ -915,6 +917,44 @@ function renderMap(activeKey = currentResult?.keys?.[0] ?? null) {
             badge.appendChild(svgEl('text', { x, y: y - 30 }, String(index + 1)));
             svg.appendChild(badge);
         });
+    }
+
+    /* Start of this leg. Drawn last so it stays on top of the tiles.
+     * The label sits beside the dot, and flips to the other side if it
+     * would run off the map. */
+    if (tourLeg && tourLeg.path && tourLeg.path.length) {
+        const [hereX, hereY] = tourLeg.path[0];
+        const here = svgEl('g', { class: 'map-here' });
+        here.appendChild(svgEl('circle', { cx: hereX, cy: hereY, r: 22, class: 'map-here-ring' }));
+        here.appendChild(svgEl('circle', { cx: hereX, cy: hereY, r: 11, class: 'map-here-dot' }));
+        const label = svgEl('text', {
+            x: hereX - 34,
+            y: hereY,
+            'text-anchor': 'end',
+            'dominant-baseline': 'central'
+        }, t('youAreHere'));
+        here.appendChild(label);
+        svg.appendChild(here);
+        const padX = 12;
+        const padY = 7;
+        let box = label.getBBox();
+        if (box.x - padX < 10) {
+            label.setAttribute('x', hereX + 34);
+            label.setAttribute('text-anchor', 'start');
+            box = label.getBBox();
+        }
+        if (box.x + box.width + padX > vw - 10) {
+            label.setAttribute('x', Math.max(10 + padX, vw - 10 - padX - box.width));
+            box = label.getBBox();
+        }
+        here.insertBefore(svgEl('rect', {
+            x: box.x - padX,
+            y: box.y - padY,
+            width: box.width + padX * 2,
+            height: box.height + padY * 2,
+            rx: 12,
+            class: 'map-here-label-bg'
+        }), label);
     }
 }
 
