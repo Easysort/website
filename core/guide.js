@@ -165,6 +165,9 @@ const translations = {
             : `Sorting guide for ${name}${operator ? `, operated by ${operator}` : ''}.`;
         if (CONFIG.kicker) translations[lang].guideKicker = CONFIG.kicker[lang] || CONFIG.kicker.da;
         if (CONFIG.subtitle) translations[lang].guideSubtitle = CONFIG.subtitle[lang] || CONFIG.subtitle.da;
+        if (CONFIG.copy && CONFIG.copy[lang]) {
+            Object.assign(translations[lang], CONFIG.copy[lang]);
+        }
     });
     const pill = CONFIG.routePill || {};
     if (pill.da) translations.da.resultPill = pill.da;
