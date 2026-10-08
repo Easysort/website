@@ -451,7 +451,8 @@ function pickCandidate(candidates, dist) {
  * If `roadHint` (a road id) is given, we only step off onto that specific
  * road – used when the truly nearest road isn't the right one to stop at.
  * If that road can't be reached we fall back to the nearest road overall. */
-function routeToPoint(target, roadHint = null) {
+function routeToPoint(target, roadHint = null, fromPoint = null) {
+    const origin = fromPoint || ENTRANCE;
     const destination = [target[0], target[1]];
     const g = buildGraph();
     const candidates = [];
@@ -472,13 +473,13 @@ function routeToPoint(target, roadHint = null) {
         });
     });
 
-    const start = connectStart(g, ENTRANCE);
+    const start = connectStart(g, origin);
     const { dist, prev } = dijkstra(g, start);
 
     const pool = roadHint ? candidates.filter((c) => c.roadId === roadHint) : candidates;
     let chosen = pickCandidate(pool, dist);
     if (!chosen && roadHint) chosen = pickCandidate(candidates, dist);
-    if (!chosen) return { path: [ENTRANCE, destination], cost: Infinity };
+    if (!chosen) return { path: [origin, destination], cost: Infinity, spot: destination };
 
     const path = [];
     for (let u = chosen.idx; u !== -1; u = prev[u]) path.unshift(g.nodes[u]);
@@ -486,18 +487,20 @@ function routeToPoint(target, roadHint = null) {
     if (!last || last[0] !== destination[0] || last[1] !== destination[1]) {
         path.push(destination);
     }
-    return { path, cost: chosen.total };
+    return { path, cost: chosen.total, spot: destination };
 }
 
 /* Route to the nearest of a fraction's (possibly several) spots. Each spot may
- * carry an optional road id as its 3rd element to force the approach road. */
-function routeToFraction(fraction) {
+ * carry an optional road id as its 3rd element to force the approach road.
+ * `fromPoint` continues a tour from the previous stop instead of the entrance. */
+function routeToFraction(fraction, fromPoint = null) {
+    const origin = fromPoint || ENTRANCE;
     let best = null;
     fraction.spots.forEach((spot) => {
-        const route = routeToPoint(spot, spot[2] || null);
+        const route = routeToPoint(spot, spot[2] || null, origin);
         if (!best || route.cost < best.cost) best = { ...route, spot };
     });
-    return best || { path: [ENTRANCE], cost: Infinity, spot: fraction.spots[0] };
+    return best || { path: [origin], cost: Infinity, spot: fraction.spots[0] };
 }
 
 /* ── i18n helpers ──────────────────────────────────────────── */
@@ -542,6 +545,9 @@ function applyTranslations() {
     if (currentPlaceholderKey) setPlaceholder(currentPlaceholderIcon, currentPlaceholderKey);
     if (MAP) renderMap();
     if (currentResult) showResult(currentResult, { scroll: false });
+    if (CONFIG.features?.tripList) {
+        document.dispatchEvent(new CustomEvent('guide:language'));
+    }
 }
 
 /* ── Camera (same behavior as the front page demo) ─────────── */
@@ -825,10 +831,19 @@ function renderMap(activeKey = currentResult?.keys?.[0] ?? null) {
         }
     });
 
-    // Route to the active fraction (nearest spot)
+    // Route to the active fraction (nearest spot). A trip tour replaces that
+    // with the leg to the next stop, still drawn in the same route style.
     const activeFraction = activeKey ? FRACTION_BY_KEY.get(activeKey) : null;
     let destinationSpot = null;
-    if (activeFraction) {
+    const tourLeg = tripTour && tripTour.stops && tripTour.stops[tripTour.index];
+    if (tourLeg && tourLeg.path) {
+        destinationSpot = tourLeg.spot;
+        svg.appendChild(svgEl('polyline', {
+            points: tourLeg.path.map((p) => p.join(',')).join(' '),
+            class: 'map-route'
+        }));
+        svg.appendChild(svgEl('circle', { cx: tourLeg.spot[0], cy: tourLeg.spot[1], r: 26, class: 'map-destination-pulse' }));
+    } else if (activeFraction) {
         const route = routeToFraction(activeFraction);
         destinationSpot = route.spot;
         svg.appendChild(svgEl('polyline', {
@@ -857,7 +872,14 @@ function renderMap(activeKey = currentResult?.keys?.[0] ?? null) {
             wrapName(fraction.name[currentLanguage]).forEach((line, li) => {
                 group.appendChild(svgEl('text', { x, y: y + 27 + li * 10, class: 'map-tile-label' }, line));
             });
-            const select = () => showResult({ keys: [fraction.key] }, { scroll: false });
+            const select = () => {
+                if (tripTour && typeof window.onTripStop === 'function') {
+                    const index = tripTour.stops.findIndex((stop) => stop.mapKey === fraction.key);
+                    if (index >= 0) window.onTripStop(index);
+                    return;
+                }
+                showResult({ keys: [fraction.key] }, { scroll: false });
+            };
             group.addEventListener('click', select);
             group.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); }
@@ -875,6 +897,29 @@ function renderMap(activeKey = currentResult?.keys?.[0] ?? null) {
     }));
     entrance.appendChild(svgEl('text', { x: ENTRANCE[0] + 22, y: ENTRANCE[1] + 5 }, t('mapEntrance')));
     svg.appendChild(entrance);
+
+    if (tripTour && tripTour.stops) {
+        tripTour.stops.forEach((stop, index) => {
+            if (!stop.spot) return;
+            const [x, y] = stop.spot;
+            const state = index === tripTour.index ? ' current' : (index < tripTour.index ? ' done' : '');
+            const badge = svgEl('g', { class: `map-stop${state}` });
+            badge.appendChild(svgEl('circle', { cx: x, cy: y - 30, r: index === tripTour.index ? 14 : 11 }));
+            badge.appendChild(svgEl('text', { x, y: y - 30 }, String(index + 1)));
+            svg.appendChild(badge);
+        });
+    }
+}
+
+/* The list page sets this while the visitor is walking the route. Null on
+ * every other guide, so their map is unchanged. */
+let tripTour = null;
+
+function setTripTour(tour) {
+    tripTour = tour;
+    if (!MAP) return;
+    const stop = tour && tour.stops && tour.stops[tour.index];
+    renderMap(stop ? stop.mapKey : null);
 }
 
 /* Scroll so `el` sits right below the fixed header. Measured a frame later
@@ -985,6 +1030,9 @@ function showResult(result, { scroll = true } = {}) {
     if (scroll) {
         /* Land with the result card (“We are analyzing: …”) on top. */
         scrollBelowHeader(card);
+    }
+    if (CONFIG.features?.tripList) {
+        document.dispatchEvent(new CustomEvent('guide:shown'));
     }
 }
 
@@ -1097,6 +1145,9 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
             };
             showResult(payload);
             flashDetection(payload);
+            if (CONFIG.features?.tripList) {
+                document.dispatchEvent(new CustomEvent('guide:classified', { detail: payload }));
+            }
         }
     } catch {
         setStatus(t('analyzeFailed'), true);
