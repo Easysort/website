@@ -25,7 +25,8 @@
             back: 'Forrige',
             edit: 'Ret listen',
             doneTitle: 'Det var det',
-            doneBody: 'Du har været forbi alle stederne.',
+            doneBody: 'Listen er klaret. Her er hvor tingene skulle hen.',
+            again: 'Se ruten igen',
             newList: 'Ny liste',
             staff: 'Spørg personalet',
             swipe: 'Stryg eller tryk næste'
@@ -44,7 +45,8 @@
             back: 'Previous',
             edit: 'Edit the list',
             doneTitle: 'That is everything',
-            doneBody: 'You have been to every stop.',
+            doneBody: 'The list is done. Here is where it went.',
+            again: 'See the route again',
             newList: 'New list',
             staff: 'Ask the staff',
             swipe: 'Swipe or tap next'
@@ -69,14 +71,20 @@
     const collectPanel = document.createElement('section');
     collectPanel.className = 'trip-collect';
     collectPanel.hidden = true;
-    collectPanel.innerHTML = '<p class="trip-status"></p><div class="trip-actions"><button type="button" class="trip-secondary" data-act="clear"></button><button type="button" class="trip-primary" data-act="route"></button></div><ul class="trip-items"></ul>';
+    collectPanel.innerHTML = '<p class="trip-status"></p><ul class="trip-items"></ul><div class="trip-actions"><button type="button" class="trip-secondary" data-act="clear"></button><button type="button" class="trip-primary" data-act="route"></button></div>';
     document.querySelector('.guide-hero').appendChild(collectPanel);
 
     const tourScreen = document.createElement('section');
     tourScreen.className = 'trip-tour';
     tourScreen.hidden = true;
-    tourScreen.innerHTML = '<p class="trip-progress"></p><h2 class="trip-place"></h2><p class="trip-here"></p><ul class="trip-drop"></ul><p class="trip-swipe"></p><div class="trip-actions"><button type="button" class="trip-secondary" data-act="back"></button><button type="button" class="trip-primary" data-act="next"></button></div><button type="button" class="trip-edit" data-act="edit"></button>';
+    tourScreen.innerHTML = '<div class="trip-tour-body"><p class="trip-progress"></p><h2 class="trip-place"></h2><p class="trip-here"></p><ul class="trip-drop"></ul><p class="trip-swipe"></p></div><div class="trip-actions"><button type="button" class="trip-secondary" data-act="back"></button><button type="button" class="trip-primary" data-act="next"></button></div><button type="button" class="trip-edit" data-act="edit"></button>';
     document.body.appendChild(tourScreen);
+
+    const doneScreen = document.createElement('section');
+    doneScreen.className = 'trip-done';
+    doneScreen.hidden = true;
+    doneScreen.innerHTML = '<div class="trip-done-scroll"><h2></h2><p class="trip-done-body"></p><ul class="trip-recap"></ul></div><div class="trip-done-actions"><button type="button" class="trip-secondary" data-act="again"></button><button type="button" class="trip-primary" data-act="new"></button><button type="button" class="trip-edit" data-act="edit"></button></div>';
+    document.body.appendChild(doneScreen);
 
     function text(key) {
         const lang = document.documentElement.lang === 'en' ? 'en' : 'da';
@@ -119,22 +127,44 @@
         screen = 'camera';
         collectPanel.hidden = true;
         tourScreen.hidden = true;
-        document.body.classList.remove('trip-collecting', 'trip-routing');
+        doneScreen.hidden = true;
+        document.body.classList.remove('trip-collecting', 'trip-routing', 'trip-finished');
         if (typeof setTripTour === 'function') setTripTour(null);
     }
 
-    /* Put the live camera under the header. The list stays just below the
-     * analyze button, so the next photo is one tap and the map stays hidden. */
+    /* Keep the header short while collecting or walking, and remember how tall
+     * it is so the camera and the map start below it. */
+    function placeChrome() {
+        const header = document.getElementById('main-header');
+        const headerHeight = header ? header.offsetHeight : 0;
+        document.documentElement.style.setProperty('--trip-header-h', headerHeight + 'px');
+        if (screen === 'tour' && !tourScreen.hidden) {
+            document.documentElement.style.setProperty('--trip-sheet-h', tourScreen.offsetHeight + 'px');
+            focusCurrentStop();
+        }
+    }
+
+    /* The live camera sits under the header. The newest row, with Fjern, is
+     * directly under the analyze button. */
     function focusCamera() {
-        if (typeof scanAgain === 'function') scanAgain({ scroll: false });
+        if (typeof scanAgain === 'function' && typeof MAP !== 'undefined' && MAP) scanAgain({ scroll: false });
+        placeChrome();
         const card = document.querySelector('.camera-card');
         if (!card) return;
-        requestAnimationFrame(() => {
-            const header = document.getElementById('main-header');
-            const headerHeight = header ? header.offsetHeight : 0;
-            const top = card.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
-            window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
-        });
+        const header = document.getElementById('main-header');
+        const headerHeight = header ? header.offsetHeight : 0;
+        const top = card.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
+        window.scrollTo({ top: Math.max(top, 0), behavior: 'auto' });
+    }
+
+    function focusCurrentStop() {
+        const pane = document.getElementById('map-section');
+        const mark = document.querySelector('.map-stop.current');
+        if (!pane || !mark) return;
+        const paneBox = pane.getBoundingClientRect();
+        const markBox = mark.getBoundingClientRect();
+        const delta = (markBox.top + markBox.height / 2) - (paneBox.top + paneBox.height / 2);
+        pane.scrollTop += delta;
     }
 
     function paintAdd() {
@@ -160,7 +190,7 @@
         routeButton.disabled = items.length === 0;
         const ul = collectPanel.querySelector('.trip-items');
         ul.innerHTML = '';
-        items.forEach((item) => {
+        items.slice().reverse().forEach((item) => {
             const row = document.createElement('li');
             if (item.id === lastId) row.className = 'trip-just-added';
             const words = document.createElement('div');
@@ -195,12 +225,14 @@
         tour = null;
         disarmClear();
         if (typeof setTripTour === 'function') setTripTour(null);
-        document.body.classList.remove('trip-routing');
+        document.body.classList.remove('trip-routing', 'trip-finished');
         document.body.classList.add('trip-collecting');
         tourScreen.hidden = true;
+        doneScreen.hidden = true;
         collectPanel.hidden = false;
         paintAdd();
         paintCollect();
+        placeChrome();
     }
 
     function addPayload(payload) {
@@ -266,14 +298,47 @@
         return { stops: stops, index: 0 };
     }
 
+    function openDone() {
+        screen = 'done';
+        document.body.classList.remove('trip-collecting', 'trip-routing');
+        document.body.classList.add('trip-finished');
+        collectPanel.hidden = true;
+        tourScreen.hidden = true;
+        doneScreen.hidden = false;
+        if (typeof setTripTour === 'function') setTripTour(null);
+        doneScreen.querySelector('h2').textContent = text('doneTitle');
+        doneScreen.querySelector('.trip-done-body').textContent = text('doneBody');
+        doneScreen.querySelector('[data-act="again"]').textContent = text('again');
+        doneScreen.querySelector('[data-act="new"]').textContent = text('newList');
+        doneScreen.querySelector('[data-act="edit"]').textContent = text('edit');
+        const ul = doneScreen.querySelector('.trip-recap');
+        ul.innerHTML = '';
+        (tour ? tour.stops : []).forEach((stop, index) => {
+            const row = document.createElement('li');
+            const where = document.createElement('strong');
+            where.textContent = (index + 1) + '. ' + (stop.mapKey ? placeName(stop.items[0]) : text('staff'));
+            const what = document.createElement('span');
+            what.textContent = stop.items.map((item) => item.label).join(', ');
+            row.appendChild(where);
+            row.appendChild(what);
+            ul.appendChild(row);
+        });
+        placeChrome();
+    }
+
     function openTour(index) {
         if (!items.length || typeof MAP === 'undefined' || !MAP || !ENTRANCE) return;
         if (!tour || index == null) tour = buildTour();
         tour.index = Math.max(0, Math.min(index, tour.stops.length));
-        screen = tour.index >= tour.stops.length ? 'done' : 'tour';
-        document.body.classList.remove('trip-collecting');
+        if (tour.index >= tour.stops.length) {
+            openDone();
+            return;
+        }
+        screen = 'tour';
+        document.body.classList.remove('trip-collecting', 'trip-finished');
         document.body.classList.add('trip-routing');
         collectPanel.hidden = true;
+        doneScreen.hidden = true;
         tourScreen.hidden = false;
         setTripTour(tour);
         const progress = tourScreen.querySelector('.trip-progress');
@@ -286,16 +351,6 @@
         const edit = tourScreen.querySelector('[data-act="edit"]');
         drop.innerHTML = '';
         edit.textContent = text('edit');
-        if (screen === 'done') {
-            progress.textContent = '';
-            place.textContent = text('doneTitle');
-            here.textContent = text('doneBody');
-            swipe.textContent = '';
-            back.hidden = false;
-            back.textContent = text('back');
-            next.textContent = text('newList');
-            return;
-        }
         const stop = tour.stops[tour.index];
         progress.textContent = (tour.index + 1) + ' / ' + tour.stops.length;
         place.textContent = stop.mapKey ? placeName(stop.items[0]) : text('staff');
@@ -309,8 +364,7 @@
         back.hidden = tour.index === 0;
         back.textContent = text('back');
         next.textContent = tour.index === tour.stops.length - 1 ? text('finish') : text('next');
-        const map = document.getElementById('map-section');
-        if (map) map.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        placeChrome();
     }
 
     function clearList() {
@@ -360,9 +414,17 @@
             focusCamera();
         }
         if (act.dataset.act === 'back') openTour(tour.index - 1);
-        if (act.dataset.act === 'next') {
-            if (screen === 'done') clearList();
-            else openTour(tour.index + 1);
+        if (act.dataset.act === 'next') openTour(tour.index + 1);
+    });
+
+    doneScreen.addEventListener('click', (event) => {
+        const act = event.target.closest('[data-act]');
+        if (!act) return;
+        if (act.dataset.act === 'again') openTour(0);
+        if (act.dataset.act === 'new') clearList();
+        if (act.dataset.act === 'edit') {
+            enterCollecting();
+            focusCamera();
         }
     });
 
@@ -411,9 +473,17 @@
     });
     document.addEventListener('guide:language', () => {
         if (screen === 'collect') paintCollect();
-        else if (screen === 'tour' || screen === 'done') openTour(tour ? tour.index : 0);
+        else if (screen === 'done') openDone();
+        else if (screen === 'tour') openTour(tour ? tour.index : 0);
         else paintAdd();
     });
 
-    if (items.length) enterCollecting();
+    window.addEventListener('resize', () => {
+        if (screen === 'collect' || screen === 'tour' || screen === 'done') placeChrome();
+    });
+
+    if (items.length) {
+        enterCollecting();
+        focusCamera();
+    }
 })();
