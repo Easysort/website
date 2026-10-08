@@ -1,12 +1,7 @@
 /* Trip list on the Roskilde test page. Large targets, one job per screen. */
 
-body.trip-has-list {
-    padding-bottom: 108px;
-}
-
 .trip-add,
-.trip-primary,
-.trip-dock-open {
+.trip-primary {
     appearance: none;
     border: 0;
     border-radius: 14px;
@@ -31,34 +26,41 @@ body.trip-has-list {
     display: none;
 }
 
-.trip-dock {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    z-index: 90;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 10px 10px 18px;
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 12px 40px rgba(0, 24, 56, 0.22);
-}
-
-.trip-dock-count {
-    font-size: 1.15rem;
-    font-weight: 900;
-    color: #00387b;
-}
-
-.trip-dock-open,
 .trip-primary,
 .trip-secondary {
     min-height: 52px;
     padding: 14px 18px;
     font-size: 1.05rem;
+}
+
+.trip-collect {
+    max-width: 520px;
+    margin: 14px auto 0;
+    text-align: left;
+}
+
+.trip-status {
+    margin: 0 0 12px;
+    color: #00387b;
+    font-size: 1.2rem;
+    font-weight: 900;
+    line-height: 1.25;
+    text-align: center;
+}
+
+html.argo body.trip-collecting .guide-hero {
+    padding-top: 112px;
+    padding-bottom: 12px;
+}
+
+body.trip-collecting .hero-kicker,
+body.trip-collecting .guide-title,
+body.trip-collecting .guide-subtitle,
+body.trip-collecting .capture-privacy,
+body.trip-collecting .map-section,
+body.trip-collecting .footer,
+body.trip-collecting .scan-again-bottom {
+    display: none;
 }
 
 .trip-secondary,
@@ -78,7 +80,6 @@ body.trip-has-list {
     background: #e7f1f8;
 }
 
-.trip-screen,
 .trip-tour {
     position: fixed;
     z-index: 90;
@@ -91,16 +92,6 @@ body.trip-has-list {
     padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
 }
 
-.trip-screen {
-    top: 88px;
-}
-
-.trip-screen-body {
-    flex: 1;
-    overflow: auto;
-}
-
-.trip-screen h2,
 .trip-place {
     margin: 0;
     color: #00387b;
@@ -158,9 +149,23 @@ body.trip-has-list {
 
 .trip-remove {
     flex: 0 0 auto;
-    min-height: 44px;
-    padding: 8px 4px;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #e7f1f8;
     font-size: 1rem;
+}
+
+.trip-just-added {
+    margin: 0 -10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 14px;
+    background: #e7f1f8;
+}
+
+.trip-just-added .trip-remove {
+    background: #fff;
 }
 
 .trip-actions {
@@ -197,10 +202,7 @@ body.trip-routing .guide-hero,
 body.trip-routing .result-card,
 body.trip-routing .scan-again-bottom,
 body.trip-routing .map-caption,
-body.trip-routing .footer,
-body.trip-list .guide-hero,
-body.trip-list .map-section,
-body.trip-list .footer {
+body.trip-routing .footer {
     display: none;
 }
 

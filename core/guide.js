@@ -1089,7 +1089,7 @@ function hideDetectionBanner() {
 }
 
 /* Reset back to the camera so the user can scan the next item. */
-function scanAgain() {
+function scanAgain({ scroll = true } = {}) {
     setStatus('');
     document.getElementById('result-card').hidden = true;
     document.getElementById('scan-again-bottom').hidden = true;
@@ -1097,6 +1097,7 @@ function scanAgain() {
     hideDetectionBanner();
     currentResult = null;
     renderMap(null);
+    if (!scroll) return;
     /* Scroll up just enough that the analyze button sits near the bottom of
      * the screen (image above it). Not to the very top: iPhone re-shows its
      * URL bar on upward scrolls, which shrinks the viewport, so leave room
@@ -1143,10 +1144,17 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
                 timing: result.timing,
                 browserMs: result.browserMs
             };
-            showResult(payload);
+            /* Once a list is started, the test page keeps the camera and adds
+             * the item itself. Every other guide still gets the map. */
+            const keptOnCamera = CONFIG.features?.tripList === true
+                && typeof window.tripHandleClassification === 'function'
+                && window.tripHandleClassification(payload);
             flashDetection(payload);
-            if (CONFIG.features?.tripList) {
-                document.dispatchEvent(new CustomEvent('guide:classified', { detail: payload }));
+            if (!keptOnCamera) {
+                showResult(payload);
+                if (CONFIG.features?.tripList) {
+                    document.dispatchEvent(new CustomEvent('guide:classified', { detail: payload }));
+                }
             }
         }
     } catch {

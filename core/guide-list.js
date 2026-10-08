@@ -1,8 +1,9 @@
 /* On-device trip list for the Roskilde test page.
  *
- * The shared guide still takes the photo and names the container. This file
- * only keeps the list in localStorage and walks the stops. Nothing on the
- * list is sent anywhere.
+ * The first result still shows the map, with one button: "Start en liste".
+ * After that the camera stays up. Each analysis is added by itself, the map
+ * stays hidden, and the visitor removes items or starts over until they are
+ * done. Nothing on the list is sent anywhere.
  */
 
 (function () {
@@ -11,14 +12,13 @@
     const STORAGE_KEY = 'easysort-trip:' + location.pathname;
     const COPY = {
         da: {
-            start: 'Start listen',
-            add: 'Læg på listen',
-            listTitle: 'Din liste',
-            listHint: 'Fjern det, der ikke skal med.',
-            empty: 'Listen er tom. Scan den første ting.',
+            start: 'Start en liste',
+            added: 'Lagt på listen:',
+            keepGoing: 'Peg på den næste ting og tryk analyser.',
+            clear: 'Start forfra',
+            clearConfirm: 'Slet listen?',
+            finishScanning: 'Færdig',
             remove: 'Fjern',
-            scanMore: 'Scan en mere',
-            showRoute: 'Vis ruten',
             here: 'Her skal du af med',
             next: 'Næste sted',
             finish: 'Færdig',
@@ -28,20 +28,16 @@
             doneBody: 'Du har været forbi alle stederne.',
             newList: 'Ny liste',
             staff: 'Spørg personalet',
-            one: '1 ting',
-            many: 'ting',
-            seeList: 'Se listen',
             swipe: 'Stryg eller tryk næste'
         },
         en: {
-            start: 'Start the list',
-            add: 'Add to the list',
-            listTitle: 'Your list',
-            listHint: 'Remove anything that should not be on it.',
-            empty: 'The list is empty. Scan the first thing.',
+            start: 'Start a list',
+            added: 'Added:',
+            keepGoing: 'Point at the next thing and tap Analyze.',
+            clear: 'Start over',
+            clearConfirm: 'Delete the list?',
+            finishScanning: 'Done',
             remove: 'Remove',
-            scanMore: 'Scan another',
-            showRoute: 'Show the route',
             here: 'Drop off here',
             next: 'Next stop',
             finish: 'Done',
@@ -51,9 +47,6 @@
             doneBody: 'You have been to every stop.',
             newList: 'New list',
             staff: 'Ask the staff',
-            one: '1 item',
-            many: 'items',
-            seeList: 'See the list',
             swipe: 'Swipe or tap next'
         }
     };
@@ -62,6 +55,10 @@
     let pending = null;
     let tour = null;
     let screen = 'camera';
+    let lastAdded = '';
+    let lastId = '';
+    let clearArmed = false;
+    let clearTimer = null;
 
     const addButton = document.createElement('button');
     addButton.type = 'button';
@@ -69,17 +66,11 @@
     addButton.hidden = true;
     document.getElementById('result-card').appendChild(addButton);
 
-    const dock = document.createElement('div');
-    dock.className = 'trip-dock';
-    dock.hidden = true;
-    dock.innerHTML = '<span class="trip-dock-count"></span><button type="button" class="trip-dock-open"></button>';
-    document.body.appendChild(dock);
-
-    const listScreen = document.createElement('section');
-    listScreen.className = 'trip-screen';
-    listScreen.hidden = true;
-    listScreen.innerHTML = '<div class="trip-screen-body"><h2></h2><p class="trip-hint"></p><ul class="trip-items"></ul></div><div class="trip-actions"><button type="button" class="trip-secondary" data-act="scan"></button><button type="button" class="trip-primary" data-act="route"></button></div>';
-    document.body.appendChild(listScreen);
+    const collectPanel = document.createElement('section');
+    collectPanel.className = 'trip-collect';
+    collectPanel.hidden = true;
+    collectPanel.innerHTML = '<p class="trip-status"></p><div class="trip-actions"><button type="button" class="trip-secondary" data-act="clear"></button><button type="button" class="trip-primary" data-act="route"></button></div><ul class="trip-items"></ul>';
+    document.querySelector('.guide-hero').appendChild(collectPanel);
 
     const tourScreen = document.createElement('section');
     tourScreen.className = 'trip-tour';
@@ -118,72 +109,60 @@
         return text('staff');
     }
 
-    function countLabel() {
-        if (items.length === 1) return text('one');
-        return items.length + ' ' + text('many');
+    function labelFor(payload) {
+        const label = ((payload && (payload.description || payload.item)) || '').trim();
+        if (label) return label;
+        return placeName({ mapKey: payload && payload.keys && payload.keys[0] });
     }
 
     function showCamera() {
         screen = 'camera';
-        listScreen.hidden = true;
+        collectPanel.hidden = true;
         tourScreen.hidden = true;
-        document.body.classList.remove('trip-list', 'trip-routing');
+        document.body.classList.remove('trip-collecting', 'trip-routing');
         if (typeof setTripTour === 'function') setTripTour(null);
-        paintDock();
     }
 
-    function paintDock() {
-        const visible = screen === 'camera' && items.length > 0;
-        dock.hidden = !visible;
-        document.body.classList.toggle('trip-has-list', visible);
-        if (!visible) return;
-        dock.querySelector('.trip-dock-count').textContent = countLabel();
-        dock.querySelector('.trip-dock-open').textContent = text('seeList');
+    /* Put the live camera under the header. The list stays just below the
+     * analyze button, so the next photo is one tap and the map stays hidden. */
+    function focusCamera() {
+        if (typeof scanAgain === 'function') scanAgain({ scroll: false });
+        const card = document.querySelector('.camera-card');
+        if (!card) return;
+        requestAnimationFrame(() => {
+            const header = document.getElementById('main-header');
+            const headerHeight = header ? header.offsetHeight : 0;
+            const top = card.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
+            window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+        });
     }
 
     function paintAdd() {
-        if (!pending) {
-            addButton.hidden = true;
-            return;
-        }
-        addButton.hidden = false;
-        addButton.textContent = items.length ? text('add') : text('start');
+        const show = screen === 'camera' && pending;
+        addButton.hidden = !show;
+        if (show) addButton.textContent = text('start');
     }
 
-    function fitListScreen() {
-        const header = document.getElementById('main-header');
-        listScreen.style.top = (header ? header.offsetHeight : 88) + 'px';
+    function disarmClear() {
+        clearArmed = false;
+        clearTimeout(clearTimer);
+        clearTimer = null;
     }
 
-    function openList() {
-        screen = 'list';
-        fitListScreen();
-        tour = null;
-        if (typeof setTripTour === 'function') setTripTour(null);
-        if (typeof hideDetectionBanner === 'function') hideDetectionBanner();
-        document.body.classList.add('trip-list');
-        document.body.classList.remove('trip-routing');
-        listScreen.hidden = false;
-        tourScreen.hidden = true;
-        dock.hidden = true;
-        document.body.classList.remove('trip-has-list');
-        listScreen.querySelector('h2').textContent = text('listTitle');
-        listScreen.querySelector('.trip-hint').textContent = text('listHint');
-        listScreen.querySelector('[data-act="scan"]').textContent = text('scanMore');
-        const routeButton = listScreen.querySelector('[data-act="route"]');
-        routeButton.textContent = text('showRoute');
+    function paintCollect() {
+        collectPanel.querySelector('.trip-status').textContent = lastAdded
+            ? text('added') + ' ' + lastAdded
+            : text('keepGoing');
+        const clearButton = collectPanel.querySelector('[data-act="clear"]');
+        if (!clearArmed) clearButton.textContent = text('clear');
+        const routeButton = collectPanel.querySelector('[data-act="route"]');
+        routeButton.textContent = text('finishScanning');
         routeButton.disabled = items.length === 0;
-        const ul = listScreen.querySelector('.trip-items');
+        const ul = collectPanel.querySelector('.trip-items');
         ul.innerHTML = '';
-        if (!items.length) {
-            const empty = document.createElement('li');
-            empty.className = 'trip-empty';
-            empty.textContent = text('empty');
-            ul.appendChild(empty);
-            return;
-        }
         items.forEach((item) => {
             const row = document.createElement('li');
+            if (item.id === lastId) row.className = 'trip-just-added';
             const words = document.createElement('div');
             const name = document.createElement('strong');
             name.textContent = item.label;
@@ -197,13 +176,44 @@
             remove.textContent = text('remove');
             remove.addEventListener('click', () => {
                 items = items.filter((entry) => entry.id !== item.id);
+                if (item.id === lastId) {
+                    lastId = '';
+                    lastAdded = '';
+                }
                 save();
-                openList();
+                if (!items.length) clearList();
+                else paintCollect();
             });
             row.appendChild(words);
             row.appendChild(remove);
             ul.appendChild(row);
         });
+    }
+
+    function enterCollecting() {
+        screen = 'collect';
+        tour = null;
+        disarmClear();
+        if (typeof setTripTour === 'function') setTripTour(null);
+        document.body.classList.remove('trip-routing');
+        document.body.classList.add('trip-collecting');
+        tourScreen.hidden = true;
+        collectPanel.hidden = false;
+        paintAdd();
+        paintCollect();
+    }
+
+    function addPayload(payload) {
+        const item = {
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            label: labelFor(payload),
+            mapKey: (payload.keys && payload.keys[0]) || null
+        };
+        items.push(item);
+        lastAdded = item.label;
+        lastId = item.id;
+        save();
+        return item;
     }
 
     function staffPoint() {
@@ -231,20 +241,20 @@
             }
             groups[indexByKey.get(key)].items.push(item);
         });
-        const pending = groups.slice();
+        const pendingGroups = groups.slice();
         const stops = [];
         let from = ENTRANCE.slice();
-        while (pending.length) {
+        while (pendingGroups.length) {
             let bestAt = 0;
             let best = null;
-            pending.forEach((group, index) => {
+            pendingGroups.forEach((group, index) => {
                 const route = routeFor(group, from);
                 if (!best || route.cost < best.cost) {
                     best = route;
                     bestAt = index;
                 }
             });
-            const group = pending.splice(bestAt, 1)[0];
+            const group = pendingGroups.splice(bestAt, 1)[0];
             stops.push({
                 mapKey: group.mapKey,
                 items: group.items,
@@ -261,11 +271,10 @@
         if (!tour || index == null) tour = buildTour();
         tour.index = Math.max(0, Math.min(index, tour.stops.length));
         screen = tour.index >= tour.stops.length ? 'done' : 'tour';
-        document.body.classList.remove('trip-list');
+        document.body.classList.remove('trip-collecting');
         document.body.classList.add('trip-routing');
-        listScreen.hidden = true;
+        collectPanel.hidden = true;
         tourScreen.hidden = false;
-        dock.hidden = true;
         setTripTour(tour);
         const progress = tourScreen.querySelector('.trip-progress');
         const place = tourScreen.querySelector('.trip-place');
@@ -304,41 +313,41 @@
         if (map) map.scrollIntoView({ block: 'start', behavior: 'smooth' });
     }
 
-    function addPending() {
-        if (!pending) return;
-        const label = (pending.description || pending.item || '').trim() || placeName({
-            mapKey: pending.keys && pending.keys[0]
-        });
-        items.push({
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-            label: label,
-            mapKey: (pending.keys && pending.keys[0]) || null
-        });
-        save();
-        pending = null;
-        paintAdd();
-        openList();
-    }
-
     function clearList() {
         items = [];
         tour = null;
         pending = null;
+        lastAdded = '';
+        lastId = '';
+        disarmClear();
         save();
         paintAdd();
         showCamera();
         if (typeof scanAgain === 'function') scanAgain();
     }
 
-    addButton.addEventListener('click', addPending);
-    dock.querySelector('.trip-dock-open').addEventListener('click', openList);
+    addButton.addEventListener('click', () => {
+        if (!pending) return;
+        addPayload(pending);
+        pending = null;
+        enterCollecting();
+        focusCamera();
+    });
 
-    listScreen.addEventListener('click', (event) => {
+    collectPanel.addEventListener('click', (event) => {
         const act = event.target.closest('[data-act]');
         if (!act) return;
-        if (act.dataset.act === 'scan') {
-            showCamera();
-            if (typeof scanAgain === 'function') scanAgain();
+        if (act.dataset.act === 'clear') {
+            if (!clearArmed) {
+                clearArmed = true;
+                act.textContent = text('clearConfirm');
+                clearTimer = setTimeout(() => {
+                    clearArmed = false;
+                    act.textContent = text('clear');
+                }, 2500);
+                return;
+            }
+            clearList();
         }
         if (act.dataset.act === 'route') openTour(0);
     });
@@ -346,7 +355,10 @@
     tourScreen.addEventListener('click', (event) => {
         const act = event.target.closest('[data-act]');
         if (!act || !tour) return;
-        if (act.dataset.act === 'edit') openList();
+        if (act.dataset.act === 'edit') {
+            enterCollecting();
+            focusCamera();
+        }
         if (act.dataset.act === 'back') openTour(tour.index - 1);
         if (act.dataset.act === 'next') {
             if (screen === 'done') clearList();
@@ -356,6 +368,16 @@
 
     window.onTripStop = function (index) {
         if (screen === 'tour' || screen === 'done') openTour(index);
+    };
+
+    /* While the list is open, a new photo is added and the camera stays.
+     * Returning true tells the guide not to open the map. */
+    window.tripHandleClassification = function (payload) {
+        if (screen !== 'collect') return false;
+        addPayload(payload);
+        paintCollect();
+        focusCamera();
+        return true;
     };
 
     let swipe = null;
@@ -386,19 +408,12 @@
     document.addEventListener('guide:classified', (event) => {
         pending = event.detail;
         paintAdd();
-        if (screen !== 'camera') showCamera();
     });
     document.addEventListener('guide:language', () => {
-        if (screen === 'list') openList();
+        if (screen === 'collect') paintCollect();
         else if (screen === 'tour' || screen === 'done') openTour(tour ? tour.index : 0);
-        else {
-            paintAdd();
-            paintDock();
-        }
+        else paintAdd();
     });
 
-    window.addEventListener('resize', () => {
-        if (screen === 'list') fitListScreen();
-    });
-    paintDock();
+    if (items.length) enterCollecting();
 })();
