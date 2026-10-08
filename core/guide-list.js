@@ -517,13 +517,13 @@
         else if (screen === 'done') openDone();
         else if (screen === 'tour') openTour(tour ? tour.index : 0);
         else paintAdd();
+        placeChrome();
     });
 
-    window.addEventListener('resize', () => {
-        if (screen === 'collect' || screen === 'tour' || screen === 'done') placeChrome();
-    });
+    window.addEventListener('resize', placeChrome);
 
     paintMode();
+    placeChrome();
 
     if (items.length) {
         enterCollecting();

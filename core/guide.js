@@ -667,16 +667,44 @@ async function switchCamera() {
     await requestCameraAccess();
 }
 
+/* The on-screen camera uses object-fit, so the element box is not the whole
+ * sensor frame. Photograph the same rectangle the visitor is looking at.
+ * Otherwise the classifier sees edges (a wallet, a hand) that were cropped
+ * out of the preview. */
+function visibleVideoRect(video) {
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    const full = { sx: 0, sy: 0, sw: vw, sh: vh };
+    const box = video.getBoundingClientRect();
+    if (!box.width || !box.height) return full;
+    const fit = getComputedStyle(video).objectFit;
+    if (fit === 'contain' || fit === 'scale-down' || fit === 'none') return full;
+    const scale = Math.max(box.width / vw, box.height / vh);
+    const sw = box.width / scale;
+    const sh = box.height / scale;
+    return {
+        sx: Math.max(0, (vw - sw) / 2),
+        sy: Math.max(0, (vh - sh) / 2),
+        sw: Math.min(vw, sw),
+        sh: Math.min(vh, sh)
+    };
+}
+
 function captureFrame() {
     const video = document.getElementById('webcam-video');
     const canvas = document.getElementById('frozen-frame');
     if (!video.videoWidth || !video.videoHeight) return null;
 
+    const source = visibleVideoRect(video);
     const maxSize = 1024;
-    const scale = Math.min(1, maxSize / Math.max(video.videoWidth, video.videoHeight));
-    canvas.width = Math.round(video.videoWidth * scale);
-    canvas.height = Math.round(video.videoHeight * scale);
-    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    const scale = Math.min(1, maxSize / Math.max(source.sw, source.sh));
+    canvas.width = Math.max(1, Math.round(source.sw * scale));
+    canvas.height = Math.max(1, Math.round(source.sh * scale));
+    canvas.getContext('2d').drawImage(
+        video,
+        source.sx, source.sy, source.sw, source.sh,
+        0, 0, canvas.width, canvas.height
+    );
     return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 }
 
