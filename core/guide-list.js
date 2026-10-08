@@ -1,4 +1,4 @@
-/* On-device trip list for the Roskilde test page.
+/* On-device trip list for the Roskilde list page.
  *
  * The first result still shows the map, with one button: "Start en liste".
  * After that the camera stays up. Each analysis is added by itself, the map

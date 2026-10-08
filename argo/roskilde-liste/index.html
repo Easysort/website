@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="da" class="argo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Sorteringsguide – Roskilde Genbrugsplads | Easysort</title>
+
+    <!-- Home screen app: manifest for Android, apple-* meta for iOS. -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Liste">
+    <link rel="icon" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+
+    <link rel="stylesheet" href="../../style2.css?v=20260715">
+    <link rel="stylesheet" href="../../core/guide.css?v=20260810">
+    <link rel="stylesheet" href="../../core/argo.css?v=20261007">
+    <link rel="stylesheet" href="../../core/guide-list.css?v=20261008g">
+</head>
+<body id="top">
+
+    <header id="main-header">
+        <a href="#top" class="logo-link">
+            <img src="../../core/argo-logo.png" alt="ARGO. Affald, ressourcer, genbrug, overskud." class="logo">
+        </a>
+        <div class="social-links">
+            <div class="language-switch" aria-label="Sprogskifter">
+                <button type="button" class="language-option" data-language-option="da" aria-pressed="true">Dansk</button>
+                <button type="button" class="language-option" data-language-option="en" aria-pressed="false">English</button>
+            </div>
+        </div>
+        <div class="detection-banner" id="detection-banner" role="status" aria-live="polite" hidden></div>
+    </header>
+
+    <main class="guide-main">
+        <section class="guide-hero">
+            <p class="hero-kicker" data-i18n="guideKicker">Argo · Roskilde Genbrugsplads</p>
+            <h1 class="guide-title" data-i18n="guideTitle">Hvordan skal mit affald sorteres på genbrugspladsen?</h1>
+            <p class="guide-subtitle" data-i18n="guideSubtitle">Tag billeder, saml en liste, og følg ruten ét sted ad gangen.</p>
+
+            <div class="camera-card">
+                <div class="webcam-area" id="webcam-area">
+                    <div class="webcam-placeholder" id="webcam-placeholder">
+                        <div class="webcam-icon">📷</div>
+                        <div class="webcam-text" data-placeholder-default>Giv kameraadgang for at komme i gang</div>
+                    </div>
+                    <video id="webcam-video" autoplay playsinline muted disablepictureinpicture disableremoteplayback controlslist="nofullscreen noremoteplayback nodownload"></video>
+                    <canvas id="frozen-frame"></canvas>
+                    <button id="camera-switch-btn" class="camera-switch-btn" title="Skift kamera" aria-label="Skift kamera">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7.5 5.5 12 9V6a6 6 0 0 1 5.7 7.9l1.5 1A7.5 7.5 0 0 0 12 4.5V5Zm0 13a6 6 0 0 1-5.7-7.9l-1.5-1A7.5 7.5 0 0 0 12 19.5V22l4.5-3.5L12 15v3Z"/></svg>
+                    </button>
+                </div>
+                <button id="identify-btn" class="analyze-button" disabled>Analyser affald</button>
+                <p class="capture-privacy">
+                    <span data-i18n="privacyNotice">Når du tager et billede, så sender vi kun dette ene billede til analyse og kvalitetskontrol.</span>
+                    <a href="../../privacy.html" data-i18n="privacyLink">Læs om privatliv</a>
+                </p>
+                <p class="photo-status" id="photo-status"></p>
+            </div>
+        </section>
+
+        <section class="map-section" id="map-section">
+            <div class="result-card" id="result-card" hidden>
+                <p class="result-identified" id="result-identified" hidden></p>
+                <div class="result-head">
+                    <h2 class="result-fraction" id="result-fraction-name"></h2>
+                    <span class="container-pill" id="result-pill" data-i18n="resultPill">Følg den grønne rute</span>
+                </div>
+                <p class="result-instructions" id="result-instructions"></p>
+                <aside class="result-notice result-multiple" id="result-multiple" hidden>
+                    <strong data-i18n="multipleItemsTitle">Flere genstande på billedet</strong>
+                    <span id="result-multiple-body"></span>
+                </aside>
+                <aside class="result-notice result-alternative" id="result-alternative" hidden>
+                    <strong id="result-alternative-title"></strong>
+                    <span data-i18n="alternativeAdvice">Spørg personalet, hvis du er i tvivl mellem de to.</span>
+                </aside>
+                <aside class="result-notice result-separate" id="result-separate" hidden>
+                    <strong id="result-separate-title"></strong>
+                    <span data-i18n="separateAdvice">Den største del følger ruten ovenfor. Afmontér kun delen, hvis det kan gøres sikkert.</span>
+                </aside>
+                <aside class="result-notice result-reuse" id="result-reuse" hidden>
+                    <strong data-i18n="directReuseTitle">Kan måske bruges igen</strong>
+                    <span data-i18n="directReuseBody">Hvis genstanden er hel, ren og virker, kan du aflevere den til Direkte Genbrug.</span>
+                </aside>
+            </div>
+
+            <div class="map-card">
+                <svg id="site-map" viewBox="0 0 620 900" role="img" aria-label="Kort over Roskilde Genbrugsplads"></svg>
+            </div>
+            <p class="map-caption" data-i18n="mapCaption">Tryk på en container for at se ruten. Kortet er vejledende – spørg personalet, hvis du er i tvivl.</p>
+
+            <div class="scan-again-bottom" id="scan-again-bottom" hidden>
+                <button type="button" class="scan-again-btn scan-again-btn--bottom" id="scan-again-bottom-btn" data-i18n="scanAgain">Scan noget andet</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer guide-footer">
+        <div class="footer-content">
+            <div class="footer-intro">
+                <a href="#top" class="footer-brand">ARGO</a>
+                <p class="footer-summary" data-i18n="footerSummary">Sorteringsvejledning til ARGOs genbrugsplads i Roskilde</p>
+                <p class="footer-address"><span data-i18n="footerAddressLine1">Vestre Hedevej 32</span><br><span data-i18n="footerAddressLine2">4000 Roskilde</span></p>
+                <div class="footer-contact">
+                    <span data-i18n="footerContactLabel">Kontakt ved tekniske problemer:</span> <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="../../privacy.html" class="footer-link" data-i18n="footerPrivacyLink">Privatliv</a>
+                <a href="https://www.argo.dk" class="footer-link" target="_blank" rel="noreferrer">argo.dk</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.SITE_CONFIG = {
+            site: 'roskilde',
+            mapUrl: '../roskilde/roskilde-genbrugsplads.json?v=20260914b',
+            operator: 'Argo',
+            brand: 'ARGO',
+            subtitle: {
+                da: 'Tag billeder, saml en liste, og følg ruten ét sted ad gangen.',
+                en: 'Take photos, build a list, and follow the route one stop at a time.'
+            },
+            routePill: { da: 'Følg den blå rute', en: 'Follow the blue route' },
+            siteName: { da: 'Roskilde Genbrugsplads', en: 'Roskilde Recycling Center' },
+            copy: {
+                da: {
+                    guideTitle: 'Hvordan skal mit affald sorteres på genbrugspladsen?',
+                    multiSpotNote: 'Findes flere steder – ruten går til den nærmeste container',
+                    privacyNotice: 'Når du tager et billede, så sender vi kun dette ene billede til analyse og kvalitetskontrol.',
+                    directReuseTitle: 'Giv til genbrug!',
+                    directReuseBody: 'Genstanden ser hel og brugbar ud. Aflevér den til Direkte Genbrug, så andre kan få glæde af den.',
+                    footerSummary: 'Sorteringsvejledning til ARGOs genbrugsplads i Roskilde',
+                    footerAddressLine1: 'Vestre Hedevej 32',
+                    footerAddressLine2: '4000 Roskilde',
+                    footerContactLabel: 'Kontakt ved tekniske problemer:'
+                },
+                en: {
+                    guideTitle: 'How should I sort my waste at the recycling centre?',
+                    multiSpotNote: 'Available in several places – the route goes to the nearest container.',
+                    privacyNotice: 'When you take a photo, we only send this one photo for analysis and quality control.',
+                    directReuseTitle: 'Give it for reuse!',
+                    directReuseBody: 'The item looks intact and usable. Leave it at Direkte Genbrug so someone else can enjoy it.',
+                    footerSummary: 'Sorting guide for ARGO’s recycling centre in Roskilde',
+                    footerAddressLine1: 'Vestre Hedevej 32',
+                    footerAddressLine2: '4000 Roskilde',
+                    footerContactLabel: 'Technical support:'
+                }
+            },
+            features: { directReuse: true, tripList: true }
+        };
+    </script>
+    <script src="../../core/guide.js?v=20261008g"></script>
+    <script src="../../core/guide-list.js?v=20261008g"></script>
+</body>
+</html>

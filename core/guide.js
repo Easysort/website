@@ -710,7 +710,7 @@ async function classifyImage(imageBase64) {
             client: 'guide.js',
             // Explicit path — Referer is often origin-only on cross-origin worker calls
             page: typeof location !== 'undefined' ? location.pathname : null,
-            /* Only the test page sets this. Other guides stay one item per photo. */
+            /* Only the list page sets this. Other guides stay one item per photo. */
             ...(wantsMany ? { mode: 'multiple' } : {}),
         })
     });
@@ -1206,7 +1206,7 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
                     item: item.item,
                 }));
             }
-            /* Once a list is started, the test page keeps the camera and adds
+            /* Once a list is started, the list page keeps the camera and adds
              * the item itself. A multi-item photo starts that list immediately.
              * Every other guide still gets the map. */
             const keptOnCamera = CONFIG.features?.tripList === true
