@@ -12,6 +12,9 @@
     const STORAGE_KEY = 'easysort-trip:' + location.pathname;
     const COPY = {
         da: {
+            oneThing: 'Én ting',
+            manyThings: 'Flere ting',
+            things: 'ting',
             start: 'Start en liste',
             added: 'Lagt på listen:',
             keepGoing: 'Peg på den næste ting og tryk analyser.',
@@ -32,6 +35,9 @@
             swipe: 'Stryg eller tryk næste'
         },
         en: {
+            oneThing: 'One thing',
+            manyThings: 'Several things',
+            things: 'things',
             start: 'Start a list',
             added: 'Added:',
             keepGoing: 'Point at the next thing and tap Analyze.',
@@ -54,6 +60,7 @@
     };
 
     let items = load();
+    let multiple = false;
     let pending = null;
     let tour = null;
     let screen = 'camera';
@@ -61,6 +68,13 @@
     let lastId = '';
     let clearArmed = false;
     let clearTimer = null;
+
+    const modeSwitch = document.createElement('div');
+    modeSwitch.className = 'trip-mode';
+    modeSwitch.setAttribute('role', 'group');
+    modeSwitch.innerHTML = '<button type="button" data-mode="single"></button><button type="button" data-mode="many"></button>';
+    const analyzeButton = document.getElementById('identify-btn');
+    analyzeButton.parentNode.insertBefore(modeSwitch, analyzeButton);
 
     const addButton = document.createElement('button');
     addButton.type = 'button';
@@ -167,6 +181,18 @@
         pane.scrollTop += delta;
     }
 
+    function paintMode() {
+        const one = modeSwitch.querySelector('[data-mode="single"]');
+        const many = modeSwitch.querySelector('[data-mode="many"]');
+        one.textContent = text('oneThing');
+        many.textContent = text('manyThings');
+        one.classList.toggle('is-on', !multiple);
+        many.classList.toggle('is-on', multiple);
+        one.setAttribute('aria-pressed', String(!multiple));
+        many.setAttribute('aria-pressed', String(multiple));
+        modeSwitch.setAttribute('aria-label', text('oneThing') + ' / ' + text('manyThings'));
+    }
+
     function paintAdd() {
         const show = screen === 'camera' && pending;
         addButton.hidden = !show;
@@ -233,6 +259,13 @@
         paintAdd();
         paintCollect();
         placeChrome();
+    }
+
+    function addMany(payloads) {
+        const batch = payloads.filter(Boolean);
+        if (!batch.length) return;
+        batch.slice().reverse().forEach(addPayload);
+        if (batch.length > 1) lastAdded = batch.length + ' ' + text('things');
     }
 
     function addPayload(payload) {
@@ -380,6 +413,13 @@
         if (typeof scanAgain === 'function') scanAgain();
     }
 
+    modeSwitch.addEventListener('click', (event) => {
+        const choice = event.target.closest('[data-mode]');
+        if (!choice) return;
+        multiple = choice.dataset.mode === 'many';
+        paintMode();
+    });
+
     addButton.addEventListener('click', () => {
         if (!pending) return;
         addPayload(pending);
@@ -434,7 +474,18 @@
 
     /* While the list is open, a new photo is added and the camera stays.
      * Returning true tells the guide not to open the map. */
+    window.tripWantsMultiple = function () {
+        return multiple;
+    };
+
     window.tripHandleClassification = function (payload) {
+        if (payload && payload.multi && Array.isArray(payload.items) && payload.items.length) {
+            addMany(payload.items);
+            if (screen !== 'collect') enterCollecting();
+            else paintCollect();
+            focusCamera();
+            return true;
+        }
         if (screen !== 'collect') return false;
         addPayload(payload);
         paintCollect();
@@ -472,6 +523,7 @@
         paintAdd();
     });
     document.addEventListener('guide:language', () => {
+        paintMode();
         if (screen === 'collect') paintCollect();
         else if (screen === 'done') openDone();
         else if (screen === 'tour') openTour(tour ? tour.index : 0);
@@ -481,6 +533,8 @@
     window.addEventListener('resize', () => {
         if (screen === 'collect' || screen === 'tour' || screen === 'done') placeChrome();
     });
+
+    paintMode();
 
     if (items.length) {
         enterCollecting();

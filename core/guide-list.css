@@ -97,6 +97,34 @@ body.trip-collecting {
     padding-bottom: calc(108px + env(safe-area-inset-bottom));
 }
 
+.trip-mode {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin: 0 0 12px;
+    padding: 4px;
+    border-radius: 16px;
+    background: #e7f1f8;
+}
+
+.trip-mode button {
+    appearance: none;
+    min-height: 48px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #00387b;
+    font: inherit;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.trip-mode button.is-on {
+    background: #00387b;
+    color: #fff;
+}
+
 .trip-collect {
     max-width: 520px;
     margin: 12px auto 0;

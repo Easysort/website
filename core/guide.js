@@ -12,10 +12,12 @@
  *
  * API (shared worker):
  *   POST GENBRUGSPLADS_WORKER_URL
- *   body:     { image: <base64 jpeg>, language: "da" | "en", site: "<key>" }
+ *   body:     { image: <base64 jpeg>, language: "da" | "en", site: "<key>",
+ *               mode?: "multiple" }
  *   response: { ok: true, result: {
  *     description, fraction, item, confidence, askStaff,
- *     alternative, separate, multipleItems, directReuse, language
+ *     alternative, separate, multipleItems, directReuse, language,
+ *     items?: [{ description, fraction, item }]
  *   } }
  */
 
@@ -691,6 +693,7 @@ async function fetchWithTimeout(url, options) {
 /* Returns the shared worker's classification decision or throws on failure. */
 async function classifyImage(imageBase64) {
     const started = performance.now();
+    const wantsMany = typeof window.tripWantsMultiple === 'function' && window.tripWantsMultiple();
     const response = await fetchWithTimeout(GENBRUGSPLADS_WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -702,6 +705,8 @@ async function classifyImage(imageBase64) {
             client: 'guide.js',
             // Explicit path — Referer is often origin-only on cross-origin worker calls
             page: typeof location !== 'undefined' ? location.pathname : null,
+            /* Only the test page sets this. Other guides stay one item per photo. */
+            ...(wantsMany ? { mode: 'multiple' } : {}),
         })
     });
     const data = await response.json();
@@ -718,6 +723,8 @@ async function classifyImage(imageBase64) {
         separate: data.result.separate || null,
         multipleItems: data.result.multipleItems === true,
         directReuse: data.result.directReuse === true,
+        items: Array.isArray(data.result.items) ? data.result.items : null,
+        multi: wantsMany,
         timing: data.timing && typeof data.timing === 'object' ? data.timing : null,
         browserMs: Math.round(performance.now() - started)
     };
@@ -1109,6 +1116,24 @@ function scanAgain({ scroll = true } = {}) {
 
 /* ── Analyze flow ──────────────────────────────────────────── */
 
+function payloadFromResult(result) {
+    const mapKey = resolveMapKey(result.fraction);
+    return {
+        keys: mapKey && !result.askStaff ? [mapKey] : [],
+        description: result.description,
+        item: result.item,
+        catalogFraction: result.fraction,
+        confidence: result.confidence,
+        askStaff: result.askStaff,
+        alternative: result.alternative,
+        separate: result.separate,
+        multipleItems: result.multipleItems,
+        directReuse: result.directReuse,
+        timing: result.timing,
+        browserMs: result.browserMs
+    };
+}
+
 function setStatus(message, isError = false) {
     const status = document.getElementById('photo-status');
     status.textContent = message;
@@ -1126,30 +1151,25 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
 
     try {
         const result = await classifyImage(imageBase64);
-        if (!result.fraction && !result.description) {
+        if (!result.fraction && !result.description && !(result.items && result.items.length)) {
             setStatus(t('noMatch'), true);
         } else {
-            const mapKey = resolveMapKey(result.fraction);
-            const payload = {
-                keys: mapKey && !result.askStaff ? [mapKey] : [],
-                description: result.description,
-                item: result.item,
-                catalogFraction: result.fraction,
-                confidence: result.confidence,
-                askStaff: result.askStaff,
-                alternative: result.alternative,
-                separate: result.separate,
-                multipleItems: result.multipleItems,
-                directReuse: result.directReuse,
-                timing: result.timing,
-                browserMs: result.browserMs
-            };
+            const payload = payloadFromResult(result);
+            if (result.multi && Array.isArray(result.items) && result.items.length) {
+                payload.multi = true;
+                payload.items = result.items.map((item) => payloadFromResult({
+                    description: item.description,
+                    fraction: item.fraction,
+                    item: item.item,
+                }));
+            }
             /* Once a list is started, the test page keeps the camera and adds
-             * the item itself. Every other guide still gets the map. */
+             * the item itself. A multi-item photo starts that list immediately.
+             * Every other guide still gets the map. */
             const keptOnCamera = CONFIG.features?.tripList === true
                 && typeof window.tripHandleClassification === 'function'
                 && window.tripHandleClassification(payload);
-            flashDetection(payload);
+            if (!(payload.multi && payload.items && payload.items.length > 1)) flashDetection(payload);
             if (!keptOnCamera) {
                 showResult(payload);
                 if (CONFIG.features?.tripList) {
