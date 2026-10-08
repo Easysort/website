@@ -403,6 +403,30 @@ body.trip-routing #site-map {
     overflow: auto;
 }
 
+.trip-more {
+    margin: 2px 0 0;
+    color: #00387b;
+    font-size: 0.95rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.trip-more[hidden] {
+    display: none;
+}
+
+.trip-more::after {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 8px;
+    border-right: 3px solid #00387b;
+    border-bottom: 3px solid #00387b;
+    transform: translateY(-2px) rotate(45deg);
+}
+
 .map-here {
     pointer-events: none;
 }
@@ -440,7 +464,6 @@ body.trip-routing #site-map {
 }
 
 .trip-here,
-.trip-swipe,
 .trip-progress,
 .trip-done-body {
     margin: 6px 0 0;

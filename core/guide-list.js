@@ -32,7 +32,7 @@
             again: 'Se ruten igen',
             newList: 'Ny liste',
             staff: 'Spørg personalet',
-            swipe: 'Stryg eller tryk næste'
+            moreBelow: 'Flere nedenfor'
         },
         en: {
             oneThing: 'One thing',
@@ -55,7 +55,7 @@
             again: 'See the route again',
             newList: 'New list',
             staff: 'Ask the staff',
-            swipe: 'Swipe or tap next'
+            moreBelow: 'More below'
         }
     };
 
@@ -91,7 +91,7 @@
     const tourScreen = document.createElement('section');
     tourScreen.className = 'trip-tour';
     tourScreen.hidden = true;
-    tourScreen.innerHTML = '<div class="trip-tour-body"><p class="trip-progress"></p><h2 class="trip-place"></h2><p class="trip-here"></p><ul class="trip-drop"></ul><p class="trip-swipe"></p></div><div class="trip-actions"><button type="button" class="trip-secondary" data-act="back"></button><button type="button" class="trip-primary" data-act="next"></button></div><button type="button" class="trip-edit" data-act="edit"></button>';
+    tourScreen.innerHTML = '<div class="trip-tour-body"><p class="trip-progress"></p><h2 class="trip-place"></h2><p class="trip-here"></p><ul class="trip-drop"></ul></div><p class="trip-more" hidden></p><div class="trip-actions"><button type="button" class="trip-secondary" data-act="back"></button><button type="button" class="trip-primary" data-act="next"></button></div><button type="button" class="trip-edit" data-act="edit"></button>';
     document.body.appendChild(tourScreen);
 
     const doneScreen = document.createElement('section');
@@ -367,7 +367,6 @@
         const place = tourScreen.querySelector('.trip-place');
         const here = tourScreen.querySelector('.trip-here');
         const drop = tourScreen.querySelector('.trip-drop');
-        const swipe = tourScreen.querySelector('.trip-swipe');
         const back = tourScreen.querySelector('[data-act="back"]');
         const next = tourScreen.querySelector('[data-act="next"]');
         const edit = tourScreen.querySelector('[data-act="edit"]');
@@ -382,11 +381,22 @@
             li.textContent = item.label;
             drop.appendChild(li);
         });
-        swipe.textContent = text('swipe');
         back.hidden = tour.index === 0;
         back.textContent = text('back');
         next.textContent = tour.index === tour.stops.length - 1 ? text('finish') : text('next');
         placeChrome();
+        requestAnimationFrame(markMore);
+    }
+
+    /* Only when items are cut off. Hidden once the list is scrolled to the end. */
+    function markMore() {
+        const body = tourScreen.querySelector('.trip-tour-body');
+        const more = tourScreen.querySelector('.trip-more');
+        if (!body || !more || screen !== 'tour') return;
+        more.textContent = text('moreBelow');
+        const overflow = body.scrollHeight > body.clientHeight + 4;
+        const atEnd = body.scrollTop + body.clientHeight >= body.scrollHeight - 4;
+        more.hidden = !overflow || atEnd;
     }
 
     function clearList() {
@@ -502,6 +512,7 @@
     }
     watchSwipe(tourScreen);
     watchSwipe(document.getElementById('site-map'));
+    tourScreen.querySelector('.trip-tour-body').addEventListener('scroll', markMore, { passive: true });
 
     document.addEventListener('guide:shown', () => {
         pending = null;
@@ -520,7 +531,10 @@
         placeChrome();
     });
 
-    window.addEventListener('resize', placeChrome);
+    window.addEventListener('resize', () => {
+        placeChrome();
+        if (screen === 'tour') requestAnimationFrame(markMore);
+    });
 
     paintMode();
     placeChrome();
