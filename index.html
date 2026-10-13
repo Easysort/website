@@ -3,139 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Sorting Guide. Point a camera at an item. You get the waste fraction and the recycling center.">
-    <title>Sorting Guide — Easysort</title>
-    <link rel="stylesheet" href="home.css?v=20261013">
+    <meta name="description" content="Easysort builds intelligent waste detection systems for recycling centers and waste facilities.">
+    <title>Easysort — See waste clearly</title>
+    <link rel="stylesheet" href="homepage.css?v=20261013">
 </head>
 <body data-worker="https://website-workers.lucas-vilsen.workers.dev/classify">
-    <header>
-        <a class="logo" href="/">Easysort</a>
-        <nav aria-label="Main navigation">
+    <header class="site-header">
+        <a class="brand" href="#top" aria-label="Easysort home">
+            <img src="logo.png" alt="Easysort">
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="#products" data-i18n="navProducts">Products</a>
+            <a href="#demo" data-i18n="navDemo">Live demo</a>
+            <a href="vision.html" data-i18n="navVision">Vision</a>
+            <a href="https://track.easysort.org" target="_blank" rel="noreferrer">EasyTrack</a>
+        </nav>
+        <div class="header-actions">
             <div class="language-switch" role="group" aria-label="Language">
                 <button type="button" data-language-option="en" aria-pressed="true">EN</button>
                 <button type="button" data-language-option="da" aria-pressed="false">DA</button>
             </div>
-            <a href="https://docs.easysort.org" data-i18n="docs">docs</a>
-        </nav>
+            <a class="button button-dark header-cta" href="https://app.cal.com/easysort" target="_blank" rel="noreferrer" data-i18n="navContact">Talk to us</a>
+        </div>
     </header>
 
-    <main>
-        <section class="intro" aria-labelledby="title">
-            <h1 id="title">Sorting Guide<span>.</span></h1>
-            <p id="lead" data-i18n="lead">Point a camera at an item. You get the waste fraction and the recycling center.</p>
+    <main id="top">
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow" data-i18n="heroEyebrow">Intelligent waste detection</p>
+                <h1 data-i18n="heroTitle">See waste clearly.<br>Sort it better.</h1>
+                <p class="hero-lead" data-i18n="heroLead">Practical AI for recycling centers and waste facilities—from helping a visitor find the right container to giving operators a clearer view of the entire site.</p>
+                <div class="hero-actions">
+                    <a class="button button-green" href="#products" data-i18n="heroProducts">Explore our products</a>
+                    <a class="button button-light" href="#demo" data-i18n="heroDemo">Try the live demo</a>
+                </div>
+                <div class="hero-proof" aria-label="Product highlights">
+                    <span data-i18n="proofOne">Built for real facilities</span>
+                    <span data-i18n="proofTwo">Live in Denmark</span>
+                    <span data-i18n="proofThree">Open technology</span>
+                </div>
+            </div>
+            <div class="hero-visual" aria-label="Easysort camera unit">
+                <div class="hero-orbit hero-orbit-one"></div>
+                <div class="hero-orbit hero-orbit-two"></div>
+                <img src="product.png" alt="Easysort camera and lighting unit">
+                <div class="signal-card signal-card-top">
+                    <span class="signal-dot"></span>
+                    <span data-i18n="signalLive">Live detection</span>
+                </div>
+                <div class="signal-card signal-card-bottom">
+                    <strong>8 sec.</strong>
+                    <span data-i18n="signalAnswer">to an answer</span>
+                </div>
+            </div>
         </section>
 
-        <div class="product">
-            <section class="demo" aria-labelledby="title">
-                <div class="stage" id="webcam-area">
-                    <div class="stage-placeholder" id="webcam-placeholder">
-                        <p data-i18n="cameraLabel">Camera</p>
+        <section class="partner-strip" aria-label="Organizations we work with">
+            <p data-i18n="partnersLabel">Working with ambitious teams across the waste sector</p>
+            <div class="partner-logos">
+                <img src="logos/argo.png" alt="ARGO">
+                <img src="logos/dtu.png" alt="DTU">
+                <img src="logos/kk.webp" alt="Københavns Kommune">
+                <img src="logos/norfors.png" alt="Norfors">
+                <img src="logos/verdis.png" alt="Verdis">
+            </div>
+        </section>
+
+        <section class="section products-section" id="products">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow" data-i18n="productsEyebrow">What we build</p>
+                    <h2 data-i18n="productsTitle">Tools for every part of the waste journey.</h2>
+                </div>
+                <p data-i18n="productsLead">One detection platform, shaped into focused products for visitors, operators, and facilities.</p>
+            </div>
+            <div class="product-grid">
+                <article class="product-card product-card-featured">
+                    <div class="product-image">
+                        <img src="models/sorteringsguide.png" alt="">
+                        <span class="product-status" data-i18n="availableNow">Available now</span>
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">01</p>
+                        <h3 data-i18n="productGuideTitle">Sorting Guide</h3>
+                        <p data-i18n="productGuideBody">Show an item to the camera and get the correct local waste fraction in seconds—on a phone or at a dedicated guide station.</p>
+                        <a href="#demo" data-i18n="tryGuide">Try the guide <span>→</span></a>
+                    </div>
+                </article>
+                <article class="product-card">
+                    <div class="product-image">
+                        <img src="models/teltovervågning.png" alt="">
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">02</p>
+                        <h3 data-i18n="productReuseTitle">Direct reuse</h3>
+                        <p data-i18n="productReuseBody">Understand visits, movement, and what finds a second life in direct-reuse areas.</p>
+                    </div>
+                </article>
+                <article class="product-card">
+                    <div class="product-image">
+                        <img src="models/modtagekontrol.png" alt="">
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">03</p>
+                        <h3 data-i18n="productControlTitle">Incoming waste control</h3>
+                        <p data-i18n="productControlBody">Review incoming loads and document sorting issues with clear visual evidence.</p>
+                    </div>
+                </article>
+                <article class="product-card">
+                    <div class="product-image">
+                        <img src="models/anlægsoptimering.png" alt="">
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">04</p>
+                        <h3 data-i18n="productFacilityTitle">Facility overview</h3>
+                        <p data-i18n="productFacilityBody">Bring cameras and operational signals together for a better view of flow across the facility.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="demo-section" id="demo">
+            <div class="demo-intro">
+                <p class="eyebrow" data-i18n="demoEyebrow">Live Sorting Guide</p>
+                <h2 data-i18n="demoTitle">Point. Capture.<br>Know where it goes.</h2>
+                <p data-i18n="demoLead">This is the same classification system used by our recycling-center guides. Choose a center, show one item, and get its local waste fraction.</p>
+                <div class="demo-steps">
+                    <div><span>1</span><p data-i18n="stepOne">Choose the recycling center</p></div>
+                    <div><span>2</span><p data-i18n="stepTwo">Show one item to the camera</p></div>
+                    <div><span>3</span><p data-i18n="stepThree">Get the local waste fraction</p></div>
+                </div>
+                <p class="privacy-note">
+                    <span data-i18n="privacy">The camera stays on your device until you analyze. Then we send that one photo.</span>
+                    <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
+                </p>
+            </div>
+
+            <div class="demo-card">
+                <div class="demo-toolbar">
+                    <span><i></i><span data-i18n="demoLive">Live demo</span></span>
+                    <span data-i18n="demoNoInstall">No install needed</span>
+                </div>
+                <div class="camera-stage" id="webcam-area">
+                    <div class="camera-placeholder" id="webcam-placeholder">
+                        <div class="camera-icon" aria-hidden="true">
+                            <span></span>
+                        </div>
+                        <strong data-i18n="cameraLabel">Use your camera</strong>
                         <p id="camera-status" data-i18n="cameraStart">Click to start</p>
                     </div>
                     <video id="webcam-video" autoplay playsinline muted></video>
                     <canvas id="frozen-frame"></canvas>
-                    <button type="button" id="camera-switch-btn" hidden data-i18n="switchCamera">Switch</button>
+                    <button type="button" id="camera-switch-btn" hidden data-i18n="switchCamera">Switch camera</button>
                 </div>
-
-                <div class="views" id="centers" role="radiogroup" aria-label="Recycling center">
+                <div class="center-picker" id="centers" role="radiogroup" aria-label="Recycling center">
                     <button type="button" data-site="roskilde" aria-pressed="true">Roskilde</button>
                     <button type="button" data-site="jyllinge" aria-pressed="false">Jyllinge</button>
                     <button type="button" data-site="vojens" aria-pressed="false">Vojens</button>
                 </div>
-
                 <div class="demo-actions">
                     <button type="button" id="analyze-btn" disabled data-i18n="analyzeNeedCamera">Enable camera</button>
-                    <button type="button" id="photo-btn" data-i18n="photo">Photo</button>
+                    <button type="button" id="photo-btn" data-i18n="photo">Choose photo</button>
                     <input id="photo-input" type="file" accept="image/*" hidden>
                 </div>
-
-                <dl class="specs result" aria-live="polite">
+                <div class="demo-result" aria-live="polite">
                     <div>
-                        <dt data-i18n="fractionLabel">Fraction</dt>
-                        <dd id="result-fraction">—</dd>
+                        <span data-i18n="fractionLabel">Waste fraction</span>
+                        <strong id="result-fraction">—</strong>
                     </div>
                     <div>
-                        <dt data-i18n="centerLabel">Center</dt>
-                        <dd id="result-center">Roskilde Recycling Center</dd>
+                        <span data-i18n="centerLabel">Recycling center</span>
+                        <strong id="result-center">Roskilde Recycling Center</strong>
                     </div>
-                </dl>
-                <p class="photo-note">
-                    <span data-i18n="privacy">The camera stays on your device until you analyze. Then we send that one photo.</span>
-                    <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
-                </p>
-            </section>
-
-            <section class="buy" aria-labelledby="specs-title">
-                <div class="specs">
-                    <h2 id="specs-title" data-i18n="specsTitle">Specifications</h2>
-                    <dl>
-                        <div>
-                            <dt data-i18n="specAnswerLabel">Answer</dt>
-                            <dd data-i18n="specAnswer">within 8 seconds</dd>
-                        </div>
-                        <div>
-                            <dt data-i18n="specUnitLabel">Unit</dt>
-                            <dd data-i18n="specUnit">screen, lights, AI, onboard compute, data management</dd>
-                        </div>
-                        <div>
-                            <dt data-i18n="specWhereLabel">Where</dt>
-                            <dd data-i18n="specWhere">Danish recycling centers</dd>
-                        </div>
-                        <div>
-                            <dt data-i18n="specWebLabel">Web</dt>
-                            <dd data-i18n="specWeb">this page, free of charge</dd>
-                        </div>
-                    </dl>
                 </div>
+            </div>
+        </section>
 
-                <form class="order">
-                    <fieldset>
-                        <legend data-i18n="priceTitle">Price</legend>
-                        <div class="choices">
-                            <label class="choice">
-                                <input type="radio" name="offer" value="app">
-                                <span class="choice-content">
-                                    <span class="choice-title" data-i18n="offerApp">App</span>
-                                    <span class="choice-description" data-i18n="offerAppBody">The guide on a phone, for one center.</span>
-                                    <span class="choice-price" data-price-for="app">15,000 kr setup + 5,000 kr/month</span>
-                                </span>
-                            </label>
-                            <label class="choice">
-                                <input type="radio" name="offer" value="box" checked>
-                                <span class="choice-content">
-                                    <span class="choice-title" data-i18n="offerBox">Box</span>
-                                    <span class="choice-description" data-i18n="offerBoxBody">The unit at the center.</span>
-                                    <span class="choice-price" data-price-for="box">25,000 kr setup + 5,000 kr/month</span>
-                                </span>
-                            </label>
-                            <label class="choice">
-                                <input type="radio" name="offer" value="both">
-                                <span class="choice-content">
-                                    <span class="choice-title" data-i18n="offerBoth">App + box</span>
-                                    <span class="choice-description" data-i18n="offerBothBody">Phone guide and the unit.</span>
-                                    <span class="choice-price" data-price-for="both">35,000 kr setup + 8,500 kr/month</span>
-                                </span>
-                            </label>
-                        </div>
-                    </fieldset>
+        <section class="approach-section">
+            <div class="approach-copy">
+                <p class="eyebrow" data-i18n="approachEyebrow">Built from the ground up</p>
+                <h2 data-i18n="approachTitle">Waste operations are physical. Our AI is too.</h2>
+                <p data-i18n="approachBody">We combine cameras, lighting, onboard compute, software, and facility knowledge. That lets us build systems around the real conditions on site—not around a perfect laboratory image.</p>
+                <a href="vision.html" data-i18n="readVision">Read our vision <span>→</span></a>
+            </div>
+            <div class="approach-list">
+                <article>
+                    <span>01</span>
+                    <div>
+                        <h3 data-i18n="approachOneTitle">Start with the decision</h3>
+                        <p data-i18n="approachOneBody">Give visitors and operators an answer they can act on.</p>
+                    </div>
+                </article>
+                <article>
+                    <span>02</span>
+                    <div>
+                        <h3 data-i18n="approachTwoTitle">Learn from real facilities</h3>
+                        <p data-i18n="approachTwoBody">Develop with the changing objects, light, weather, and flow found on site.</p>
+                    </div>
+                </article>
+                <article>
+                    <span>03</span>
+                    <div>
+                        <h3 data-i18n="approachThreeTitle">Connect the overview</h3>
+                        <p data-i18n="approachThreeBody">Turn individual detections into useful operational knowledge.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
 
-                    <a id="checkout" href="mailto:lucas@easysort.org?subject=Sorting%20Guide&amp;body=Box%0A25%2C000%20kr%20setup%20%2B%205%2C000%20kr%2Fmonth%0APer%20recycling%20center%2C%20ex.%20VAT.">
-                        <span data-i18n="order">Order</span>
-                        <span id="checkout-price">25,000 kr setup + 5,000 kr/month</span>
-                    </a>
-                    <p class="checkout-note" data-i18n="priceNote">Per recycling center, ex. VAT. We confirm by email before invoicing.</p>
-                </form>
-            </section>
-        </div>
+        <section class="contact-section">
+            <p class="eyebrow" data-i18n="contactEyebrow">Start a conversation</p>
+            <h2 data-i18n="contactTitle">What should be easier to see at your facility?</h2>
+            <p data-i18n="contactBody">Show us the operation, the difficult decision, or the blind spot. We will tell you honestly where computer vision can help.</p>
+            <div class="contact-actions">
+                <a class="button button-white" href="https://app.cal.com/easysort" target="_blank" rel="noreferrer" data-i18n="bookCall">Book a conversation</a>
+                <a class="contact-mail" href="mailto:lucas@easysort.org">lucas@easysort.org <span>→</span></a>
+            </div>
+        </section>
     </main>
 
-    <footer>
-        <span>Easysort</span>
-        <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
-        <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
-        <a href="vision.html" data-i18n="visionLink">Vision</a>
+    <footer class="site-footer">
+        <div class="footer-brand">
+            <img src="logo.png" alt="Easysort">
+            <p data-i18n="footerLine">Intelligent waste detection systems.</p>
+        </div>
+        <div class="footer-links">
+            <a href="#products" data-i18n="navProducts">Products</a>
+            <a href="vision.html" data-i18n="navVision">Vision</a>
+            <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
+            <a href="https://docs.easysort.org">Docs</a>
+            <a href="https://github.com/Easysort">GitHub</a>
+        </div>
+        <p class="footer-note">© 2026 Easysort</p>
     </footer>
 
-    <script src="script.js?v=20261013"></script>
+    <script src="homepage.js?v=20261013"></script>
 </body>
 </html>
