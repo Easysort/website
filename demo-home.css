@@ -1,0 +1,292 @@
+@import url("homepage.css?v=20261013");
+
+.demo-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(500px, 1.18fr);
+    gap: clamp(48px, 7vw, 110px);
+    align-items: center;
+    min-height: 860px;
+    padding: 132px clamp(28px, 7vw, 110px) 70px;
+    background:
+        radial-gradient(circle at 84% 15%, rgba(45, 84, 116, 0.13), transparent 29%),
+        radial-gradient(circle at 12% 86%, rgba(23, 139, 73, 0.1), transparent 28%),
+        linear-gradient(145deg, #f9fbfa, #eef6f1);
+}
+
+.demo-hero-copy h1 {
+    max-width: 720px;
+    font-size: clamp(3.3rem, 6.4vw, 6.5rem);
+    font-weight: 790;
+    letter-spacing: -0.07em;
+    line-height: 0.93;
+}
+
+.demo-hero-copy .hero-lead {
+    max-width: 590px;
+    margin-top: 27px;
+    color: #43505d;
+    font-size: clamp(1.08rem, 1.6vw, 1.25rem);
+    line-height: 1.65;
+}
+
+.hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+}
+
+.hero-badges > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 0 13px;
+    border: 1px solid #d7e2da;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: #3e4a56;
+    font-size: 0.76rem;
+    font-weight: 720;
+}
+
+.hero-badges i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+}
+
+.demo-hero .demo-card {
+    width: 100%;
+    max-width: 760px;
+    justify-self: end;
+    border-color: rgba(17, 24, 39, 0.08);
+    box-shadow: 0 34px 90px rgba(17, 24, 39, 0.15);
+}
+
+.demo-hero .camera-stage {
+    aspect-ratio: 16 / 10;
+}
+
+.center-label {
+    padding-top: 13px;
+    color: #69756e;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.demo-hero .center-picker {
+    padding-top: 8px;
+}
+
+.demo-privacy {
+    margin: 12px 3px 0;
+    color: #7f8983;
+    font-size: 0.69rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.demo-privacy a {
+    margin-left: 4px;
+    color: #455149;
+}
+
+.proof-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--white);
+}
+
+.proof-item {
+    min-width: 0;
+    padding: 34px clamp(20px, 3vw, 48px);
+    border-right: 1px solid var(--line);
+}
+
+.proof-item:last-child {
+    border-right: 0;
+}
+
+.proof-item strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--green-dark);
+    font-size: clamp(1.45rem, 2.8vw, 2.25rem);
+    letter-spacing: -0.045em;
+    line-height: 1;
+}
+
+.proof-item span {
+    display: block;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.partner-strip {
+    padding-top: 40px;
+    padding-bottom: 42px;
+    border-top: 0;
+    background: #f9faf9;
+}
+
+.products-section {
+    padding-top: clamp(78px, 9vw, 125px);
+}
+
+.product-copy a {
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgba(15, 109, 57, 0.25);
+}
+
+.contact-section {
+    margin-top: 0;
+}
+
+@media (max-width: 940px) {
+    .demo-hero {
+        grid-template-columns: 1fr;
+        gap: 42px;
+        padding-top: 128px;
+    }
+
+    .demo-hero-copy {
+        max-width: 740px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .demo-hero-copy .hero-lead {
+        margin-inline: auto;
+    }
+
+    .hero-badges {
+        justify-content: center;
+    }
+
+    .demo-hero .demo-card {
+        max-width: 700px;
+        justify-self: center;
+    }
+
+    .proof-strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .proof-item:nth-child(2) {
+        border-right: 0;
+    }
+
+    .proof-item:nth-child(-n + 2) {
+        border-bottom: 1px solid var(--line);
+    }
+}
+
+@media (max-width: 640px) {
+    html {
+        scroll-padding-top: 76px;
+    }
+
+    .demo-hero {
+        min-height: auto;
+        gap: 27px;
+        padding: 103px 14px 28px;
+    }
+
+    .demo-hero-copy {
+        padding-inline: 7px;
+        text-align: left;
+    }
+
+    .demo-hero-copy .eyebrow {
+        margin-bottom: 11px;
+    }
+
+    .demo-hero-copy h1 {
+        max-width: 10ch;
+        margin: 0;
+        font-size: clamp(2.85rem, 13vw, 3.7rem);
+        line-height: 0.94;
+    }
+
+    .demo-hero-copy .hero-lead {
+        margin-top: 17px;
+        font-size: 0.96rem;
+        line-height: 1.55;
+    }
+
+    .hero-badges {
+        justify-content: flex-start;
+        gap: 6px;
+        margin-top: 19px;
+    }
+
+    .hero-badges > span {
+        min-height: 31px;
+        padding-inline: 10px;
+        font-size: 0.67rem;
+    }
+
+    .hero-badges > span:last-child {
+        display: none;
+    }
+
+    .demo-hero .demo-card {
+        padding: 9px;
+        border-radius: 20px;
+        box-shadow: 0 20px 55px rgba(17, 24, 39, 0.14);
+    }
+
+    .demo-toolbar {
+        padding: 3px 3px 10px;
+    }
+
+    .demo-hero .camera-stage {
+        aspect-ratio: 4 / 3;
+        border-radius: 13px;
+    }
+
+    .camera-icon {
+        width: 54px;
+        height: 43px;
+    }
+
+    .center-label {
+        padding: 10px 2px 0;
+    }
+
+    .center-picker {
+        padding-bottom: 7px;
+    }
+
+    .demo-result {
+        margin-top: 8px;
+    }
+
+    .demo-result > div {
+        padding: 13px;
+    }
+
+    .proof-item {
+        padding: 25px 18px;
+    }
+
+    .proof-item strong {
+        font-size: 1.45rem;
+    }
+
+    .partner-strip {
+        padding-top: 31px;
+        padding-bottom: 34px;
+    }
+
+    .products-section {
+        padding-top: 72px;
+    }
+}

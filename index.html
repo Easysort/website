@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Easysort builds intelligent waste detection systems for recycling centers and waste facilities.">
     <title>Easysort — See waste clearly</title>
-    <link rel="stylesheet" href="homepage.css?v=20261013">
+    <link rel="stylesheet" href="demo-home.css?v=20261013">
 </head>
 <body data-worker="https://website-workers.lucas-vilsen.workers.dev/classify">
     <header class="site-header">
@@ -28,134 +28,34 @@
     </header>
 
     <main id="top">
-        <section class="hero">
-            <div class="hero-copy">
-                <p class="eyebrow" data-i18n="heroEyebrow">Intelligent waste detection</p>
-                <h1 data-i18n="heroTitle">See waste clearly.<br>Sort it better.</h1>
-                <p class="hero-lead" data-i18n="heroLead">Practical AI for recycling centers and waste facilities—from helping a visitor find the right container to giving operators a clearer view of the entire site.</p>
-                <div class="hero-actions">
-                    <a class="button button-green" href="#products" data-i18n="heroProducts">Explore our products</a>
-                    <a class="button button-light" href="#demo" data-i18n="heroDemo">Try the live demo</a>
+        <section class="demo-hero" id="demo">
+            <div class="demo-hero-copy">
+                <p class="eyebrow" data-i18n="heroEyebrow">Free Sorting Guide</p>
+                <h1 data-i18n="heroTitle">Where should this waste go?</h1>
+                <p class="hero-lead" data-i18n="heroLead">Take a photo and get the correct fraction for your Danish recycling center. Free for anyone to use.</p>
+                <div class="hero-badges">
+                    <span><i></i><span data-i18n="proofFree">Always free</span></span>
+                    <span><i></i><span data-i18n="proofNoAccount">No account</span></span>
+                    <span><i></i><span data-i18n="proofDanish">Made for Danish recycling sites</span></span>
                 </div>
-                <div class="hero-proof" aria-label="Product highlights">
-                    <span data-i18n="proofOne">Built for real facilities</span>
-                    <span data-i18n="proofTwo">Live in Denmark</span>
-                    <span data-i18n="proofThree">Open technology</span>
-                </div>
-            </div>
-            <div class="hero-visual" aria-label="Easysort camera unit">
-                <div class="hero-orbit hero-orbit-one"></div>
-                <div class="hero-orbit hero-orbit-two"></div>
-                <img src="product.png" alt="Easysort camera and lighting unit">
-                <div class="signal-card signal-card-top">
-                    <span class="signal-dot"></span>
-                    <span data-i18n="signalLive">Live detection</span>
-                </div>
-                <div class="signal-card signal-card-bottom">
-                    <strong>8 sec.</strong>
-                    <span data-i18n="signalAnswer">to an answer</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="partner-strip" aria-label="Organizations we work with">
-            <p data-i18n="partnersLabel">Working with ambitious teams across the waste sector</p>
-            <div class="partner-logos">
-                <img src="logos/argo.png" alt="ARGO">
-                <img src="logos/dtu.png" alt="DTU">
-                <img src="logos/kk.webp" alt="Københavns Kommune">
-                <img src="logos/norfors.png" alt="Norfors">
-                <img src="logos/verdis.png" alt="Verdis">
-            </div>
-        </section>
-
-        <section class="section products-section" id="products">
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow" data-i18n="productsEyebrow">What we build</p>
-                    <h2 data-i18n="productsTitle">Tools for every part of the waste journey.</h2>
-                </div>
-                <p data-i18n="productsLead">One detection platform, shaped into focused products for visitors, operators, and facilities.</p>
-            </div>
-            <div class="product-grid">
-                <article class="product-card product-card-featured">
-                    <div class="product-image">
-                        <img src="models/sorteringsguide.png" alt="">
-                        <span class="product-status" data-i18n="availableNow">Available now</span>
-                    </div>
-                    <div class="product-copy">
-                        <p class="product-number">01</p>
-                        <h3 data-i18n="productGuideTitle">Sorting Guide</h3>
-                        <p data-i18n="productGuideBody">Show an item to the camera and get the correct local waste fraction in seconds—on a phone or at a dedicated guide station.</p>
-                        <a href="#demo" data-i18n="tryGuide">Try the guide <span>→</span></a>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="models/teltovervågning.png" alt="">
-                    </div>
-                    <div class="product-copy">
-                        <p class="product-number">02</p>
-                        <h3 data-i18n="productReuseTitle">Direct reuse</h3>
-                        <p data-i18n="productReuseBody">Understand visits, movement, and what finds a second life in direct-reuse areas.</p>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="models/modtagekontrol.png" alt="">
-                    </div>
-                    <div class="product-copy">
-                        <p class="product-number">03</p>
-                        <h3 data-i18n="productControlTitle">Incoming waste control</h3>
-                        <p data-i18n="productControlBody">Review incoming loads and document sorting issues with clear visual evidence.</p>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="models/anlægsoptimering.png" alt="">
-                    </div>
-                    <div class="product-copy">
-                        <p class="product-number">04</p>
-                        <h3 data-i18n="productFacilityTitle">Facility overview</h3>
-                        <p data-i18n="productFacilityBody">Bring cameras and operational signals together for a better view of flow across the facility.</p>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-        <section class="demo-section" id="demo">
-            <div class="demo-intro">
-                <p class="eyebrow" data-i18n="demoEyebrow">Live Sorting Guide</p>
-                <h2 data-i18n="demoTitle">Point. Capture.<br>Know where it goes.</h2>
-                <p data-i18n="demoLead">This is the same classification system used by our recycling-center guides. Choose a center, show one item, and get its local waste fraction.</p>
-                <div class="demo-steps">
-                    <div><span>1</span><p data-i18n="stepOne">Choose the recycling center</p></div>
-                    <div><span>2</span><p data-i18n="stepTwo">Show one item to the camera</p></div>
-                    <div><span>3</span><p data-i18n="stepThree">Get the local waste fraction</p></div>
-                </div>
-                <p class="privacy-note">
-                    <span data-i18n="privacy">The camera stays on your device until you analyze. Then we send that one photo.</span>
-                    <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
-                </p>
             </div>
 
             <div class="demo-card">
                 <div class="demo-toolbar">
-                    <span><i></i><span data-i18n="demoLive">Live demo</span></span>
-                    <span data-i18n="demoNoInstall">No install needed</span>
+                    <span><i></i><span data-i18n="demoLive">Live Sorting Guide</span></span>
+                    <span data-i18n="demoNoInstall">Free · no install</span>
                 </div>
                 <div class="camera-stage" id="webcam-area">
                     <div class="camera-placeholder" id="webcam-placeholder">
-                        <div class="camera-icon" aria-hidden="true">
-                            <span></span>
-                        </div>
-                        <strong data-i18n="cameraLabel">Use your camera</strong>
-                        <p id="camera-status" data-i18n="cameraStart">Click to start</p>
+                        <div class="camera-icon" aria-hidden="true"><span></span></div>
+                        <strong data-i18n="cameraLabel">Show one item</strong>
+                        <p id="camera-status" data-i18n="cameraStart">Tap to use your camera</p>
                     </div>
                     <video id="webcam-video" autoplay playsinline muted></video>
                     <canvas id="frozen-frame"></canvas>
                     <button type="button" id="camera-switch-btn" hidden data-i18n="switchCamera">Switch camera</button>
                 </div>
+                <div class="center-label" data-i18n="chooseCenter">Choose your recycling center</div>
                 <div class="center-picker" id="centers" role="radiogroup" aria-label="Recycling center">
                     <button type="button" data-site="roskilde" aria-pressed="true">Roskilde</button>
                     <button type="button" data-site="jyllinge" aria-pressed="false">Jyllinge</button>
@@ -176,36 +76,95 @@
                         <strong id="result-center">Roskilde Recycling Center</strong>
                     </div>
                 </div>
+                <p class="demo-privacy">
+                    <span data-i18n="privacyShort">Only the photo you analyze is sent.</span>
+                    <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
+                </p>
             </div>
         </section>
 
-        <section class="approach-section">
-            <div class="approach-copy">
-                <p class="eyebrow" data-i18n="approachEyebrow">Built from the ground up</p>
-                <h2 data-i18n="approachTitle">Waste operations are physical. Our AI is too.</h2>
-                <p data-i18n="approachBody">We combine cameras, lighting, onboard compute, software, and facility knowledge. That lets us build systems around the real conditions on site—not around a perfect laboratory image.</p>
-                <a href="vision.html" data-i18n="readVision">Read our vision <span>→</span></a>
+        <section class="proof-strip" aria-label="Sorting Guide proof">
+            <div class="proof-item">
+                <strong>3</strong>
+                <span data-i18n="metricSites">local recycling-center catalogs</span>
             </div>
-            <div class="approach-list">
-                <article>
-                    <span>01</span>
-                    <div>
-                        <h3 data-i18n="approachOneTitle">Start with the decision</h3>
-                        <p data-i18n="approachOneBody">Give visitors and operators an answer they can act on.</p>
+            <div class="proof-item">
+                <strong>≈ 8 sec.</strong>
+                <span data-i18n="metricSpeed">to a sorting answer</span>
+            </div>
+            <div class="proof-item">
+                <strong>0 kr.</strong>
+                <span data-i18n="metricPrice">for everyone using the web guide</span>
+            </div>
+            <div class="proof-item">
+                <strong data-i18n="metricLiveValue">Live</strong>
+                <span data-i18n="metricLive">at Danish recycling centers</span>
+            </div>
+        </section>
+
+        <section class="partner-strip" aria-label="Organizations we work with">
+            <p data-i18n="partnersLabel">Developed and tested with teams in the Danish waste sector</p>
+            <div class="partner-logos">
+                <img src="logos/argo.png" alt="ARGO">
+                <img src="logos/dtu.png" alt="DTU">
+                <img src="logos/kk.webp" alt="Københavns Kommune">
+                <img src="logos/norfors.png" alt="Norfors">
+                <img src="logos/verdis.png" alt="Verdis">
+            </div>
+        </section>
+
+        <section class="section products-section" id="products">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow" data-i18n="productsEyebrow">Easysort products</p>
+                    <h2 data-i18n="productsTitle">See what else we are building.</h2>
+                </div>
+                <p data-i18n="productsLead">The free guide is one part of a larger system for understanding waste, reuse, and facility operations.</p>
+            </div>
+            <div class="product-grid">
+                <article class="product-card product-card-featured">
+                    <div class="product-image">
+                        <img src="models/sorteringsguide.png" alt="">
+                        <span class="product-status" data-i18n="availableNow">Available now</span>
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">01</p>
+                        <h3 data-i18n="productGuideTitle">Sorting Guide</h3>
+                        <p data-i18n="productGuideBody">Show an item to the camera and get the correct local waste fraction in seconds—on a phone or at a dedicated guide station.</p>
+                        <a href="#demo" data-i18n="tryGuide">Use for free <span>→</span></a>
                     </div>
                 </article>
-                <article>
-                    <span>02</span>
-                    <div>
-                        <h3 data-i18n="approachTwoTitle">Learn from real facilities</h3>
-                        <p data-i18n="approachTwoBody">Develop with the changing objects, light, weather, and flow found on site.</p>
+                <article class="product-card">
+                    <div class="product-image">
+                        <img src="models/teltovervågning.png" alt="">
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">02</p>
+                        <h3 data-i18n="productReuseTitle">Direct reuse</h3>
+                        <p data-i18n="productReuseBody">Understand visits, movement, and what finds a second life in direct-reuse areas.</p>
+                        <a href="mailto:lucas@easysort.org?subject=Direct%20reuse" data-i18n="viewProduct">View product <span>→</span></a>
                     </div>
                 </article>
-                <article>
-                    <span>03</span>
-                    <div>
-                        <h3 data-i18n="approachThreeTitle">Connect the overview</h3>
-                        <p data-i18n="approachThreeBody">Turn individual detections into useful operational knowledge.</p>
+                <article class="product-card">
+                    <div class="product-image">
+                        <img src="models/modtagekontrol.png" alt="">
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">03</p>
+                        <h3 data-i18n="productControlTitle">Incoming waste control</h3>
+                        <p data-i18n="productControlBody">Review incoming loads and document sorting issues with clear visual evidence.</p>
+                        <a href="mailto:lucas@easysort.org?subject=Incoming%20waste%20control" data-i18n="viewProduct">View product <span>→</span></a>
+                    </div>
+                </article>
+                <article class="product-card">
+                    <div class="product-image">
+                        <img src="models/anlægsoptimering.png" alt="">
+                    </div>
+                    <div class="product-copy">
+                        <p class="product-number">04</p>
+                        <h3 data-i18n="productFacilityTitle">Facility overview</h3>
+                        <p data-i18n="productFacilityBody">Bring cameras and operational signals together for a better view of flow across the facility.</p>
+                        <a href="mailto:lucas@easysort.org?subject=Facility%20overview" data-i18n="viewProduct">View product <span>→</span></a>
                     </div>
                 </article>
             </div>
