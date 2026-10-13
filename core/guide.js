@@ -70,8 +70,17 @@ const translations = {
         askStaffPill: 'Til personalet',
         unassignedTitle: 'Spørg personalet',
         unassignedBody: 'Vi har ikke en fast container til dette her. Vis det til personalet – de hjælper dig med at komme af med det på det rigtige sted.',
+        issuePill: 'Prøv igen',
+        issueTitle_bad_image: 'Dårligt billede',
+        issueBody_bad_image: 'Billedet er sløret, afskåret eller dækket. Tag et nyt, tættere på genstanden.',
+        issueTitle_bad_lighting: 'Dårlig belysning',
+        issueBody_bad_lighting: 'Der er for mørkt eller for lyst til at se genstanden. Find bedre lys og prøv igen.',
+        issueTitle_mixed_waste: 'Blandet affald',
+        issueBody_mixed_waste: 'Der er flere slags affald. Tag et billede af én ting ad gangen.',
+        noItemTitle: 'Ingen genstand fundet',
+        noItemBody: 'Vi kan ikke se en genstand, der skal sorteres. Placér affaldet tydeligt i billedet og prøv igen.',
         multipleItemsTitle: 'Flere genstande på billedet',
-        multipleItemsBody: 'Resultatet gælder kun den valgte genstand. Scan de andre genstande hver for sig.',
+        multipleItemsBody: 'Genstandene skal sorteres hver for sig:',
         alternativePrefix: 'Det kan også være:',
         alternativeAdvice: 'Spørg personalet, hvis du er i tvivl mellem de to.',
         separatePrefix: 'Skil fra:',
@@ -120,8 +129,17 @@ const translations = {
         askStaffPill: 'Ask the staff',
         unassignedTitle: 'Ask the staff',
         unassignedBody: 'We do not have a fixed container for this on site. Show it to the staff – they will help you drop it in the right place.',
+        issuePill: 'Try again',
+        issueTitle_bad_image: 'Bad image',
+        issueBody_bad_image: 'The photo is blurry, cut off, or blocked. Take a new one, closer to the object.',
+        issueTitle_bad_lighting: 'Bad lighting',
+        issueBody_bad_lighting: 'It is too dark or too bright to see the object. Find better light and try again.',
+        issueTitle_mixed_waste: 'Mixed waste',
+        issueBody_mixed_waste: 'There are several kinds of waste. Take a photo of one thing at a time.',
+        noItemTitle: 'No item found',
+        noItemBody: 'We cannot see an item to sort. Place the waste clearly in the photo and try again.',
         multipleItemsTitle: 'Multiple items in the photo',
-        multipleItemsBody: 'This result only applies to the selected item. Scan the other items separately.',
+        multipleItemsBody: 'Sort the detected items separately:',
         alternativePrefix: 'It could also be:',
         alternativeAdvice: 'Ask the staff if you are unsure which of the two applies.',
         separatePrefix: 'Separate:',
@@ -726,7 +744,8 @@ async function fetchWithTimeout(url, options) {
 /* Returns the shared worker's classification decision or throws on failure. */
 async function classifyImage(imageBase64) {
     const started = performance.now();
-    const wantsMany = typeof window.tripWantsMultiple === 'function' && window.tripWantsMultiple();
+    const wantsMany = CONFIG.features?.multipleItems === true
+        || (typeof window.tripWantsMultiple === 'function' && window.tripWantsMultiple());
     const response = await fetchWithTimeout(GENBRUGSPLADS_WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -756,6 +775,8 @@ async function classifyImage(imageBase64) {
         separate: data.result.separate || null,
         multipleItems: data.result.multipleItems === true,
         directReuse: data.result.directReuse === true,
+        issue: data.result.issue || '',
+        noItem: data.result.noItem === true,
         items: Array.isArray(data.result.items) ? data.result.items : null,
         multi: wantsMany,
         timing: data.timing && typeof data.timing === 'object' ? data.timing : null,
@@ -1037,9 +1058,23 @@ function showResult(result, { scroll = true } = {}) {
     const separateEl = document.getElementById('result-separate');
     const separateTitle = document.getElementById('result-separate-title');
     const reuseEl = document.getElementById('result-reuse');
-    const askStaff = result.askStaff === true || !primary;
+    const issue = result.issue || '';
+    const noItem = result.noItem === true;
+    const askStaff = !issue && !noItem && (result.askStaff === true || !primary);
 
-    if (!askStaff) {
+    if (noItem) {
+        card.classList.add('unassigned');
+        nameEl.textContent = t('noItemTitle');
+        pillEl.textContent = t('issuePill');
+        instructionsEl.textContent = t('noItemBody');
+        renderMap(null);
+    } else if (issue) {
+        card.classList.add('unassigned');
+        nameEl.textContent = t('issueTitle_' + issue) || result.description || t('unassignedTitle');
+        pillEl.textContent = t('issuePill');
+        instructionsEl.textContent = t('issueBody_' + issue) || t('unassignedBody');
+        renderMap(null);
+    } else if (!askStaff) {
         card.classList.remove('unassigned');
         nameEl.textContent = primary.name[currentLanguage];
         pillEl.textContent = t('resultPill');
@@ -1055,8 +1090,22 @@ function showResult(result, { scroll = true } = {}) {
         renderMap(null);
     }
 
-    multipleEl.hidden = result.multipleItems !== true;
-    if (!multipleEl.hidden) multipleBody.textContent = t('multipleItemsBody');
+    const detectedItems = Array.isArray(result.items) ? result.items : [];
+    multipleEl.hidden = result.multipleItems !== true || detectedItems.length < 2;
+    if (!multipleEl.hidden) {
+        multipleBody.textContent = t('multipleItemsBody');
+        detectedItems.forEach((detected) => {
+            const line = document.createElement('div');
+            const key = resolveMapKey(detected.catalogFraction || detected.fraction);
+            const mapped = key ? FRACTION_BY_KEY.get(key) : null;
+            const fractionName = mapped
+                ? mapped.name[currentLanguage]
+                : (detected.catalogFraction || detected.fraction || t('unassignedTitle'));
+            line.textContent = `${detected.description || detected.item || '—'} → ${fractionName}`;
+            if (detected.guidance) line.textContent += ` · ${detected.guidance}`;
+            multipleBody.appendChild(line);
+        });
+    }
 
     const alternativeFraction = result.alternative?.fraction || '';
     if (!askStaff && alternativeFraction) {
@@ -1132,12 +1181,13 @@ function flashDetection(result) {
     const header = document.getElementById('main-header');
     const banner = document.getElementById('detection-banner');
     const mapKey = result.keys && result.keys[0];
-    const fraction = result.askStaff === true
+    const fraction = result.issue || result.askStaff === true
         ? null
         : (mapKey ? FRACTION_BY_KEY.get(mapKey) : null);
-    const what = result.description || result.item || '';
-    const fractionName = fraction ? fraction.name[currentLanguage]
-        : (result.catalogFraction || t('unassignedTitle'));
+    const what = result.issue ? '' : (result.description || result.item || '');
+    const fractionName = result.issue
+        ? (t('issueTitle_' + result.issue) || result.description)
+        : (fraction ? fraction.name[currentLanguage] : (result.catalogFraction || t('unassignedTitle')));
     const color = fraction ? (COLORS[fraction.color] || fraction.color) : null;
 
     banner.innerHTML = '';
@@ -1200,6 +1250,9 @@ function payloadFromResult(result) {
         separate: result.separate,
         multipleItems: result.multipleItems,
         directReuse: result.directReuse,
+        issue: result.issue || '',
+        noItem: result.noItem === true,
+        items: Array.isArray(result.items) ? result.items : null,
         timing: result.timing,
         browserMs: result.browserMs
     };
@@ -1222,7 +1275,7 @@ document.getElementById('identify-btn').addEventListener('click', async () => {
 
     try {
         const result = await classifyImage(imageBase64);
-        if (!result.fraction && !result.description && !(result.items && result.items.length)) {
+        if (!result.fraction && !result.description && !result.issue && !(result.items && result.items.length)) {
             setStatus(t('noMatch'), true);
         } else {
             const payload = payloadFromResult(result);

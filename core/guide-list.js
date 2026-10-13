@@ -478,6 +478,7 @@
     };
 
     window.tripHandleClassification = function (payload) {
+        if (payload && payload.issue) return false;
         if (payload && payload.multi && Array.isArray(payload.items) && payload.items.length) {
             addMany(payload.items);
             if (screen !== 'collect') enterCollecting();
