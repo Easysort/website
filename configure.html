@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Configure an Easysort product.">
+    <title>Configure — Easysort</title>
+    <link rel="stylesheet" href="configure.css?v=20261013">
+</head>
+<body>
+    <header>
+        <a class="brand" href="./"><img src="logo.png" alt="Easysort"></a>
+        <div class="header-actions">
+            <div class="language-switch" role="group" aria-label="Language">
+                <button type="button" data-language-option="en" aria-pressed="true">EN</button>
+                <button type="button" data-language-option="da" aria-pressed="false">DA</button>
+            </div>
+            <a href="./" data-i18n="back">Back</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="intro">
+            <p data-i18n="eyebrow">Configure</p>
+            <h1 data-i18n="title">Choose what you need.</h1>
+        </div>
+
+        <form id="config-form">
+            <div class="config-grid">
+                <section class="product-view">
+                    <div class="image-stage">
+                        <img id="product-image" src="models/sorteringsguide.png" alt="">
+                    </div>
+                    <h2 id="product-title">Sorting Guide</h2>
+                    <p id="product-description">Help visitors sort correctly on a phone or at a fixed station.</p>
+                </section>
+
+                <section class="choices">
+                    <fieldset>
+                        <legend><span>1</span><span data-i18n="chooseProduct">Product</span></legend>
+                        <div class="product-toggle">
+                            <label>
+                                <input type="radio" name="product" value="sorting" checked>
+                                <span data-i18n="sorting">Sorting Guide</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="product" value="monitoring">
+                                <span data-i18n="monitoring">Monitoring Box</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend><span>2</span><span data-i18n="chooseService">Service</span></legend>
+                        <div class="service-options" id="service-options"></div>
+                        <ul class="included-list" id="included-list"></ul>
+                    </fieldset>
+
+                    <fieldset class="quantity-field">
+                        <legend><span>3</span><span data-i18n="quantity">Locations</span></legend>
+                        <div class="quantity-control">
+                            <button type="button" id="decrease" aria-label="Decrease">−</button>
+                            <output id="quantity-output">1</output>
+                            <button type="button" id="increase" aria-label="Increase">+</button>
+                        </div>
+                        <p id="saving-note"></p>
+                    </fieldset>
+
+                    <section class="price-box">
+                        <div>
+                            <span data-i18n="setup">Example setup</span>
+                            <strong id="setup-price">—</strong>
+                        </div>
+                        <div>
+                            <span data-i18n="monthly">Example monthly</span>
+                            <strong id="monthly-price">—</strong>
+                        </div>
+                        <p data-i18n="placeholder">Placeholder prices—not an offer.</p>
+                    </section>
+
+                    <button class="continue-button" id="continue-button" type="button">
+                        <span data-i18n="continue">Continue</span><span>→</span>
+                    </button>
+                </section>
+            </div>
+
+            <section class="contact-panel" id="contact-panel" hidden>
+                <div>
+                    <p class="contact-eyebrow" data-i18n="lastStep">Last step</p>
+                    <h2 data-i18n="contactTitle">Where should we contact you?</h2>
+                    <p data-i18n="contactLead">No payment now. We will confirm the final setup, delivery, and payment with you.</p>
+                </div>
+                <div class="contact-fields">
+                    <label><span data-i18n="name">Name</span><input name="name" autocomplete="name" required></label>
+                    <label><span data-i18n="company">Organization</span><input name="company" autocomplete="organization" required></label>
+                    <label><span data-i18n="email">Email</span><input type="email" name="email" autocomplete="email" required></label>
+                    <label><span data-i18n="locations">Location(s)</span><input name="locations" required></label>
+                    <label class="wide"><span data-i18n="note">Note (optional)</span><textarea name="note" rows="3"></textarea></label>
+                    <button type="submit"><span data-i18n="send">Prepare request</span><span>→</span></button>
+                    <p class="mail-note" data-i18n="mailNote">Opens a prepared email for you to send.</p>
+                </div>
+            </section>
+        </form>
+    </main>
+
+    <footer>
+        <span>Easysort</span>
+        <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+        <a href="privacy.html" data-i18n="privacy">Privacy</a>
+    </footer>
+
+    <script src="configure.js?v=20261013"></script>
+</body>
+</html>

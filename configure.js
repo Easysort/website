@@ -1,0 +1,321 @@
+const STORAGE_KEY = 'easysort-language';
+
+const PRODUCTS = {
+    sorting: {
+        image: 'models/sorteringsguide.png',
+        titleKey: 'sorting',
+        descriptionKey: 'sortingDescription',
+        services: ['app', 'software', 'hardware', 'managed']
+    },
+    monitoring: {
+        image: 'models/teltovervågning.png',
+        titleKey: 'monitoring',
+        descriptionKey: 'monitoringDescription',
+        services: ['software', 'hardware', 'managed']
+    }
+};
+
+const SERVICES = {
+    sorting: {
+        app: { setup: 15000, monthly: 1500, label: 'serviceApp', perks: ['localCatalog', 'hosting', 'updates'] },
+        software: { setup: 20000, monthly: 2500, label: 'serviceSoftware', perks: ['ownHardware', 'setupHelp', 'updates'] },
+        hardware: { setup: 35000, monthly: 2000, label: 'serviceHardware', perks: ['completeStation', 'handover', 'customerOperated'] },
+        managed: { setup: 45000, monthly: 5500, label: 'serviceManaged', perks: ['completeStation', 'healthMonitoring', 'maintenance'] }
+    },
+    monitoring: {
+        software: { setup: 18000, monthly: 2000, label: 'serviceSoftware', perks: ['ownHardware', 'dashboard', 'updates'] },
+        hardware: { setup: 28000, monthly: 1500, label: 'serviceHardware', perks: ['monitoringBox', 'handover', 'customerOperated'] },
+        managed: { setup: 38000, monthly: 4500, label: 'serviceManaged', perks: ['monitoringBox', 'healthMonitoring', 'maintenance'] }
+    }
+};
+
+const copy = {
+    en: {
+        pageTitle: 'Configure — Easysort',
+        back: 'Back',
+        eyebrow: 'Configure',
+        title: 'Choose what you need.',
+        chooseProduct: 'Product',
+        chooseService: 'Service',
+        quantity: 'Locations',
+        sorting: 'Sorting Guide',
+        monitoring: 'Monitoring Box',
+        sortingDescription: 'Help visitors sort correctly on a phone or at a fixed station.',
+        monitoringDescription: 'Monitor activity or find misplaced items in containers.',
+        serviceApp: 'App',
+        serviceSoftware: 'Use your hardware',
+        serviceHardware: 'We supply it; you operate it',
+        serviceManaged: 'Fully managed by Easysort',
+        localCatalog: 'Local sorting catalog',
+        hosting: 'Hosting included',
+        updates: 'Software updates',
+        ownHardware: 'Your camera and screen',
+        setupHelp: 'Setup help',
+        completeStation: 'Complete station',
+        monitoringBox: 'Camera box included',
+        handover: 'Installation and handover',
+        customerOperated: 'You control and maintain it',
+        dashboard: 'Overview dashboard',
+        healthMonitoring: 'Health monitoring',
+        maintenance: 'Maintenance and replacement',
+        setup: 'Example setup',
+        monthly: 'Example monthly',
+        placeholder: 'Placeholder prices—not an offer.',
+        continue: 'Continue',
+        saveMore: 'Add more locations to see example savings.',
+        saving: '{percent}% example saving for {quantity} locations.',
+        lastStep: 'Last step',
+        contactTitle: 'Where should we contact you?',
+        contactLead: 'No payment now. We will confirm the final setup, delivery, and payment with you.',
+        name: 'Name',
+        company: 'Organization',
+        email: 'Email',
+        locations: 'Location(s)',
+        note: 'Note (optional)',
+        send: 'Prepare request',
+        mailNote: 'Opens a prepared email for you to send.',
+        privacy: 'Privacy',
+        perMonth: '/ month',
+        mailSubject: 'Easysort configuration',
+        mailProduct: 'Product',
+        mailService: 'Service',
+        mailQuantity: 'Locations',
+        mailSetup: 'Example setup',
+        mailMonthly: 'Example monthly',
+        mailDisclaimer: 'Placeholder prices only. Please confirm final configuration, delivery, and payment.'
+    },
+    da: {
+        pageTitle: 'Konfigurér — Easysort',
+        back: 'Tilbage',
+        eyebrow: 'Konfigurér',
+        title: 'Vælg det, I har brug for.',
+        chooseProduct: 'Produkt',
+        chooseService: 'Service',
+        quantity: 'Placeringer',
+        sorting: 'Sorteringsguide',
+        monitoring: 'Overvågningsboks',
+        sortingDescription: 'Hjælp besøgende med at sortere korrekt på telefonen eller ved en fast station.',
+        monitoringDescription: 'Følg aktivitet, eller find fejlsorterede ting i containere.',
+        serviceApp: 'App',
+        serviceSoftware: 'Brug jeres hardware',
+        serviceHardware: 'Vi leverer; I driver',
+        serviceManaged: 'Fuldt serviceret af Easysort',
+        localCatalog: 'Lokalt sorteringskatalog',
+        hosting: 'Hosting inkluderet',
+        updates: 'Softwareopdateringer',
+        ownHardware: 'Jeres kamera og skærm',
+        setupHelp: 'Hjælp til opsætning',
+        completeStation: 'Komplet station',
+        monitoringBox: 'Kameraboks inkluderet',
+        handover: 'Installation og overdragelse',
+        customerOperated: 'I styrer og vedligeholder',
+        dashboard: 'Overblik i dashboard',
+        healthMonitoring: 'Overvågning af enhedens tilstand',
+        maintenance: 'Vedligehold og udskiftning',
+        setup: 'Eksempel på opstart',
+        monthly: 'Eksempel pr. måned',
+        placeholder: 'Midlertidige priser—ikke et tilbud.',
+        continue: 'Fortsæt',
+        saveMore: 'Tilføj flere placeringer for at se en eksempelrabat.',
+        saving: '{percent}% eksempelrabat ved {quantity} placeringer.',
+        lastStep: 'Sidste trin',
+        contactTitle: 'Hvor skal vi kontakte jer?',
+        contactLead: 'Ingen betaling nu. Vi bekræfter endelig opsætning, levering og betaling med jer.',
+        name: 'Navn',
+        company: 'Organisation',
+        email: 'E-mail',
+        locations: 'Placering(er)',
+        note: 'Note (valgfri)',
+        send: 'Forbered forespørgsel',
+        mailNote: 'Åbner en forberedt mail, som I kan sende.',
+        privacy: 'Privatliv',
+        perMonth: '/ md.',
+        mailSubject: 'Easysort-konfiguration',
+        mailProduct: 'Produkt',
+        mailService: 'Service',
+        mailQuantity: 'Placeringer',
+        mailSetup: 'Eksempel på opstart',
+        mailMonthly: 'Eksempel pr. måned',
+        mailDisclaimer: 'Kun midlertidige priser. Bekræft venligst endelig konfiguration, levering og betaling.'
+    }
+};
+
+let language = preferredLanguage();
+let product = requestedProduct();
+let service = product === 'sorting' ? 'managed' : 'managed';
+let quantity = 1;
+
+function preferredLanguage() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === 'da' || saved === 'en') return saved;
+    return navigator.language && navigator.language.toLowerCase().startsWith('da') ? 'da' : 'en';
+}
+
+function requestedProduct() {
+    return new URLSearchParams(location.search).get('product') === 'monitoring' ? 'monitoring' : 'sorting';
+}
+
+function t(key, replacements = {}) {
+    const value = copy[language][key] || copy.en[key] || key;
+    return value.replace(/\{(\w+)\}/g, (_, name) => replacements[name] ?? `{${name}}`);
+}
+
+function formatMoney(value) {
+    return `${new Intl.NumberFormat(language === 'da' ? 'da-DK' : 'en-GB').format(Math.round(value))} kr.`;
+}
+
+function discount() {
+    if (quantity >= 10) return 0.20;
+    if (quantity >= 5) return 0.15;
+    if (quantity >= 2) return 0.08;
+    return 0;
+}
+
+function selectedService() {
+    return SERVICES[product][service];
+}
+
+function totals() {
+    const selected = selectedService();
+    const factor = 1 - discount();
+    return {
+        setup: selected.setup * quantity * factor,
+        monthly: selected.monthly * quantity * factor
+    };
+}
+
+function renderServices() {
+    const container = document.getElementById('service-options');
+    if (!PRODUCTS[product].services.includes(service)) service = PRODUCTS[product].services.at(-1);
+    container.textContent = '';
+    PRODUCTS[product].services.forEach((key) => {
+        const selected = SERVICES[product][key];
+        const label = document.createElement('label');
+        label.className = 'service-option';
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'service';
+        input.value = key;
+        input.checked = key === service;
+        input.addEventListener('change', () => {
+            service = key;
+            update();
+        });
+
+        const body = document.createElement('span');
+        const name = document.createElement('strong');
+        name.textContent = t(selected.label);
+        const price = document.createElement('em');
+        price.textContent = `${formatMoney(selected.setup)} + ${formatMoney(selected.monthly)} ${t('perMonth')}`;
+        body.append(name, price);
+        label.append(input, body);
+        container.append(label);
+    });
+}
+
+function renderPerks() {
+    const list = document.getElementById('included-list');
+    list.textContent = '';
+    selectedService().perks.forEach((key) => {
+        const item = document.createElement('li');
+        item.textContent = t(key);
+        list.append(item);
+    });
+}
+
+function renderProduct() {
+    const selected = PRODUCTS[product];
+    document.getElementById('product-image').src = selected.image;
+    document.getElementById('product-title').textContent = t(selected.titleKey);
+    document.getElementById('product-description').textContent = t(selected.descriptionKey);
+    document.querySelectorAll('input[name="product"]').forEach((input) => {
+        input.checked = input.value === product;
+    });
+}
+
+function update() {
+    renderProduct();
+    renderServices();
+    renderPerks();
+    const price = totals();
+    document.getElementById('quantity-output').textContent = String(quantity);
+    document.getElementById('setup-price').textContent = formatMoney(price.setup);
+    document.getElementById('monthly-price').textContent = `${formatMoney(price.monthly)} ${t('perMonth')}`;
+    document.getElementById('saving-note').textContent = discount()
+        ? t('saving', { percent: Math.round(discount() * 100), quantity })
+        : t('saveMore');
+    document.getElementById('decrease').disabled = quantity === 1;
+    document.getElementById('increase').disabled = quantity === 20;
+}
+
+function applyLanguage() {
+    document.documentElement.lang = language;
+    document.title = t('pageTitle');
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+        node.textContent = t(node.dataset.i18n);
+    });
+    document.querySelectorAll('[data-language-option]').forEach((button) => {
+        button.setAttribute('aria-pressed', button.dataset.languageOption === language ? 'true' : 'false');
+    });
+    update();
+}
+
+function prepareMail(event) {
+    event.preventDefault();
+    if (!event.currentTarget.reportValidity()) return;
+    const data = new FormData(event.currentTarget);
+    const price = totals();
+    const lines = [
+        `${t('mailProduct')}: ${t(PRODUCTS[product].titleKey)}`,
+        `${t('mailService')}: ${t(selectedService().label)}`,
+        `${t('mailQuantity')}: ${quantity}`,
+        `${t('mailSetup')}: ${formatMoney(price.setup)}`,
+        `${t('mailMonthly')}: ${formatMoney(price.monthly)}`,
+        '',
+        `${t('name')}: ${data.get('name')}`,
+        `${t('company')}: ${data.get('company')}`,
+        `${t('email')}: ${data.get('email')}`,
+        `${t('locations')}: ${data.get('locations')}`,
+        `${t('note')}: ${data.get('note') || '—'}`,
+        '',
+        t('mailDisclaimer')
+    ];
+    const subject = `${t('mailSubject')} — ${data.get('company')}`;
+    location.href = `mailto:lucas@easysort.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+}
+
+document.querySelectorAll('[data-language-option]').forEach((button) => {
+    button.addEventListener('click', () => {
+        language = button.dataset.languageOption;
+        localStorage.setItem(STORAGE_KEY, language);
+        applyLanguage();
+    });
+});
+
+document.querySelectorAll('input[name="product"]').forEach((input) => {
+    input.addEventListener('change', () => {
+        product = input.value;
+        service = 'managed';
+        history.replaceState(null, '', `?product=${product}`);
+        update();
+    });
+});
+
+document.getElementById('decrease').addEventListener('click', () => {
+    quantity = Math.max(1, quantity - 1);
+    update();
+});
+document.getElementById('increase').addEventListener('click', () => {
+    quantity = Math.min(20, quantity + 1);
+    update();
+});
+document.getElementById('continue-button').addEventListener('click', () => {
+    const panel = document.getElementById('contact-panel');
+    panel.hidden = false;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    panel.querySelector('input').focus({ preventScroll: true });
+});
+document.getElementById('config-form').addEventListener('submit', prepareMail);
+
+applyLanguage();

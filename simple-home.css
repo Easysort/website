@@ -1,0 +1,259 @@
+@import url("demo-home.css?v=20261013b");
+
+.simple-hero {
+    display: grid;
+    justify-items: center;
+    min-height: 100vh;
+    padding: 130px 20px 56px;
+    background: linear-gradient(180deg, #f8fbf9 0%, #edf7f0 100%);
+}
+
+.simple-intro {
+    max-width: 720px;
+    text-align: center;
+}
+
+.simple-intro .eyebrow {
+    margin-bottom: 12px;
+}
+
+.simple-intro h1 {
+    font-size: clamp(3rem, 6.2vw, 5.8rem);
+    font-weight: 790;
+    letter-spacing: -0.07em;
+    line-height: 0.93;
+}
+
+.simple-intro > p:last-child {
+    margin-top: 17px;
+    color: var(--muted);
+    font-size: 1rem;
+}
+
+.simple-hero .demo-card {
+    width: min(100%, 680px);
+    margin-top: 32px;
+    padding: 13px;
+    border-color: rgba(17, 24, 39, 0.08);
+    box-shadow: 0 28px 70px rgba(17, 24, 39, 0.13);
+}
+
+.simple-hero .camera-stage {
+    aspect-ratio: 16 / 9;
+}
+
+.simple-hero .demo-actions {
+    margin-top: 9px;
+}
+
+.analysis-result {
+    margin-top: 10px;
+    padding: 18px;
+    border: 1px solid #cbe2d2;
+    border-radius: 16px;
+    background: #f4fbf6;
+}
+
+.analysis-item,
+.analysis-destination {
+    text-align: center;
+}
+
+.analysis-result span {
+    display: block;
+    margin-bottom: 5px;
+    color: #657169;
+    font-size: 0.65rem;
+    font-weight: 820;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.analysis-item strong {
+    display: block;
+    font-size: clamp(1.12rem, 2vw, 1.45rem);
+    line-height: 1.25;
+}
+
+.analysis-arrow {
+    margin: 8px 0 5px;
+    color: var(--green);
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.analysis-destination {
+    padding: 14px;
+    border-radius: 12px;
+    color: var(--white);
+    background: var(--green);
+}
+
+.analysis-destination span {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.analysis-destination strong {
+    display: block;
+    font-size: clamp(1.55rem, 3.4vw, 2.35rem);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+}
+
+.analysis-site {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 11px;
+    color: #5f6b63;
+    font-size: 0.72rem;
+}
+
+.analysis-site span {
+    margin: 0;
+    font-size: inherit;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.analysis-site strong {
+    font-weight: 730;
+}
+
+.simple-proof {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px 24px;
+    margin-top: 25px;
+    color: #607068;
+    font-size: 0.76rem;
+    font-weight: 680;
+}
+
+.simple-proof span::before {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    content: "";
+    vertical-align: 1px;
+}
+
+.products-section {
+    padding-top: clamp(82px, 9vw, 120px);
+    padding-bottom: clamp(82px, 9vw, 120px);
+}
+
+.products-section .section-heading {
+    margin-bottom: 38px;
+}
+
+.products-section .product-copy {
+    min-height: 0;
+}
+
+.product-perks {
+    grid-template-columns: repeat(3, max-content);
+    gap: 7px;
+}
+
+.product-perks li {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f0f5f1;
+    font-size: 0.71rem;
+}
+
+.product-perks li::before {
+    display: none;
+}
+
+.partner-strip {
+    border-top: 1px solid var(--line);
+}
+
+.contact-section {
+    max-width: 1220px;
+    margin-inline: auto;
+    padding: clamp(48px, 6vw, 76px);
+}
+
+.contact-section h2 {
+    max-width: 800px;
+    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+}
+
+@media (max-width: 640px) {
+    .simple-hero {
+        min-height: auto;
+        padding: 96px 11px 36px;
+    }
+
+    .simple-intro {
+        padding-inline: 8px;
+    }
+
+    .simple-intro .eyebrow {
+        margin-bottom: 8px;
+    }
+
+    .simple-intro h1 {
+        font-size: clamp(2.75rem, 13vw, 3.5rem);
+    }
+
+    .simple-intro > p:last-child {
+        margin-top: 13px;
+        font-size: 0.88rem;
+    }
+
+    .simple-hero .demo-card {
+        margin-top: 22px;
+        padding: 8px;
+        border-radius: 18px;
+    }
+
+    .simple-hero .camera-stage {
+        aspect-ratio: 4 / 3;
+    }
+
+    .analysis-result {
+        padding: 12px;
+    }
+
+    .analysis-destination {
+        padding: 12px 9px;
+    }
+
+    .analysis-site {
+        align-items: center;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .simple-proof {
+        gap: 6px 15px;
+        margin-top: 18px;
+        font-size: 0.67rem;
+    }
+
+    .products-section {
+        padding-top: 72px;
+        padding-bottom: 72px;
+    }
+
+    .product-perks {
+        grid-template-columns: 1fr;
+    }
+
+    .product-perks li {
+        width: max-content;
+    }
+
+    .contact-section {
+        margin: 12px;
+    }
+}

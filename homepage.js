@@ -20,14 +20,16 @@ const translations = {
         description: 'Free sorting help for Danish recycling centers and practical camera systems for waste facilities.',
         navProducts: 'Products',
         navDemo: 'Live demo',
+        navConfigure: 'Configure',
         navVision: 'Vision',
         navContact: 'Talk to us',
         heroEyebrow: 'Free Sorting Guide',
-        heroTitle: 'Where should this waste go?',
-        heroLead: 'Take a photo and get the correct fraction for your Danish recycling center. Free for anyone to use.',
+        heroTitle: 'Take a photo.|See where it goes.',
+        heroLead: 'Free sorting help for Danish recycling centers.',
         proofFree: 'Always free',
         proofNoAccount: 'No account',
         proofDanish: 'Made for Danish recycling sites',
+        proofLive: 'Used at Danish recycling centers',
         heroProducts: 'Explore our products',
         heroDemo: 'Try the live demo',
         proofOne: 'Built for real facilities',
@@ -41,21 +43,19 @@ const translations = {
         metricLiveValue: 'Live',
         metricLive: 'at Danish recycling centers',
         partnersLabel: 'Developed and tested with teams in the Danish waste sector',
-        productsEyebrow: 'Easysort products',
-        productsTitle: 'See what else we are building.',
-        productsLead: 'The free guide is one part of a larger system for understanding waste, reuse, and facility operations.',
+        productsEyebrow: 'Products',
+        productsTitle: 'Two products. One simple setup.',
+        productsLead: 'Choose a product, service level, and number of locations in one configurator.',
         availableNow: 'Available now',
         productGuideTitle: 'Sorting Guide',
-        productGuideBody: 'Show an item to the camera and get the correct local waste fraction in seconds—on a phone or at a dedicated guide station.',
-        configureGuide: 'Configure Sorting Guide →',
+        productGuideBody: 'Help visitors sort correctly on their phone or at a fixed station.',
+        configureGuide: 'Configure →',
         productReuseTitle: 'Monitoring Box',
-        productReuseBody: 'One box that can monitor direct reuse, people flow, or containers for misplaced items.',
-        monitorPerkOne: 'Mount it where you need visibility',
-        monitorPerkTwo: 'Count visitors and activity in direct-reuse areas',
-        monitorPerkThree: 'Find misplaced items in containers',
-        monitorPerkFour: 'Review events and development over time',
-        monitorPerkFive: 'Optional personnel alerts before errors become costly',
-        viewProduct: 'Ask about Monitoring Box →',
+        productReuseBody: 'Monitor people and reuse activity, or find misplaced items in containers.',
+        monitorPerkOne: 'People and activity',
+        monitorPerkTwo: 'Misplaced items',
+        monitorPerkThree: 'Overview and optional alerts',
+        viewProduct: 'Configure →',
         productControlTitle: 'Incoming waste control',
         productControlBody: 'Review incoming loads and document sorting issues with clear visual evidence.',
         productFacilityTitle: 'Facility overview',
@@ -68,26 +68,27 @@ const translations = {
         stepThree: 'Get the local waste fraction',
         privacy: 'The camera stays on your device until you analyze. Then we send that one photo.',
         privacyLink: 'Privacy',
-        demoLive: 'Live Sorting Guide',
-        demoNoInstall: 'Free · no install',
+        demoLive: 'Camera ready',
+        demoNoInstall: 'Free',
         cameraLabel: 'Show one item',
-        cameraStart: 'Tap to use your camera',
+        cameraStart: 'Tap to start',
         cameraRequiresHttps: 'Camera requires HTTPS.',
         cameraApiUnsupported: 'This browser has no camera API.',
         cameraAccessDenied: 'Camera access failed. Click to try again.',
         cameraPermissionDenied: 'Camera permission denied. Allow it, then click to try again.',
         cameraNotFound: 'No camera found.',
         switchCamera: 'Switch camera',
-        analyzeNeedCamera: 'Enable camera',
-        analyze: 'Analyze item',
+        analyzeNeedCamera: 'Take photo',
+        analyze: 'Take photo',
         analyzing: 'Analyzing…',
-        photo: 'Choose photo',
-        fractionLabel: 'Waste fraction',
-        centerLabel: 'Best matching guide',
+        photo: 'Upload',
+        itemLabel: 'We think this is',
+        fractionLabel: 'Sort it as',
+        centerLabel: 'Guide',
         autoSiteLabel: 'Local guide selected automatically',
         automaticGuide: 'Danish recycling center',
         checkingLocation: 'Finding the best local match…',
-        privacyShort: 'Only the photo you analyze is sent.',
+        privacyShort: 'Only this photo is sent for analysis.',
         noItem: 'No item in the photo',
         askStaff: 'Ask the staff',
         failed: 'Analysis failed. Try again.',
@@ -112,14 +113,16 @@ const translations = {
         description: 'Gratis sorteringshjælp til danske genbrugspladser og praktiske kamerasystemer til affaldsanlæg.',
         navProducts: 'Produkter',
         navDemo: 'Live demo',
+        navConfigure: 'Konfigurér',
         navVision: 'Vision',
         navContact: 'Tal med os',
         heroEyebrow: 'Gratis sorteringsguide',
-        heroTitle: 'Hvor skal affaldet hen?',
-        heroLead: 'Tag et billede, og få den rigtige fraktion til din danske genbrugsplads. Gratis for alle.',
+        heroTitle: 'Tag et billede.|Se hvor det skal hen.',
+        heroLead: 'Gratis sorteringshjælp til danske genbrugspladser.',
         proofFree: 'Altid gratis',
         proofNoAccount: 'Ingen konto',
         proofDanish: 'Lavet til danske genbrugspladser',
+        proofLive: 'Bruges på danske genbrugspladser',
         heroProducts: 'Se vores produkter',
         heroDemo: 'Prøv live demoen',
         proofOne: 'Bygget til virkelige anlæg',
@@ -133,21 +136,19 @@ const translations = {
         metricLiveValue: 'I drift',
         metricLive: 'på danske genbrugspladser',
         partnersLabel: 'Udviklet og testet med teams i den danske affaldssektor',
-        productsEyebrow: 'Easysorts produkter',
-        productsTitle: 'Se hvad vi ellers bygger.',
-        productsLead: 'Den gratis guide er én del af et større system til at forstå affald, genbrug og drift.',
+        productsEyebrow: 'Produkter',
+        productsTitle: 'To produkter. Én enkel opsætning.',
+        productsLead: 'Vælg produkt, serviceniveau og antal placeringer i én konfigurator.',
         availableNow: 'Tilgængelig nu',
         productGuideTitle: 'Sorteringsguide',
-        productGuideBody: 'Vis en ting til kameraet, og få den rigtige lokale affaldsfraktion på få sekunder—på telefonen eller ved en fast guide.',
-        configureGuide: 'Konfigurér Sorteringsguide →',
+        productGuideBody: 'Hjælp besøgende med at sortere korrekt på telefonen eller ved en fast station.',
+        configureGuide: 'Konfigurér →',
         productReuseTitle: 'Overvågningsboks',
-        productReuseBody: 'Én boks, der kan overvåge direkte genbrug, personflow eller containere for fejlsorterede ting.',
-        monitorPerkOne: 'Montér den dér, hvor I mangler overblik',
-        monitorPerkTwo: 'Tæl besøgende og aktivitet ved direkte genbrug',
-        monitorPerkThree: 'Find fejlsorterede ting i containere',
-        monitorPerkFour: 'Se hændelser og udvikling over tid',
-        monitorPerkFive: 'Valgfri advarsler til personalet, før fejl bliver dyre',
-        viewProduct: 'Spørg til Overvågningsboksen →',
+        productReuseBody: 'Følg personer og genbrugsaktivitet, eller find fejlsorterede ting i containere.',
+        monitorPerkOne: 'Personer og aktivitet',
+        monitorPerkTwo: 'Fejlsorterede ting',
+        monitorPerkThree: 'Overblik og valgfrie advarsler',
+        viewProduct: 'Konfigurér →',
         productControlTitle: 'Modtagekontrol',
         productControlBody: 'Gennemgå indkommende læs, og dokumentér fejlsortering med tydelig visuel dokumentation.',
         productFacilityTitle: 'Anlægsoverblik',
@@ -160,26 +161,27 @@ const translations = {
         stepThree: 'Få den lokale affaldsfraktion',
         privacy: 'Kameraet bliver på din enhed, indtil du analyserer. Så sender vi det ene billede.',
         privacyLink: 'Privatliv',
-        demoLive: 'Live sorteringsguide',
-        demoNoInstall: 'Gratis · ingen installation',
+        demoLive: 'Kamera klar',
+        demoNoInstall: 'Gratis',
         cameraLabel: 'Vis én ting',
-        cameraStart: 'Tryk for at bruge kameraet',
+        cameraStart: 'Tryk for at starte',
         cameraRequiresHttps: 'Kamera kræver HTTPS.',
         cameraApiUnsupported: 'Denne browser har intet kamera-API.',
         cameraAccessDenied: 'Kameraet kunne ikke åbnes. Klik for at prøve igen.',
         cameraPermissionDenied: 'Kameratilladelse blev afvist. Giv adgang, og klik for at prøve igen.',
         cameraNotFound: 'Intet kamera fundet.',
         switchCamera: 'Skift kamera',
-        analyzeNeedCamera: 'Tænd kamera',
-        analyze: 'Analyser ting',
+        analyzeNeedCamera: 'Tag billede',
+        analyze: 'Tag billede',
         analyzing: 'Analyserer…',
-        photo: 'Vælg foto',
-        fractionLabel: 'Affaldsfraktion',
-        centerLabel: 'Bedste match',
+        photo: 'Upload',
+        itemLabel: 'Vi tror, det er',
+        fractionLabel: 'Sortér som',
+        centerLabel: 'Guide',
         autoSiteLabel: 'Lokal guide valgt automatisk',
         automaticGuide: 'Dansk genbrugsplads',
         checkingLocation: 'Finder det bedste lokale match…',
-        privacyShort: 'Kun det billede, du analyserer, bliver sendt.',
+        privacyShort: 'Kun dette billede bliver sendt til analyse.',
         noItem: 'Ingen ting på billedet',
         askStaff: 'Spørg personalet',
         failed: 'Analysen mislykkedes. Prøv igen.',
@@ -261,7 +263,6 @@ function applyLanguage() {
     const fraction = document.getElementById('result-fraction');
     const statusKey = statusKeyFor(fraction.textContent);
     if (statusKey) fraction.textContent = t(statusKey);
-    document.getElementById('auto-site-name').textContent = siteLabel();
     document.getElementById('result-center').textContent = siteLabel();
     updateAnalyzeButton();
 }
@@ -294,7 +295,6 @@ function setSite(next, specific = true) {
     if (!SITES[next]) return;
     site = next;
     hasSpecificSite = specific;
-    document.getElementById('auto-site-name').textContent = siteLabel();
     document.getElementById('result-center').textContent = siteLabel();
 }
 
@@ -491,19 +491,31 @@ function resultText(result) {
     return t('askStaff');
 }
 
+function itemText(result) {
+    const description = typeof result.description === 'string' ? result.description.trim() : '';
+    const item = typeof result.item === 'string' ? result.item.trim() : '';
+    if (description || item) return description || item;
+    if (result.noItem === true) return t('noItem');
+    return t('askStaff');
+}
+
 async function analyze() {
     if (busy) return;
     const image = isVideoActive ? captureFrame() : stillBase64;
     if (!image) return;
     busy = true;
+    document.getElementById('analysis-result').hidden = true;
     updateAnalyzeButton();
     try {
         const result = await classify(image);
+        document.getElementById('result-item').textContent = itemText(result);
         document.getElementById('result-fraction').textContent = resultText(result);
         document.getElementById('result-center').textContent = siteLabel();
     } catch {
+        document.getElementById('result-item').textContent = t('failed');
         document.getElementById('result-fraction').textContent = t('failed');
     } finally {
+        document.getElementById('analysis-result').hidden = false;
         busy = false;
         if (isVideoActive) document.getElementById('frozen-frame').classList.remove('show');
         updateAnalyzeButton();
