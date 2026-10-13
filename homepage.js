@@ -9,15 +9,15 @@ const SUPPORTED_LANGUAGES = ['en', 'da'];
 const API_TIMEOUT_MS = 30000;
 
 const SITES = {
-    roskilde: { da: 'Roskilde Genbrugsplads', en: 'Roskilde Recycling Center' },
-    jyllinge: { da: 'Jyllinge Genbrugsplads', en: 'Jyllinge Recycling Center' },
-    vojens: { da: 'Vojens Genbrugsplads', en: 'Vojens Recycling Center' }
+    roskilde: { da: 'Roskilde Genbrugsplads', en: 'Roskilde Recycling Center', lat: 55.64, lon: 12.08 },
+    jyllinge: { da: 'Jyllinge Genbrugsplads', en: 'Jyllinge Recycling Center', lat: 55.75, lon: 12.10 },
+    vojens: { da: 'Vojens Genbrugsplads', en: 'Vojens Recycling Center', lat: 55.25, lon: 9.31 }
 };
 
 const translations = {
     en: {
-        pageTitle: 'Easysort — See waste clearly',
-        description: 'Easysort builds intelligent waste detection systems for recycling centers and waste facilities.',
+        pageTitle: 'Easysort — Sort waste correctly',
+        description: 'Free sorting help for Danish recycling centers and practical camera systems for waste facilities.',
         navProducts: 'Products',
         navDemo: 'Live demo',
         navVision: 'Vision',
@@ -47,10 +47,15 @@ const translations = {
         availableNow: 'Available now',
         productGuideTitle: 'Sorting Guide',
         productGuideBody: 'Show an item to the camera and get the correct local waste fraction in seconds—on a phone or at a dedicated guide station.',
-        tryGuide: 'Use for free →',
-        viewProduct: 'View product →',
-        productReuseTitle: 'Direct reuse',
-        productReuseBody: 'Understand visits, movement, and what finds a second life in direct-reuse areas.',
+        configureGuide: 'Configure Sorting Guide →',
+        productReuseTitle: 'Monitoring Box',
+        productReuseBody: 'One box that can monitor direct reuse, people flow, or containers for misplaced items.',
+        monitorPerkOne: 'Mount it where you need visibility',
+        monitorPerkTwo: 'Count visitors and activity in direct-reuse areas',
+        monitorPerkThree: 'Find misplaced items in containers',
+        monitorPerkFour: 'Review events and development over time',
+        monitorPerkFive: 'Optional personnel alerts before errors become costly',
+        viewProduct: 'Ask about Monitoring Box →',
         productControlTitle: 'Incoming waste control',
         productControlBody: 'Review incoming loads and document sorting issues with clear visual evidence.',
         productFacilityTitle: 'Facility overview',
@@ -78,9 +83,10 @@ const translations = {
         analyzing: 'Analyzing…',
         photo: 'Choose photo',
         fractionLabel: 'Waste fraction',
-        centerLabel: 'Recycling center',
-        centersLabel: 'Recycling center',
-        chooseCenter: 'Choose your recycling center',
+        centerLabel: 'Best matching guide',
+        autoSiteLabel: 'Local guide selected automatically',
+        automaticGuide: 'Danish recycling center',
+        checkingLocation: 'Finding the best local match…',
         privacyShort: 'Only the photo you analyze is sent.',
         noItem: 'No item in the photo',
         askStaff: 'Ask the staff',
@@ -97,13 +103,13 @@ const translations = {
         approachThreeBody: 'Turn individual detections into useful operational knowledge.',
         contactEyebrow: 'Start a conversation',
         contactTitle: 'What should be easier to see at your facility?',
-        contactBody: 'Show us the operation, the difficult decision, or the blind spot. We will tell you honestly where computer vision can help.',
+        contactBody: 'Show us the operation, the difficult decision, or the blind spot. We will tell you honestly where better monitoring can help.',
         bookCall: 'Book a conversation',
-        footerLine: 'Intelligent waste detection systems.'
+        footerLine: 'Practical tools for sorting and monitoring waste.'
     },
     da: {
-        pageTitle: 'Easysort — Se affaldet tydeligt',
-        description: 'Easysort bygger intelligente systemer til affaldsgenkendelse for genbrugspladser og affaldsanlæg.',
+        pageTitle: 'Easysort — Sortér affaldet korrekt',
+        description: 'Gratis sorteringshjælp til danske genbrugspladser og praktiske kamerasystemer til affaldsanlæg.',
         navProducts: 'Produkter',
         navDemo: 'Live demo',
         navVision: 'Vision',
@@ -133,10 +139,15 @@ const translations = {
         availableNow: 'Tilgængelig nu',
         productGuideTitle: 'Sorteringsguide',
         productGuideBody: 'Vis en ting til kameraet, og få den rigtige lokale affaldsfraktion på få sekunder—på telefonen eller ved en fast guide.',
-        tryGuide: 'Brug gratis →',
-        viewProduct: 'Se produktet →',
-        productReuseTitle: 'Direkte genbrug',
-        productReuseBody: 'Forstå besøg, bevægelse og hvad der får et nyt liv i områder til direkte genbrug.',
+        configureGuide: 'Konfigurér Sorteringsguide →',
+        productReuseTitle: 'Overvågningsboks',
+        productReuseBody: 'Én boks, der kan overvåge direkte genbrug, personflow eller containere for fejlsorterede ting.',
+        monitorPerkOne: 'Montér den dér, hvor I mangler overblik',
+        monitorPerkTwo: 'Tæl besøgende og aktivitet ved direkte genbrug',
+        monitorPerkThree: 'Find fejlsorterede ting i containere',
+        monitorPerkFour: 'Se hændelser og udvikling over tid',
+        monitorPerkFive: 'Valgfri advarsler til personalet, før fejl bliver dyre',
+        viewProduct: 'Spørg til Overvågningsboksen →',
         productControlTitle: 'Modtagekontrol',
         productControlBody: 'Gennemgå indkommende læs, og dokumentér fejlsortering med tydelig visuel dokumentation.',
         productFacilityTitle: 'Anlægsoverblik',
@@ -164,9 +175,10 @@ const translations = {
         analyzing: 'Analyserer…',
         photo: 'Vælg foto',
         fractionLabel: 'Affaldsfraktion',
-        centerLabel: 'Genbrugsplads',
-        centersLabel: 'Genbrugsplads',
-        chooseCenter: 'Vælg din genbrugsplads',
+        centerLabel: 'Bedste match',
+        autoSiteLabel: 'Lokal guide valgt automatisk',
+        automaticGuide: 'Dansk genbrugsplads',
+        checkingLocation: 'Finder det bedste lokale match…',
         privacyShort: 'Kun det billede, du analyserer, bliver sendt.',
         noItem: 'Ingen ting på billedet',
         askStaff: 'Spørg personalet',
@@ -183,14 +195,15 @@ const translations = {
         approachThreeBody: 'Gør enkelte registreringer til brugbar viden om driften.',
         contactEyebrow: 'Start en samtale',
         contactTitle: 'Hvad burde være lettere at se på jeres anlæg?',
-        contactBody: 'Vis os driften, den svære beslutning eller den blinde vinkel. Vi fortæller ærligt, hvor computer vision kan hjælpe.',
+        contactBody: 'Vis os driften, den svære beslutning eller den blinde vinkel. Vi fortæller ærligt, hvor bedre overvågning kan hjælpe.',
         bookCall: 'Book en samtale',
-        footerLine: 'Intelligente systemer til affaldsgenkendelse.'
+        footerLine: 'Praktiske værktøjer til sortering og overvågning af affald.'
     }
 };
 
 let language = preferredLanguage();
-let site = 'roskilde';
+let site = 'vojens';
+let hasSpecificSite = false;
 let stream = null;
 let isVideoActive = false;
 let isRequestingCamera = false;
@@ -228,6 +241,10 @@ function statusKeyFor(value) {
     return null;
 }
 
+function siteLabel() {
+    return hasSpecificSite ? SITES[site][language] : t('automaticGuide');
+}
+
 function applyLanguage() {
     document.documentElement.lang = language;
     document.title = t('pageTitle');
@@ -240,12 +257,12 @@ function applyLanguage() {
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         button.setAttribute('aria-pressed', button.dataset.languageOption === language ? 'true' : 'false');
     });
-    document.getElementById('centers').setAttribute('aria-label', t('centersLabel'));
     document.getElementById('camera-status').textContent = t(placeholderKey);
     const fraction = document.getElementById('result-fraction');
     const statusKey = statusKeyFor(fraction.textContent);
     if (statusKey) fraction.textContent = t(statusKey);
-    document.getElementById('result-center').textContent = SITES[site][language];
+    document.getElementById('auto-site-name').textContent = siteLabel();
+    document.getElementById('result-center').textContent = siteLabel();
     updateAnalyzeButton();
 }
 
@@ -273,14 +290,48 @@ function updateAnalyzeButton() {
     button.textContent = ready ? t('analyze') : t('analyzeNeedCamera');
 }
 
-function setSite(next) {
+function setSite(next, specific = true) {
     if (!SITES[next]) return;
     site = next;
-    document.querySelectorAll('#centers button').forEach((button) => {
-        button.setAttribute('aria-pressed', button.dataset.site === site ? 'true' : 'false');
+    hasSpecificSite = specific;
+    document.getElementById('auto-site-name').textContent = siteLabel();
+    document.getElementById('result-center').textContent = siteLabel();
+}
+
+function nearestSite(latitude, longitude) {
+    let nearest = 'vojens';
+    let nearestDistance = Infinity;
+    Object.entries(SITES).forEach(([key, candidate]) => {
+        const latDistance = latitude - candidate.lat;
+        const lonDistance = (longitude - candidate.lon) * Math.cos(latitude * Math.PI / 180);
+        const distance = latDistance ** 2 + lonDistance ** 2;
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearest = key;
+        }
     });
-    document.getElementById('result-center').textContent = SITES[site][language];
-    document.getElementById('result-fraction').textContent = '—';
+    return nearest;
+}
+
+async function chooseAutomaticSite() {
+    const requested = new URLSearchParams(location.search).get('site');
+    if (SITES[requested]) {
+        setSite(requested);
+        return;
+    }
+    setSite('vojens', false);
+    if (!navigator.permissions || !navigator.geolocation) return;
+    try {
+        const permission = await navigator.permissions.query({ name: 'geolocation' });
+        if (permission.state !== 'granted') return;
+        navigator.geolocation.getCurrentPosition(
+            (position) => setSite(nearestSite(position.coords.latitude, position.coords.longitude)),
+            () => setSite('vojens', false),
+            { enableHighAccuracy: false, maximumAge: 600000, timeout: 3000 }
+        );
+    } catch {
+        setSite('vojens', false);
+    }
 }
 
 async function getAvailableCameras() {
@@ -449,7 +500,7 @@ async function analyze() {
     try {
         const result = await classify(image);
         document.getElementById('result-fraction').textContent = resultText(result);
-        document.getElementById('result-center').textContent = SITES[site][language];
+        document.getElementById('result-center').textContent = siteLabel();
     } catch {
         document.getElementById('result-fraction').textContent = t('failed');
     } finally {
@@ -483,12 +534,8 @@ document.getElementById('photo-input').addEventListener('change', (event) => {
     usePhoto((event.target.files || [])[0]);
     event.target.value = '';
 });
-document.getElementById('centers').addEventListener('click', (event) => {
-    const button = event.target.closest('button[data-site]');
-    if (button) setSite(button.dataset.site);
-});
-
 window.addEventListener('beforeunload', stopCamera);
 
 applyLanguage();
+chooseAutomaticSite();
 requestCameraAccess();

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Easysort builds intelligent waste detection systems for recycling centers and waste facilities.">
-    <title>Easysort — See waste clearly</title>
-    <link rel="stylesheet" href="demo-home.css?v=20261013">
+    <meta name="description" content="Free sorting help for Danish recycling centers and practical camera systems for waste facilities.">
+    <title>Easysort — Sort waste correctly</title>
+    <link rel="stylesheet" href="demo-home.css?v=20261013b">
 </head>
 <body data-worker="https://website-workers.lucas-vilsen.workers.dev/classify">
     <header class="site-header">
@@ -15,7 +15,6 @@
         <nav class="main-nav" aria-label="Main navigation">
             <a href="#products" data-i18n="navProducts">Products</a>
             <a href="#demo" data-i18n="navDemo">Live demo</a>
-            <a href="vision.html" data-i18n="navVision">Vision</a>
             <a href="https://track.easysort.org" target="_blank" rel="noreferrer">EasyTrack</a>
         </nav>
         <div class="header-actions">
@@ -55,11 +54,9 @@
                     <canvas id="frozen-frame"></canvas>
                     <button type="button" id="camera-switch-btn" hidden data-i18n="switchCamera">Switch camera</button>
                 </div>
-                <div class="center-label" data-i18n="chooseCenter">Choose your recycling center</div>
-                <div class="center-picker" id="centers" role="radiogroup" aria-label="Recycling center">
-                    <button type="button" data-site="roskilde" aria-pressed="true">Roskilde</button>
-                    <button type="button" data-site="jyllinge" aria-pressed="false">Jyllinge</button>
-                    <button type="button" data-site="vojens" aria-pressed="false">Vojens</button>
+                <div class="auto-site">
+                    <span data-i18n="autoSiteLabel">Best matching local guide</span>
+                    <strong id="auto-site-name">Checking location…</strong>
                 </div>
                 <div class="demo-actions">
                     <button type="button" id="analyze-btn" disabled data-i18n="analyzeNeedCamera">Enable camera</button>
@@ -72,8 +69,8 @@
                         <strong id="result-fraction">—</strong>
                     </div>
                     <div>
-                        <span data-i18n="centerLabel">Recycling center</span>
-                        <strong id="result-center">Roskilde Recycling Center</strong>
+                        <span data-i18n="centerLabel">Best matching guide</span>
+                        <strong id="result-center">Danish recycling center</strong>
                     </div>
                 </div>
                 <p class="demo-privacy">
@@ -131,7 +128,7 @@
                         <p class="product-number">01</p>
                         <h3 data-i18n="productGuideTitle">Sorting Guide</h3>
                         <p data-i18n="productGuideBody">Show an item to the camera and get the correct local waste fraction in seconds—on a phone or at a dedicated guide station.</p>
-                        <a href="#demo" data-i18n="tryGuide">Use for free <span>→</span></a>
+                        <a href="sorting-guide.html" data-i18n="configureGuide">Configure Sorting Guide <span>→</span></a>
                     </div>
                 </article>
                 <article class="product-card">
@@ -140,31 +137,16 @@
                     </div>
                     <div class="product-copy">
                         <p class="product-number">02</p>
-                        <h3 data-i18n="productReuseTitle">Direct reuse</h3>
-                        <p data-i18n="productReuseBody">Understand visits, movement, and what finds a second life in direct-reuse areas.</p>
-                        <a href="mailto:lucas@easysort.org?subject=Direct%20reuse" data-i18n="viewProduct">View product <span>→</span></a>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="models/modtagekontrol.png" alt="">
-                    </div>
-                    <div class="product-copy">
-                        <p class="product-number">03</p>
-                        <h3 data-i18n="productControlTitle">Incoming waste control</h3>
-                        <p data-i18n="productControlBody">Review incoming loads and document sorting issues with clear visual evidence.</p>
-                        <a href="mailto:lucas@easysort.org?subject=Incoming%20waste%20control" data-i18n="viewProduct">View product <span>→</span></a>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="models/anlægsoptimering.png" alt="">
-                    </div>
-                    <div class="product-copy">
-                        <p class="product-number">04</p>
-                        <h3 data-i18n="productFacilityTitle">Facility overview</h3>
-                        <p data-i18n="productFacilityBody">Bring cameras and operational signals together for a better view of flow across the facility.</p>
-                        <a href="mailto:lucas@easysort.org?subject=Facility%20overview" data-i18n="viewProduct">View product <span>→</span></a>
+                        <h3 data-i18n="productReuseTitle">Monitoring Box</h3>
+                        <p data-i18n="productReuseBody">One box that can monitor direct reuse, people flow, or containers for misplaced items.</p>
+                        <ul class="product-perks">
+                            <li data-i18n="monitorPerkOne">Mount it where you need visibility</li>
+                            <li data-i18n="monitorPerkTwo">Count visitors and activity in direct-reuse areas</li>
+                            <li data-i18n="monitorPerkThree">Find misplaced items in containers</li>
+                            <li data-i18n="monitorPerkFour">Review events and development over time</li>
+                            <li data-i18n="monitorPerkFive">Optional personnel alerts before errors become costly</li>
+                        </ul>
+                        <a href="mailto:lucas@easysort.org?subject=Monitoring%20Box" data-i18n="viewProduct">Ask about Monitoring Box <span>→</span></a>
                     </div>
                 </article>
             </div>
@@ -173,7 +155,7 @@
         <section class="contact-section">
             <p class="eyebrow" data-i18n="contactEyebrow">Start a conversation</p>
             <h2 data-i18n="contactTitle">What should be easier to see at your facility?</h2>
-            <p data-i18n="contactBody">Show us the operation, the difficult decision, or the blind spot. We will tell you honestly where computer vision can help.</p>
+            <p data-i18n="contactBody">Show us the operation, the difficult decision, or the blind spot. We will tell you honestly where better monitoring can help.</p>
             <div class="contact-actions">
                 <a class="button button-white" href="https://app.cal.com/easysort" target="_blank" rel="noreferrer" data-i18n="bookCall">Book a conversation</a>
                 <a class="contact-mail" href="mailto:lucas@easysort.org">lucas@easysort.org <span>→</span></a>
@@ -184,11 +166,10 @@
     <footer class="site-footer">
         <div class="footer-brand">
             <img src="logo.png" alt="Easysort">
-            <p data-i18n="footerLine">Intelligent waste detection systems.</p>
+            <p data-i18n="footerLine">Practical tools for sorting and monitoring waste.</p>
         </div>
         <div class="footer-links">
             <a href="#products" data-i18n="navProducts">Products</a>
-            <a href="vision.html" data-i18n="navVision">Vision</a>
             <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
             <a href="https://docs.easysort.org">Docs</a>
             <a href="https://github.com/Easysort">GitHub</a>
@@ -196,6 +177,6 @@
         <p class="footer-note">© 2026 Easysort</p>
     </footer>
 
-    <script src="homepage.js?v=20261013"></script>
+    <script src="homepage.js?v=20261013b"></script>
 </body>
 </html>

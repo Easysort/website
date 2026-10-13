@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Configure an Easysort Sorting Guide for your recycling center.">
+    <title>Configure Sorting Guide — Easysort</title>
+    <link rel="stylesheet" href="sorting-guide.css?v=20261013">
+</head>
+<body>
+    <header class="config-header">
+        <a class="config-brand" href="./" aria-label="Back to Easysort">
+            <img src="logo.png" alt="Easysort">
+        </a>
+        <div class="config-header-actions">
+            <div class="language-switch" role="group" aria-label="Language">
+                <button type="button" data-language-option="en" aria-pressed="true">EN</button>
+                <button type="button" data-language-option="da" aria-pressed="false">DA</button>
+            </div>
+            <a href="./" data-i18n="back">Back to demo</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="config-intro">
+            <p class="eyebrow" data-i18n="eyebrow">Sorting Guide</p>
+            <h1 data-i18n="title">Configure your guide.</h1>
+            <p data-i18n="lead">Choose the software, hardware, and service level that fits your recycling centers.</p>
+        </section>
+
+        <div class="config-layout">
+            <section class="product-showcase" aria-label="Sorting Guide product">
+                <div class="product-stage">
+                    <img src="models/sorteringsguide.png" alt="Sorting Guide at a recycling center">
+                </div>
+                <div class="product-facts">
+                    <div><span data-i18n="factAnswer">Answer</span><strong data-i18n="factAnswerValue">about 8 seconds</strong></div>
+                    <div><span data-i18n="factUse">Use</span><strong data-i18n="factUseValue">phone or fixed station</strong></div>
+                    <div><span data-i18n="factCatalog">Catalog</span><strong data-i18n="factCatalogValue">adapted to each center</strong></div>
+                    <div><span data-i18n="factIncluded">Included</span><strong data-i18n="factIncludedValue">setup and launch</strong></div>
+                </div>
+                <p class="product-note" data-i18n="productNote">The same Sorting Guide can start as a web app and later be extended with one or more physical stations.</p>
+            </section>
+
+            <form class="configurator" id="config-form">
+                <fieldset>
+                    <legend><span>1</span><span data-i18n="configuration">Choose configuration</span></legend>
+                    <div class="config-options">
+                        <label class="config-option">
+                            <input type="radio" name="plan" value="app">
+                            <span class="option-body">
+                                <span class="option-top">
+                                    <strong data-i18n="planApp">App</strong>
+                                    <span data-price="app"></span>
+                                </span>
+                                <span class="option-description" data-i18n="planAppBody">A branded sorting guide for visitors on their own phones. No on-site hardware.</span>
+                                <span class="option-includes" data-i18n="planAppIncludes">Includes local fraction catalog, updates, and web hosting.</span>
+                            </span>
+                        </label>
+
+                        <label class="config-option">
+                            <input type="radio" name="plan" value="software">
+                            <span class="option-body">
+                                <span class="option-top">
+                                    <strong data-i18n="planSoftware">Web app for your hardware</strong>
+                                    <span data-price="software"></span>
+                                </span>
+                                <span class="option-description" data-i18n="planSoftwareBody">Run the guide in a browser on screens, cameras, and computers you install and maintain.</span>
+                                <span class="option-includes" data-i18n="planSoftwareIncludes">Includes setup assistance, center catalog, software updates, and remote launch support.</span>
+                            </span>
+                        </label>
+
+                        <label class="config-option">
+                            <input type="radio" name="plan" value="hardware">
+                            <span class="option-body">
+                                <span class="option-top">
+                                    <strong data-i18n="planHardware">Hardware, operated by you</strong>
+                                    <span data-price="hardware"></span>
+                                </span>
+                                <span class="option-description" data-i18n="planHardwareBody">We deliver the complete station. After handover, you control access, maintenance, monitoring, and repairs.</span>
+                                <span class="option-includes" data-i18n="planHardwareIncludes">Includes screen, camera, lighting, computer, enclosure, installation, and handover.</span>
+                            </span>
+                        </label>
+
+                        <label class="config-option">
+                            <input type="radio" name="plan" value="managed" checked>
+                            <span class="option-body">
+                                <span class="option-top">
+                                    <strong data-i18n="planManaged">Fully managed</strong>
+                                    <span data-price="managed"></span>
+                                </span>
+                                <span class="option-description" data-i18n="planManagedBody">We deliver and operate the station, watch its health, maintain it, investigate issues, and replace failed equipment.</span>
+                                <span class="option-includes" data-i18n="planManagedIncludes">Includes hardware, installation, monitoring, maintenance, support, and replacement coverage.</span>
+                                <span class="recommended" data-i18n="recommended">Recommended</span>
+                            </span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend><span>2</span><span data-i18n="quantity">Number of recycling centers</span></legend>
+                    <div class="quantity-row">
+                        <button type="button" id="decrease" aria-label="Decrease quantity">−</button>
+                        <output id="quantity-output">1</output>
+                        <button type="button" id="increase" aria-label="Increase quantity">+</button>
+                    </div>
+                    <p class="saving-note" id="saving-note" data-i18n="savingOne">Add more centers to see the example volume saving.</p>
+                </fieldset>
+
+                <section class="order-summary" aria-labelledby="summary-title">
+                    <div class="summary-heading">
+                        <h2 id="summary-title" data-i18n="summary">Configuration summary</h2>
+                        <span data-i18n="indicative">Indicative preview price</span>
+                    </div>
+                    <dl>
+                        <div><dt data-i18n="selected">Selected</dt><dd id="summary-plan">Fully managed</dd></div>
+                        <div><dt data-i18n="centers">Centers</dt><dd id="summary-quantity">1</dd></div>
+                        <div><dt data-i18n="setup">Example setup</dt><dd id="summary-setup">—</dd></div>
+                        <div><dt data-i18n="monthly">Example monthly</dt><dd id="summary-monthly">—</dd></div>
+                        <div class="discount-row" hidden><dt data-i18n="volumeSaving">Example volume saving</dt><dd id="summary-discount">—</dd></div>
+                    </dl>
+                    <p class="price-warning" data-i18n="priceWarning">These prices are placeholders for testing the configurator. They are not an offer or quote.</p>
+                </section>
+
+                <fieldset class="contact-fields">
+                    <legend><span>3</span><span data-i18n="contact">Your contact details</span></legend>
+                    <div class="field-grid">
+                        <label>
+                            <span data-i18n="name">Name</span>
+                            <input name="name" autocomplete="name" required>
+                        </label>
+                        <label>
+                            <span data-i18n="company">Organization</span>
+                            <input name="company" autocomplete="organization" required>
+                        </label>
+                        <label>
+                            <span data-i18n="email">Email</span>
+                            <input type="email" name="email" autocomplete="email" required>
+                        </label>
+                        <label>
+                            <span data-i18n="phone">Phone (optional)</span>
+                            <input type="tel" name="phone" autocomplete="tel">
+                        </label>
+                        <label class="field-wide">
+                            <span data-i18n="locations">Recycling center name(s)</span>
+                            <input name="locations" required>
+                        </label>
+                        <label class="field-wide">
+                            <span data-i18n="notes">Anything we should know? (optional)</span>
+                            <textarea name="notes" rows="4"></textarea>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <button class="submit-request" type="submit">
+                    <span data-i18n="submit">Prepare request</span>
+                    <span>→</span>
+                </button>
+                <p class="submit-note" data-i18n="submitNote">No payment now. This opens a prepared email; after you send it, we contact you about the final configuration, delivery, and payment.</p>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <span>Easysort</span>
+        <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+        <a href="privacy.html" data-i18n="privacy">Privacy</a>
+    </footer>
+
+    <script src="sorting-guide.js?v=20261013"></script>
+</body>
+</html>
