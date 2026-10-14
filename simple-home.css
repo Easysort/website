@@ -203,14 +203,14 @@ p {
 }
 
 .simple-intro h1 {
-    font-size: clamp(2.8rem, 5.2vw, 4.6rem);
+    font-size: clamp(2.35rem, 4vw, 3.55rem);
     font-weight: 780;
-    letter-spacing: -0.055em;
-    line-height: 1;
+    letter-spacing: -0.05em;
+    line-height: 0.98;
 }
 
 .hero-lead {
-    max-width: 30ch;
+    max-width: 34ch;
     margin-top: 20px;
     color: #43505d;
     font-size: clamp(1.05rem, 1.5vw, 1.2rem);
@@ -772,7 +772,7 @@ p {
     }
 
     .simple-intro h1 {
-        font-size: clamp(2.4rem, 11vw, 3.2rem);
+        font-size: clamp(2.05rem, 8.4vw, 2.7rem);
     }
 
     .hero-lead {
