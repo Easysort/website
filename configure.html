@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Configure and order Easysort products.">
     <title>Configure — Easysort</title>
-    <link rel="stylesheet" href="configure.css?v=20261014q">
+    <link rel="stylesheet" href="configure.css?v=20261014s">
 </head>
 <body data-order-url="https://website-workers.lucas-vilsen.workers.dev/order">
     <header>
@@ -120,10 +120,8 @@
                         </div>
                     </div>
                 </div>
-                <p class="box-note" id="box-note">
-                    <span id="box-note-text"></span>
-                    <button type="button" class="link-button" id="more-boxes" data-i18n="moreBoxes">More boxes per location</button>
-                </p>
+                <p class="box-note" id="box-note"><span id="box-note-text"></span></p>
+                <p id="extra-box-note"></p>
                 <p id="saving-note"></p>
             </section>
         </div>
@@ -155,7 +153,7 @@
                         <div><dt data-i18n="setup">One-time</dt><dd id="cart-setup">—</dd></div>
                         <div><dt data-i18n="monthly">Monthly</dt><dd id="cart-monthly">—</dd></div>
                     </dl>
-                    <p data-i18n="summaryNote">Prices excl. VAT.</p>
+                    <p data-i18n="summaryNote">Prices excl. VAT. Unpaid orders are canceled after 5 days.</p>
                 </section>
             </div>
 
@@ -177,7 +175,16 @@
                         <div><dt data-i18n="setup">One-time</dt><dd id="summary-setup">—</dd></div>
                         <div><dt data-i18n="monthly">Monthly</dt><dd id="summary-monthly">—</dd></div>
                     </dl>
-                    <p data-i18n="summaryNote">Prices excl. VAT. No payment now.</p>
+                    <p data-i18n="summaryNote">Prices excl. VAT. Unpaid orders are canceled after 5 days.</p>
+                </section>
+
+                <section class="order-section payment">
+                    <h3 data-i18n="paymentTitle">Payment</h3>
+                    <p class="payment-secure" data-i18n="paymentSecure">All transactions are secure and encrypted.</p>
+                    <div class="payment-method">
+                        <strong data-i18n="paymentMethod">Bank transfer</strong>
+                        <p data-i18n="paymentBody">After you place the order, you receive a confirmation email with the payment details. Unpaid orders are canceled after 5 days. You receive another email when the payment has arrived, and one when we start.</p>
+                    </div>
                 </section>
 
                 <section class="order-section">
@@ -215,7 +222,7 @@
                     </label>
                     <label class="check-row">
                         <input type="checkbox" name="binding" required>
-                        <span><strong data-i18n="checkBinding">The order is binding</strong><small data-i18n="checkBindingHint">The invoice is paid within 14 days, otherwise the order lapses.</small></span>
+                        <span><strong data-i18n="checkBinding">I accept the payment terms</strong><small data-i18n="checkBindingHint">Bank transfer. Unpaid orders are canceled after 5 days.</small></span>
                     </label>
                 </fieldset>
 
@@ -233,7 +240,7 @@
                     <span data-i18n="send">Send order</span>
                     <span id="send-total"></span>
                 </button>
-                <p data-i18n="sendNote">We confirm delivery and payment with you before anything is binding.</p>
+                <p data-i18n="sendNote">Unpaid orders are canceled after 5 days.</p>
             </div>
 
             <div class="dialog-body receipt" id="receipt-step" hidden>
@@ -250,9 +257,9 @@
                 <section class="next-steps">
                     <h3 data-i18n="nextTitle">What happens now</h3>
                     <ol>
-                        <li><strong data-i18n="nextOneTitle">We contact you</strong><span id="next-one-body"></span></li>
-                        <li><strong data-i18n="nextTwoTitle">We agree on the details</strong><span data-i18n="nextTwoBody">Delivery, start date, and payment. Nothing is binding before this.</span></li>
-                        <li><strong data-i18n="nextThreeTitle">We sign and get started</strong><span data-i18n="nextThreeBody">Data processing agreement, then setup on your site.</span></li>
+                        <li><strong data-i18n="nextOneTitle">Confirmation with payment details</strong><span id="next-one-body"></span></li>
+                        <li><strong data-i18n="nextTwoTitle">Email when the payment arrives</strong><span data-i18n="nextTwoBody">If it has not arrived within 5 days, the order is canceled.</span></li>
+                        <li><strong data-i18n="nextThreeTitle">Email when we start</strong><span data-i18n="nextThreeBody">We sign the data processing agreement and set it up on your site.</span></li>
                     </ol>
                 </section>
                 <p class="receipt-contact">
@@ -272,6 +279,6 @@
         <a href="privacy.html" data-i18n="privacy">Privacy</a>
     </footer>
 
-    <script src="configure.js?v=20261014q"></script>
+    <script src="configure.js?v=20261014s"></script>
 </body>
 </html>

@@ -16,7 +16,9 @@ const MAX_LINES = 20;
  * "Sorteringsguide på jeres hardware" offer of 5 October 2026: we host the page
  * and classify the images, but have no access to the device, so fault-finding
  * after setup is billed by the hour. Its setup matches the box with support,
- * which is a placeholder. Monitoring is priced per camera only, whatever the
+ * which is a placeholder. An extra box at a location that already has one
+ * costs 5,000 kr. less to set up and 1,000 kr. less per month; the complete
+ * add-on is unchanged. Monitoring is priced per camera only, whatever the
  * number of locations. */
 const HOURLY_RATE = 950;
 const PRODUCTS = {
@@ -41,6 +43,8 @@ const PRODUCTS = {
                 hardware: true,
                 unitSetup: 23500,
                 unitMonthly: 6000,
+                extraUnitSetup: 18500,
+                extraUnitMonthly: 5000,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
                 complete: { perUnit: 6500, perLocation: 0 },
@@ -53,6 +57,8 @@ const PRODUCTS = {
                 hardware: true,
                 unitSetup: 23500,
                 unitMonthly: 4000,
+                extraUnitSetup: 18500,
+                extraUnitMonthly: 3000,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
                 complete: { perUnit: 6500, perLocation: 0 },
@@ -258,13 +264,16 @@ const copy = {
         shopMore: 'Add more products',
         backToCart: 'Back to basket',
         boxesPerSite: '{boxes}, one per location.',
+        extraBoxOne: '1 at the lower price',
+        extraBoxMany: '{count} at the lower price',
+        extraBoxPrice: 'Extra box at the same location: {setup} + {monthly} / month, instead of {fullSetup} + {fullMonthly} / month.',
         boxesMinimum: 'At least one box per location.',
         moreBoxes: 'More boxes per location',
         stepCartOne: 'Basket · 1 line',
         stepCartMany: 'Basket · {count} lines',
         stepCheckout: 'Checkout',
-        checkBinding: 'The order is binding',
-        checkBindingHint: 'We send an invoice. Pay it within 14 days to secure the purchase.',
+        checkBinding: 'I accept the payment terms',
+        checkBindingHint: 'Bank transfer. Unpaid orders are canceled after 5 days.',
         chooseProduct: 'Product',
         mockLabel: 'Fraction',
         mockFraction: 'Cardboard',
@@ -360,8 +369,12 @@ const copy = {
         close: 'Close',
         stepSent: 'Order sent',
         checkoutTitle: 'Place your order',
-        summaryNote: 'Prices excl. VAT. Paid by invoice within 14 days.',
-        contactHeading: 'Where do we send the invoice?',
+        paymentTitle: 'Payment',
+        paymentSecure: 'All transactions are secure and encrypted.',
+        paymentMethod: 'Bank transfer',
+        paymentBody: 'After you place the order, you receive a confirmation email with the payment details. Unpaid orders are canceled after 5 days. You receive another email when the payment has arrived, and one when we start.',
+        summaryNote: 'Prices excl. VAT. Unpaid orders are canceled after 5 days.',
+        contactHeading: 'Where do we send the confirmation?',
         email: 'Work email',
         company: 'Organization',
         phone: 'Phone',
@@ -377,21 +390,21 @@ const copy = {
         dpaBody: 'We sign it before we start. It covers every image, and faces and license plates are blurred immediately. Images are kept for at most 30 days and almost always deleted within 24 hours. Selected anonymous images are kept longer to improve accuracy.',
         send: 'Place binding order',
         sending: 'Sending…',
-        sendNote: 'The order is binding. We send an invoice, due within 14 days.',
+        sendNote: 'Unpaid orders are canceled after 5 days.',
         errorEmail: 'Enter a valid email address.',
         errorChecklist: 'Confirm every point in the checklist.',
         errorSend: 'We could not send your order. ',
         errorSendLink: 'Email it to us instead',
         receiptRef: 'Order {ref}',
         confirmedTitle: 'Thank you. We have your order.',
-        receiptLead: 'The order is binding. The invoice comes by email and must be paid within 14 days to secure the purchase.',
+        receiptLead: 'The order is placed. A confirmation with the payment details is on its way. Unpaid orders are canceled after 5 days.',
         nextTitle: 'What happens now',
-        nextOneTitle: 'Invoice by email',
-        nextOneBody: 'We send the invoice to {email}.',
-        nextTwoTitle: 'You pay within 14 days',
-        nextTwoBody: 'Once we have the payment, the purchase is secured and we plan the start with you.',
-        nextThreeTitle: 'We set it up',
-        nextThreeBody: 'We sign the data processing agreement and set up the solution on your site.',
+        nextOneTitle: 'Confirmation with payment details',
+        nextOneBody: 'We send it to {email}.',
+        nextTwoTitle: 'Email when the payment arrives',
+        nextTwoBody: 'If it has not arrived within 5 days, the order is canceled.',
+        nextThreeTitle: 'Email when we start',
+        nextThreeBody: 'We sign the data processing agreement and set it up on your site.',
         questions: 'Questions?',
         backHome: 'Back to Easysort',
         privacy: 'Privacy',
@@ -406,13 +419,16 @@ const copy = {
         shopMore: 'Tilføj flere produkter',
         backToCart: 'Tilbage til kurven',
         boxesPerSite: '{boxes}, én pr. plads.',
+        extraBoxOne: '1 til den lavere pris',
+        extraBoxMany: '{count} til den lavere pris',
+        extraBoxPrice: 'Ekstra boks på samme plads: {setup} + {monthly} / md. i stedet for {fullSetup} + {fullMonthly} / md.',
         boxesMinimum: 'Mindst én boks pr. plads.',
         moreBoxes: 'Flere bokse pr. plads',
         stepCartOne: 'Kurv · 1 linje',
         stepCartMany: 'Kurv · {count} linjer',
         stepCheckout: 'Bestilling',
-        checkBinding: 'Ordren er bindende',
-        checkBindingHint: 'Vi sender en faktura. Den betales inden for 14 dage for at sikre købet.',
+        checkBinding: 'Jeg accepterer betalingsbetingelserne',
+        checkBindingHint: 'Bankoverførsel. Ubetalte ordrer annulleres efter 5 dage.',
         chooseProduct: 'Produkt',
         mockLabel: 'Fraktion',
         mockFraction: 'Pap og karton',
@@ -508,8 +524,12 @@ const copy = {
         close: 'Luk',
         stepSent: 'Ordre sendt',
         checkoutTitle: 'Afgiv ordre',
-        summaryNote: 'Priser ekskl. moms. Betales på faktura inden for 14 dage.',
-        contactHeading: 'Hvor sender vi fakturaen?',
+        paymentTitle: 'Betaling',
+        paymentSecure: 'Alle transaktioner er sikre og krypterede.',
+        paymentMethod: 'Bankoverførsel',
+        paymentBody: 'Når I har afgivet ordren, får I en bekræftelse på mail med betalingsoplysningerne. Ubetalte ordrer annulleres efter 5 dage. I får en mail, når betalingen er gået ind, og en mail, når vi går i gang.',
+        summaryNote: 'Priser ekskl. moms. Ubetalte ordrer annulleres efter 5 dage.',
+        contactHeading: 'Hvor sender vi bekræftelsen?',
         email: 'Arbejdsmail',
         company: 'Organisation',
         phone: 'Telefon',
@@ -525,20 +545,20 @@ const copy = {
         dpaBody: 'Vi underskriver den, før vi går i gang. Den gælder alle billeder, og ansigter og nummerplader sløres med det samme. Billeder gemmes i højst 30 dage og slettes næsten altid inden for 24 timer. Udvalgte anonyme billeder holdes længere for at øge præcisionen.',
         send: 'Afgiv bindende ordre',
         sending: 'Sender…',
-        sendNote: 'Ordren er bindende. Vi sender en faktura, som betales inden for 14 dage.',
+        sendNote: 'Ubetalte ordrer annulleres efter 5 dage.',
         errorEmail: 'Skriv en gyldig e-mailadresse.',
         errorChecklist: 'Bekræft alle punkter på tjeklisten.',
         errorSend: 'Vi kunne ikke sende ordren. ',
         errorSendLink: 'Send den til os på mail i stedet',
         receiptRef: 'Ordre {ref}',
         confirmedTitle: 'Tak. Vi har modtaget jeres ordre.',
-        receiptLead: 'Ordren er bindende. Fakturaen kommer på mail og skal betales inden for 14 dage for at sikre købet.',
+        receiptLead: 'Ordren er afgivet. En bekræftelse med betalingsoplysninger er på vej. Ubetalte ordrer annulleres efter 5 dage.',
         nextTitle: 'Det sker nu',
-        nextOneTitle: 'Faktura på mail',
-        nextOneBody: 'Vi sender fakturaen til {email}.',
-        nextTwoTitle: 'I betaler inden for 14 dage',
-        nextTwoBody: 'Når betalingen er modtaget, er købet sikret, og vi planlægger opstarten med jer.',
-        nextThreeTitle: 'Vi sætter det op',
+        nextOneTitle: 'Bekræftelse med betalingsoplysninger',
+        nextOneBody: 'Vi sender den til {email}.',
+        nextTwoTitle: 'Mail, når betalingen er gået ind',
+        nextTwoBody: 'Hvis den ikke er gået ind inden for 5 dage, annulleres ordren.',
+        nextThreeTitle: 'Mail, når vi går i gang',
         nextThreeBody: 'Vi underskriver databehandleraftalen og sætter løsningen op på pladsen.',
         questions: 'Spørgsmål?',
         backHome: 'Tilbage til Easysort',
@@ -554,13 +574,16 @@ const copy = {
         shopMore: 'Weitere Produkte hinzufügen',
         backToCart: 'Zurück zum Warenkorb',
         boxesPerSite: '{boxes}, eine pro Standort.',
+        extraBoxOne: '1 zum niedrigeren Preis',
+        extraBoxMany: '{count} zum niedrigeren Preis',
+        extraBoxPrice: 'Weitere Box am selben Standort: {setup} + {monthly} / Monat statt {fullSetup} + {fullMonthly} / Monat.',
         boxesMinimum: 'Mindestens eine Box pro Standort.',
         moreBoxes: 'Mehr Boxen pro Standort',
         stepCartOne: 'Warenkorb · 1 Position',
         stepCartMany: 'Warenkorb · {count} Positionen',
         stepCheckout: 'Kasse',
-        checkBinding: 'Die Bestellung ist verbindlich',
-        checkBindingHint: 'Wir senden eine Rechnung. Zahlen Sie sie innerhalb von 14 Tagen, um den Kauf zu sichern.',
+        checkBinding: 'Ich akzeptiere die Zahlungsbedingungen',
+        checkBindingHint: 'Banküberweisung. Unbezahlte Bestellungen werden nach 5 Tagen storniert.',
         chooseProduct: 'Produkt',
         mockLabel: 'Fraktion',
         mockFraction: 'Pappe und Karton',
@@ -656,8 +679,12 @@ const copy = {
         close: 'Schließen',
         stepSent: 'Bestellung gesendet',
         checkoutTitle: 'Bestellung aufgeben',
-        summaryNote: 'Preise zzgl. MwSt. Zahlung per Rechnung innerhalb von 14 Tagen.',
-        contactHeading: 'Wohin senden wir die Rechnung?',
+        paymentTitle: 'Zahlung',
+        paymentSecure: 'Alle Transaktionen sind sicher und verschlüsselt.',
+        paymentMethod: 'Banküberweisung',
+        paymentBody: 'Nach der Bestellung erhalten Sie eine Bestätigung per E-Mail mit den Zahlungsdaten. Unbezahlte Bestellungen werden nach 5 Tagen storniert. Sie erhalten eine E-Mail, wenn die Zahlung eingegangen ist, und eine, wenn wir beginnen.',
+        summaryNote: 'Preise zzgl. MwSt. Unbezahlte Bestellungen werden nach 5 Tagen storniert.',
+        contactHeading: 'Wohin senden wir die Bestätigung?',
         email: 'Geschäftliche E-Mail',
         company: 'Organisation',
         phone: 'Telefon',
@@ -673,20 +700,20 @@ const copy = {
         dpaBody: 'Wir unterzeichnen ihn vor dem Start. Er gilt für alle Bilder, Gesichter und Kennzeichen werden sofort unkenntlich gemacht. Bilder werden höchstens 30 Tage gespeichert und fast immer innerhalb von 24 Stunden gelöscht. Ausgewählte anonyme Bilder werden länger aufbewahrt, um die Genauigkeit zu verbessern.',
         send: 'Verbindlich bestellen',
         sending: 'Wird gesendet…',
-        sendNote: 'Die Bestellung ist verbindlich. Wir senden eine Rechnung, zahlbar innerhalb von 14 Tagen.',
+        sendNote: 'Unbezahlte Bestellungen werden nach 5 Tagen storniert.',
         errorEmail: 'Bitte eine gültige E-Mail-Adresse eingeben.',
         errorChecklist: 'Bitte alle Punkte der Checkliste bestätigen.',
         errorSend: 'Die Bestellung konnte nicht gesendet werden. ',
         errorSendLink: 'Stattdessen per E-Mail senden',
         receiptRef: 'Bestellung {ref}',
         confirmedTitle: 'Vielen Dank. Ihre Bestellung ist eingegangen.',
-        receiptLead: 'Die Bestellung ist verbindlich. Die Rechnung kommt per E-Mail und ist innerhalb von 14 Tagen zu zahlen, um den Kauf zu sichern.',
+        receiptLead: 'Die Bestellung ist aufgegeben. Eine Bestätigung mit den Zahlungsdaten ist unterwegs. Unbezahlte Bestellungen werden nach 5 Tagen storniert.',
         nextTitle: 'So geht es weiter',
-        nextOneTitle: 'Rechnung per E-Mail',
-        nextOneBody: 'Wir senden die Rechnung an {email}.',
-        nextTwoTitle: 'Sie zahlen innerhalb von 14 Tagen',
-        nextTwoBody: 'Sobald die Zahlung eingegangen ist, ist der Kauf gesichert und wir planen den Start mit Ihnen.',
-        nextThreeTitle: 'Wir richten es ein',
+        nextOneTitle: 'Bestätigung mit Zahlungsdaten',
+        nextOneBody: 'Wir senden sie an {email}.',
+        nextTwoTitle: 'E-Mail, wenn die Zahlung eingeht',
+        nextTwoBody: 'Geht sie nicht innerhalb von 5 Tagen ein, wird die Bestellung storniert.',
+        nextThreeTitle: 'E-Mail, wenn wir beginnen',
         nextThreeBody: 'Wir unterzeichnen den Auftragsverarbeitungsvertrag und richten die Lösung vor Ort ein.',
         questions: 'Fragen?',
         backHome: 'Zurück zu Easysort',
@@ -702,7 +729,6 @@ let complete = true;
 let locations = 1;
 /* Boxes follow locations: one per location, plus any extra the visitor adds. */
 let extraBoxes = 0;
-let moreBoxesOpen = false;
 let cameras = 1;
 let basket = loadBasket();
 let step = 'cart';
@@ -786,11 +812,22 @@ function completePrice(config, line) {
     return config.complete.perUnit * line.units + config.complete.perLocation * line.locations;
 }
 
+function unitTotals(config, line) {
+    const discounted = config.extraUnitSetup != null && line.locations > 0;
+    const full = discounted ? Math.min(line.units, line.locations) : line.units;
+    const extra = line.units - full;
+    return {
+        setup: config.unitSetup * full + (config.extraUnitSetup ?? config.unitSetup) * extra,
+        monthly: config.unitMonthly * full + (config.extraUnitMonthly ?? config.unitMonthly) * extra
+    };
+}
+
 function priceFor(line) {
     const config = optionConfig(line);
+    const units = unitTotals(config, line);
     return {
-        setup: config.unitSetup * line.units + tiered(config.locationSetup, line.locations) + completePrice(config, line),
-        monthly: config.unitMonthly * line.units + tiered(config.locationMonthly, line.locations)
+        setup: units.setup + tiered(config.locationSetup, line.locations) + completePrice(config, line),
+        monthly: units.monthly + tiered(config.locationMonthly, line.locations)
     };
 }
 
@@ -829,6 +866,8 @@ function lineSummary(line) {
     const parts = [];
     if (config.unit) parts.push(countLabel(line.units, `count_${config.unit}`));
     if (line.locations) parts.push(line.locations === 1 ? t('locationCountOne') : t('locationCount', { count: line.locations }));
+    const extraBoxesOnLine = config.unit === 'box' ? Math.max(0, line.units - line.locations) : 0;
+    if (extraBoxesOnLine) parts.push(extraBoxesOnLine === 1 ? t('extraBoxOne') : t('extraBoxMany', { count: extraBoxesOnLine }));
     if (line.complete) parts.push(t('completeTag'));
     return parts.join(' · ');
 }
@@ -963,17 +1002,28 @@ function renderQuantity() {
     document.getElementById('location-decrease').disabled = locations <= 1;
     document.getElementById('location-increase').disabled = locations >= MAX_LOCATIONS;
 
-    document.getElementById('unit-group').hidden = !config.unit || (boxes && !moreBoxesOpen);
+    document.getElementById('unit-group').hidden = !config.unit;
     if (config.unit) document.getElementById('unit-label').textContent = t(`unit_${config.unit}`);
     document.getElementById('unit-output').textContent = String(line.units);
     document.getElementById('unit-decrease').disabled = boxes ? extraBoxes <= 0 : cameras <= 1;
     document.getElementById('unit-increase').disabled = line.units >= MAX_UNITS;
 
     document.getElementById('box-note').hidden = !boxes;
-    document.getElementById('box-note-text').textContent = moreBoxesOpen
+    document.getElementById('box-note-text').textContent = extraBoxes
         ? t('boxesMinimum')
         : t('boxesPerSite', { boxes: countLabel(line.units, 'count_box') });
-    document.getElementById('more-boxes').hidden = moreBoxesOpen;
+    const extraNote = document.getElementById('extra-box-note');
+    extraNote.hidden = !boxes;
+    if (boxes) {
+        const full = priceFor(lineFor(option, 1, 0, 1));
+        const withExtra = priceFor(lineFor(option, 1, 1, 1));
+        extraNote.textContent = t('extraBoxPrice', {
+            setup: formatMoney(withExtra.setup - full.setup),
+            monthly: formatMoney(withExtra.monthly - full.monthly),
+            fullSetup: formatMoney(full.setup),
+            fullMonthly: formatMoney(full.monthly)
+        });
+    }
 
     const note = document.getElementById('saving-note');
     const extra = config.locationSetup.extra || config.locationMonthly.extra;
@@ -1296,10 +1346,6 @@ document.getElementById('unit-increase').addEventListener('click', () => {
         if (perSite(currentConfig())) extraBoxes = Math.min(MAX_UNITS - locations, extraBoxes + 1);
         else cameras = Math.min(MAX_UNITS, cameras + 1);
     });
-});
-document.getElementById('more-boxes').addEventListener('click', () => {
-    change(() => { moreBoxesOpen = true; });
-    document.getElementById('unit-increase').focus();
 });
 document.getElementById('add-button').addEventListener('click', () => {
     if (basket.length >= MAX_LINES) return;

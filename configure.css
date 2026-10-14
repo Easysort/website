@@ -556,6 +556,7 @@ header {
 
 .link-button:hover { color: var(--ink); }
 
+#extra-box-note,
 #saving-note {
     margin-top: 10px;
     color: var(--green-dark);
@@ -815,6 +816,25 @@ header {
 
 .order-section {
     margin-top: 28px;
+}
+
+.payment-secure {
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+.payment-method {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
+.payment-method strong { font-size: 0.95rem; }
+
+.payment-method p {
+    margin-top: 6px;
+    color: #3f4b43;
+    font-size: 0.84rem;
 }
 
 .order-section h3,
