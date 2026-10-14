@@ -5,6 +5,8 @@
 
 const WORKER_URL = document.body.dataset.worker;
 const LANGUAGE_STORAGE_KEY = 'easysort-language';
+const CURRENCY_STORAGE_KEY = 'easysort-currency';
+const DKK_PER_EUR = 7.46038;
 const SUPPORTED_LANGUAGES = ['en', 'da', 'de'];
 const API_TIMEOUT_MS = 30000;
 
@@ -49,13 +51,13 @@ const translations = {
         productsTitle: 'Our products',
         productGuideTitle: 'Sorting Guide',
         productGuideBody: 'Visitors scan a QR code or use a screen on site, take a photo, and see where it goes.',
-        guidePerkOne: 'App: from 15,000 kr. + 4,000 kr. / month',
-        guidePerkTwo: 'Physical box with outdoor screen: 30,000 kr. + 6,000 kr. / month',
+        guidePerkOne: 'App: from {kr:15000} + {kr:4000} / month',
+        guidePerkTwo: 'Physical box with outdoor screen: {kr:30000} + {kr:6000} / month',
         guidePerkThree: 'Signs, site map, and EasyTrack included',
         productReuseTitle: 'Monitoring Box',
         productReuseBody: 'Two cameras. One watches the site. One sits at a container. The results are in EasyTrack.',
-        monitorPerkOne: 'Reuse monitoring watches the site: 6,000 kr. + 1,800 kr. / month per camera',
-        monitorPerkTwo: 'Container monitoring sits at one container: 10,000 kr. + 3,500 kr. / month per camera',
+        monitorPerkOne: 'Reuse monitoring watches the site: {kr:6000} + {kr:1800} / month per camera',
+        monitorPerkTwo: 'Container monitoring sits at one container: {kr:10000} + {kr:3500} / month per camera',
         monitorPerkThree: 'Faces and license plates blurred immediately',
         configureProduct: 'Configure',
         customTitle: 'Sorting and incineration plants',
@@ -100,13 +102,13 @@ const translations = {
         productsTitle: 'Vores produkter',
         productGuideTitle: 'Sorteringsguide',
         productGuideBody: 'Borgeren scanner en QR-kode eller bruger en skærm på pladsen, tager et billede og ser, hvor det skal hen.',
-        guidePerkOne: 'App: fra 15.000 kr. + 4.000 kr. / md.',
-        guidePerkTwo: 'Fysisk boks med udendørs skærm: 30.000 kr. + 6.000 kr. / md.',
+        guidePerkOne: 'App: fra {kr:15000} + {kr:4000} / md.',
+        guidePerkTwo: 'Fysisk boks med udendørs skærm: {kr:30000} + {kr:6000} / md.',
         guidePerkThree: 'Skilte, pladskort og EasyTrack er med',
         productReuseTitle: 'Overvågningsboks',
         productReuseBody: 'To kameraer. Ét ser pladsen. Ét sidder ved en container. Resultaterne ligger i EasyTrack.',
-        monitorPerkOne: 'Genbrugsovervågning ser pladsen: 6.000 kr. + 1.800 kr. / md. pr. kamera',
-        monitorPerkTwo: 'Containerovervågning sidder ved én container: 10.000 kr. + 3.500 kr. / md. pr. kamera',
+        monitorPerkOne: 'Genbrugsovervågning ser pladsen: {kr:6000} + {kr:1800} / md. pr. kamera',
+        monitorPerkTwo: 'Containerovervågning sidder ved én container: {kr:10000} + {kr:3500} / md. pr. kamera',
         monitorPerkThree: 'Ansigter og nummerplader sløres med det samme',
         configureProduct: 'Konfigurér',
         customTitle: 'Sorteringsanlæg og forbrændingsanlæg',
@@ -151,13 +153,13 @@ const translations = {
         productsTitle: 'Unsere Produkte',
         productGuideTitle: 'Sortierhilfe',
         productGuideBody: 'Besucher scannen einen QR-Code oder nutzen einen Bildschirm vor Ort, machen ein Foto und sehen, wohin es gehört.',
-        guidePerkOne: 'App: ab 15.000 kr. + 4.000 kr. / Monat',
-        guidePerkTwo: 'Physische Box mit Outdoor-Bildschirm: 30.000 kr. + 6.000 kr. / Monat',
+        guidePerkOne: 'App: ab {kr:15000} + {kr:4000} / Monat',
+        guidePerkTwo: 'Physische Box mit Outdoor-Bildschirm: {kr:30000} + {kr:6000} / Monat',
         guidePerkThree: 'Schilder, Lageplan und EasyTrack inklusive',
         productReuseTitle: 'Monitoring Box',
         productReuseBody: 'Zwei Kameras. Eine sieht den Platz. Eine sitzt an einem Container. Die Ergebnisse liegen in EasyTrack.',
-        monitorPerkOne: 'Wiederverwendungsüberwachung sieht den Platz: 6.000 kr. + 1.800 kr. / Monat pro Kamera',
-        monitorPerkTwo: 'Containerüberwachung sitzt an einem Container: 10.000 kr. + 3.500 kr. / Monat pro Kamera',
+        monitorPerkOne: 'Wiederverwendungsüberwachung sieht den Platz: {kr:6000} + {kr:1800} / Monat pro Kamera',
+        monitorPerkTwo: 'Containerüberwachung sitzt an einem Container: {kr:10000} + {kr:3500} / Monat pro Kamera',
         monitorPerkThree: 'Gesichter und Kennzeichen werden sofort unkenntlich gemacht',
         configureProduct: 'Konfigurieren',
         customTitle: 'Sortier- und Verbrennungsanlagen',
@@ -171,6 +173,7 @@ const translations = {
 };
 
 let language = preferredLanguage();
+let currency = preferredCurrency();
 let site = 'vojens';
 let hasSpecificSite = false;
 let stream = null;
@@ -182,10 +185,6 @@ let stillBase64 = null;
 let placeholderKey = 'cameraStart';
 let busy = false;
 
-function t(key) {
-    return (translations[language] || translations.en)[key] || translations.en[key] || key;
-}
-
 function preferredLanguage() {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
     if (SUPPORTED_LANGUAGES.includes(saved)) return saved;
@@ -193,6 +192,38 @@ function preferredLanguage() {
     if (browserLanguage.startsWith('da')) return 'da';
     if (browserLanguage.startsWith('de')) return 'de';
     return 'en';
+}
+
+function currencyForLanguage(code) {
+    return code === 'de' ? 'EUR' : 'DKK';
+}
+
+function preferredCurrency() {
+    const saved = localStorage.getItem(CURRENCY_STORAGE_KEY);
+    if (saved === 'DKK' || saved === 'EUR') return saved;
+    return currencyForLanguage(preferredLanguage());
+}
+
+function shownAmount(dkk) {
+    const amount = Number(dkk) || 0;
+    if (currency !== 'EUR') return Math.round(amount);
+    return Math.round(amount / DKK_PER_EUR);
+}
+
+function formatMoney(dkk) {
+    const locale = language === 'da' ? 'da-DK' : language === 'de' ? 'de-DE' : 'en-GB';
+    const formatted = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(shownAmount(dkk));
+    if (currency === 'EUR') return language === 'en' ? `€${formatted}` : `${formatted} €`;
+    return `${formatted} kr.`;
+}
+
+function fillMoney(value) {
+    return String(value).replace(/\{kr:(\d+)\}/g, (_, amount) => formatMoney(Number(amount)));
+}
+
+function t(key) {
+    const value = (translations[language] || translations.en)[key] || translations.en[key] || key;
+    return fillMoney(value);
 }
 
 function applyRichText(node, value) {
@@ -229,6 +260,9 @@ function applyLanguage() {
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         button.setAttribute('aria-pressed', button.dataset.languageOption === language ? 'true' : 'false');
     });
+    document.querySelectorAll('[data-currency-option]').forEach((button) => {
+        button.setAttribute('aria-pressed', button.dataset.currencyOption === currency ? 'true' : 'false');
+    });
     document.getElementById('camera-status').textContent = t(placeholderKey);
     const fraction = document.getElementById('result-fraction');
     const statusKey = statusKeyFor(fraction.textContent);
@@ -237,11 +271,18 @@ function applyLanguage() {
     updateAnalyzeButton();
 }
 
+function setCurrency(next) {
+    if (next !== 'DKK' && next !== 'EUR') return;
+    currency = next;
+    localStorage.setItem(CURRENCY_STORAGE_KEY, currency);
+    applyLanguage();
+}
+
 function setLanguage(next) {
     if (!SUPPORTED_LANGUAGES.includes(next) || next === language) return;
     language = next;
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-    applyLanguage();
+    setCurrency(currencyForLanguage(language));
 }
 
 function setPlaceholder(key) {
@@ -494,6 +535,10 @@ async function analyze() {
 
 document.querySelectorAll('[data-language-option]').forEach((button) => {
     button.addEventListener('click', () => setLanguage(button.dataset.languageOption));
+});
+
+document.querySelectorAll('[data-currency-option]').forEach((button) => {
+    button.addEventListener('click', () => setCurrency(button.dataset.currencyOption));
 });
 
 document.getElementById('webcam-area').addEventListener('click', (event) => {

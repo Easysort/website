@@ -148,7 +148,14 @@ p {
     color: var(--ink);
 }
 
-.language-switch {
+.header-switches {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-switch,
+.currency-switch {
     display: flex;
     padding: 3px;
     border: 1px solid var(--line);
@@ -156,7 +163,8 @@ p {
     background: var(--surface);
 }
 
-.language-switch button {
+.language-switch button,
+.currency-switch button {
     min-width: 36px;
     min-height: 30px;
     border: 0;
@@ -168,7 +176,10 @@ p {
     letter-spacing: 0.04em;
 }
 
-.language-switch button[aria-pressed="true"] {
+.currency-switch button { min-width: 46px; letter-spacing: 0; }
+
+.language-switch button[aria-pressed="true"],
+.currency-switch button[aria-pressed="true"] {
     color: var(--white);
     background: var(--ink);
 }
@@ -688,7 +699,7 @@ p {
         display: none;
     }
 
-    .language-switch {
+    .header-switches {
         margin-left: 16px;
     }
 

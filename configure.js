@@ -1,4 +1,6 @@
 const STORAGE_KEY = 'easysort-language';
+const CURRENCY_KEY = 'easysort-currency';
+const DKK_PER_EUR = 7.46038;
 const BASKET_KEY = 'easysort-basket-v2';
 const ORDER_URL = document.body.dataset.orderUrl;
 const ORDER_TIMEOUT_MS = 15000;
@@ -21,7 +23,8 @@ const MAX_LINES = 20;
  * add-on is unchanged. Monitoring is priced per camera only, whatever the
  * number of locations. The app's monthly price starts at 4,000 kr. for the
  * first location and falls by 300 kr. for each further location, down to a
- * floor of 2,000 kr. */
+ * floor of 2,000 kr. Euros use the ERM II central rate, 7.46038 kr. per euro,
+ * rounded to the nearest euro. */
 const HOURLY_RATE = 950;
 const PRODUCTS = {
     sorting: {
@@ -106,7 +109,7 @@ const PRODUCTS = {
 const BENEFITS = {
     en: {
         app: [
-            ['Signs and QR labels', '2 A1 signs and 80 QR labels, designed and printed. Worth 6,500 kr.'],
+            ['Signs and QR labels', '2 A1 signs and 80 QR labels, designed and printed. Worth {kr:6500}.'],
             ['Made for your site', 'Site map, fraction split, and your special rules.'],
             ['We keep it running', 'Monitoring, weekly review, and retraining every month.'],
             ['Unlimited use', 'Unlimited requests and unlimited changes to the guide.']
@@ -156,7 +159,7 @@ const BENEFITS = {
     },
     da: {
         app: [
-            ['Skilte og QR-mærker', '2 A1-skilte og 80 QR-mærker med design og print. Værdi 6.500 kr.'],
+            ['Skilte og QR-mærker', '2 A1-skilte og 80 QR-mærker med design og print. Værdi {kr:6500}.'],
             ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og jeres særskilte regler.'],
             ['Vi holder den kørende', 'Overvågning, ugentlig gennemgang og gentræning hver måned.'],
             ['Ubegrænset brug', 'Ubegrænsede forespørgsler og ubegrænsede ændringer til guiden.']
@@ -206,7 +209,7 @@ const BENEFITS = {
     },
     de: {
         app: [
-            ['Schilder und QR-Etiketten', '2 A1-Schilder und 80 QR-Etiketten mit Design und Druck. Wert 6.500 kr.'],
+            ['Schilder und QR-Etiketten', '2 A1-Schilder und 80 QR-Etiketten mit Design und Druck. Wert {kr:6500}.'],
             ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und Ihre Sonderregeln.'],
             ['Wir halten es am Laufen', 'Überwachung, wöchentliche Prüfung und monatliches Nachtraining.'],
             ['Unbegrenzte Nutzung', 'Unbegrenzte Anfragen und unbegrenzte Änderungen an der Sortierhilfe.']
@@ -315,8 +318,8 @@ const copy = {
         nextLocationNote: 'Next location: {setup} setup and {monthly} / month. Then {step} less per location each month.',
         tryRoskilde: 'Try it in Roskilde',
         tryRoskildeHint: 'The live guide. Scan with your phone.',
-        signsA1: '2 A1 signs, designed and printed (worth 4,000 kr.)',
-        qrLabels: '80 A4 QR labels for containers and signs (worth 2,500 kr.)',
+        signsA1: '2 A1 signs, designed and printed (worth {kr:4000})',
+        qrLabels: '80 A4 QR labels for containers and signs (worth {kr:2500})',
         signDesign: 'Design of signs and labels. You can request changes.',
         siteMap: 'Site map, fraction split, and special rules',
         easytrack: 'Setup in and access to EasyTrack',
@@ -473,8 +476,8 @@ const copy = {
         nextLocationNote: 'Næste plads: {setup} i opsætning og {monthly} / md. Derefter {step} mindre pr. plads om måneden.',
         tryRoskilde: 'Prøv den i Roskilde',
         tryRoskildeHint: 'Den rigtige guide. Scan med telefonen.',
-        signsA1: '2 A1-skilte med design og print, værdi 4.000 kr.',
-        qrLabels: '80 A4 QR-mærker til containere og skilte, værdi 2.500 kr.',
+        signsA1: '2 A1-skilte med design og print, værdi {kr:4000}',
+        qrLabels: '80 A4 QR-mærker til containere og skilte, værdi {kr:2500}',
         signDesign: 'Design af skilte og mærker. I kan komme med ændringer.',
         siteMap: 'Pladskort, fraktionsdeling og særskilte regler',
         easytrack: 'Opsætning i og adgang til EasyTrack',
@@ -631,8 +634,8 @@ const copy = {
         nextLocationNote: 'Nächster Standort: {setup} Einrichtung und {monthly} / Monat. Danach {step} weniger pro Standort und Monat.',
         tryRoskilde: 'In Roskilde ausprobieren',
         tryRoskildeHint: 'Die echte Sortierhilfe. Mit dem Handy scannen.',
-        signsA1: '2 A1-Schilder mit Design und Druck (Wert 4.000 kr.)',
-        qrLabels: '80 A4-QR-Etiketten für Container und Schilder (Wert 2.500 kr.)',
+        signsA1: '2 A1-Schilder mit Design und Druck (Wert {kr:4000})',
+        qrLabels: '80 A4-QR-Etiketten für Container und Schilder (Wert {kr:2500})',
         signDesign: 'Design von Schildern und Etiketten. Änderungswünsche sind möglich.',
         siteMap: 'Lageplan, Fraktionsaufteilung und Sonderregeln',
         easytrack: 'Einrichtung und Zugang zu EasyTrack',
@@ -734,6 +737,7 @@ const copy = {
 };
 
 let language = preferredLanguage();
+let currency = preferredCurrency();
 let product = requestedProduct();
 let option = PRODUCTS[product].defaultOption;
 let complete = true;
@@ -758,18 +762,54 @@ function preferredLanguage() {
     return 'en';
 }
 
+function currencyForLanguage(code) {
+    return code === 'de' ? 'EUR' : 'DKK';
+}
+
+function preferredCurrency() {
+    const saved = localStorage.getItem(CURRENCY_KEY);
+    if (saved === 'DKK' || saved === 'EUR') return saved;
+    return currencyForLanguage(preferredLanguage());
+}
+
 function requestedProduct() {
     return new URLSearchParams(location.search).get('product') === 'monitoring' ? 'monitoring' : 'sorting';
 }
 
 function t(key, replacements = {}) {
     const value = copy[language][key] ?? copy.en[key] ?? key;
-    return value.replace(/\{(\w+)\}/g, (_, name) => replacements[name] ?? `{${name}}`);
+    return fillMoney(value.replace(/\{(\w+)\}/g, (_, name) => replacements[name] ?? `{${name}}`));
 }
 
-function formatMoney(value) {
+function shownAmount(dkk) {
+    const amount = Number(dkk) || 0;
+    if (currency !== 'EUR') return Math.round(amount);
+    return Math.round(amount / DKK_PER_EUR);
+}
+
+function formatAmount(amount) {
     const locale = language === 'da' ? 'da-DK' : language === 'de' ? 'de-DE' : 'en-GB';
-    return `${new Intl.NumberFormat(locale).format(Math.round(value))} kr.`;
+    const formatted = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Math.round(amount));
+    if (currency === 'EUR') return language === 'en' ? `€${formatted}` : `${formatted} €`;
+    return `${formatted} kr.`;
+}
+
+function formatMoney(dkk) {
+    return formatAmount(shownAmount(dkk));
+}
+
+function fillMoney(value) {
+    return String(value).replace(/\{kr:(\d+)\}/g, (_, amount) => formatMoney(Number(amount)));
+}
+
+function shownTotals(lines) {
+    return lines.reduce((sum, line) => {
+        const price = priceFor(line);
+        return {
+            setup: sum.setup + shownAmount(price.setup),
+            monthly: sum.monthly + shownAmount(price.monthly)
+        };
+    }, { setup: 0, monthly: 0 });
 }
 
 function optionConfig(line) {
@@ -898,13 +938,6 @@ function lineTitle(line) {
     return `${t(line.product)} · ${t(`name_${line.option}`)}`;
 }
 
-function totalsFor(lines) {
-    return lines.reduce((sum, line) => {
-        const price = priceFor(line);
-        return { setup: sum.setup + price.setup, monthly: sum.monthly + price.monthly };
-    }, { setup: 0, monthly: 0 });
-}
-
 function monthlyText(value) {
     return `${formatMoney(value)} ${t('perMonth')}`;
 }
@@ -1000,7 +1033,7 @@ function renderBenefits() {
         const strong = document.createElement('strong');
         strong.textContent = title;
         const span = document.createElement('span');
-        span.textContent = body;
+        span.textContent = fillMoney(body);
         item.append(strong, span);
         list.append(item);
     });
@@ -1125,7 +1158,6 @@ function showStep(name) {
 }
 
 function renderCart() {
-    const totals = totalsFor(basket);
     document.getElementById('dialog-step').textContent = basket.length === 1
         ? t('stepCartOne')
         : t('stepCartMany', { count: basket.length });
@@ -1145,18 +1177,19 @@ function renderCart() {
         });
         list.append(lineItem(line, remove));
     });
-    document.getElementById('cart-setup').textContent = formatMoney(totals.setup);
-    document.getElementById('cart-monthly').textContent = monthlyText(totals.monthly);
-    document.getElementById('cart-total').textContent = priceText(totals);
+    const shown = shownTotals(basket);
+    document.getElementById('cart-setup').textContent = formatAmount(shown.setup);
+    document.getElementById('cart-monthly').textContent = `${formatAmount(shown.monthly)} ${t('perMonth')}`;
+    document.getElementById('cart-total').textContent = `${formatAmount(shown.setup)} + ${formatAmount(shown.monthly)} ${t('perMonth')}`;
 }
 
 function renderOrderStep() {
-    const totals = totalsFor(basket);
+    const totals = shownTotals(basket);
     document.getElementById('dialog-step').textContent = t('stepCheckout');
     renderLines('summary-lines', basket);
-    document.getElementById('summary-setup').textContent = formatMoney(totals.setup);
-    document.getElementById('summary-monthly').textContent = monthlyText(totals.monthly);
-    document.getElementById('send-total').textContent = priceText(totals);
+    document.getElementById('summary-setup').textContent = formatAmount(totals.setup);
+    document.getElementById('summary-monthly').textContent = `${formatAmount(totals.monthly)} ${t('perMonth')}`;
+    document.getElementById('send-total').textContent = `${formatAmount(totals.setup)} + ${formatAmount(totals.monthly)} ${t('perMonth')}`;
 
     const hardware = needsHardware(basket);
     const infrastructure = document.getElementById('infrastructure-check');
@@ -1172,9 +1205,9 @@ function renderReceipt() {
     document.getElementById('receipt-lead').textContent = t('receiptLead');
     document.getElementById('next-one-body').textContent = t('nextOneBody', { email: receipt.email });
     renderLines('receipt-lines', receipt.lines);
-    const totals = totalsFor(receipt.lines);
-    document.getElementById('receipt-setup').textContent = formatMoney(totals.setup);
-    document.getElementById('receipt-monthly').textContent = monthlyText(totals.monthly);
+    const totals = shownTotals(receipt.lines);
+    document.getElementById('receipt-setup').textContent = formatAmount(totals.setup);
+    document.getElementById('receipt-monthly').textContent = `${formatAmount(totals.monthly)} ${t('perMonth')}`;
 }
 
 function renderDialog() {
@@ -1207,12 +1240,15 @@ function applyLanguage() {
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         button.setAttribute('aria-pressed', button.dataset.languageOption === language ? 'true' : 'false');
     });
+    document.querySelectorAll('[data-currency-option]').forEach((button) => {
+        button.setAttribute('aria-pressed', button.dataset.currencyOption === currency ? 'true' : 'false');
+    });
     document.getElementById('form-error').hidden = true;
     update();
 }
 
 function orderText(data, lines) {
-    const totals = totalsFor(lines);
+    const totals = shownTotals(lines);
     const items = lines.map((line) => `- ${lineTitle(line)} (${lineSummary(line)}): ${priceText(priceFor(line))}`);
     const optional = [
         data.organization && `${t('company')}: ${data.organization}`,
@@ -1221,8 +1257,8 @@ function orderText(data, lines) {
     return [
         ...items,
         '',
-        `${t('setup')}: ${formatMoney(totals.setup)}`,
-        `${t('monthly')}: ${monthlyText(totals.monthly)}`,
+        `${t('setup')}: ${formatAmount(totals.setup)}`,
+        `${t('monthly')}: ${formatAmount(totals.monthly)} ${t('perMonth')}`,
         '',
         `${t('email')}: ${data.email}`,
         ...optional
@@ -1313,9 +1349,12 @@ async function submitOrder(event) {
             infrastructure: needsHardware(lines) ? form.elements.infrastructure.checked : null,
             binding: form.elements.binding.checked
         },
-        items: lines.map((line) => ({ ...line, ...priceFor(line) })),
-        totals: totalsFor(lines),
-        currency: 'DKK'
+        items: lines.map((line) => {
+            const price = priceFor(line);
+            return { ...line, setup: shownAmount(price.setup), monthly: shownAmount(price.monthly) };
+        }),
+        totals: shownTotals(lines),
+        currency
     };
 
     setSending(true);
@@ -1339,12 +1378,23 @@ async function submitOrder(event) {
     }
 }
 
+function setCurrency(next) {
+    if (next !== 'DKK' && next !== 'EUR') return;
+    currency = next;
+    localStorage.setItem(CURRENCY_KEY, currency);
+    applyLanguage();
+}
+
 document.querySelectorAll('[data-language-option]').forEach((button) => {
     button.addEventListener('click', () => {
         language = button.dataset.languageOption;
         localStorage.setItem(STORAGE_KEY, language);
-        applyLanguage();
+        setCurrency(currencyForLanguage(language));
     });
+});
+
+document.querySelectorAll('[data-currency-option]').forEach((button) => {
+    button.addEventListener('click', () => setCurrency(button.dataset.currencyOption));
 });
 
 document.querySelectorAll('input[name="product"]').forEach((input) => {
