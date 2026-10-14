@@ -350,6 +350,7 @@ header {
     font-size: 0.8rem;
     font-style: normal;
     font-weight: 650;
+    line-height: 1.35;
 }
 
 .option-card small {

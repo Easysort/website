@@ -20,9 +20,9 @@ const MAX_LINES = 20;
  * after setup is billed by the hour. Its setup matches the box with support,
  * which is a placeholder. An extra box at a location that already has one
  * costs 5,000 kr. less to set up and 1,000 kr. less per month; the complete
- * add-on is unchanged. Monitoring is priced per camera. Reuse monitoring
- * also adds 1,000 kr. per month for the first location, for basic setup and
- * support. The app's monthly price starts at 4,000 kr. for the
+ * add-on is unchanged. Monitoring is priced per camera. The first reuse
+ * camera is 2,500 kr. per month, and each further camera is 1,800 kr. per
+ * month. The app's monthly price starts at 4,000 kr. for the
  * first location and falls by 300 kr. for each further location, down to a
  * floor of 2,000 kr. Euros use the ERM II central rate, 7.46038 kr. per euro,
  * rounded up to the next 50 euros. */
@@ -83,8 +83,8 @@ const PRODUCTS = {
                 unit: 'camera',
                 hardware: true,
                 unitSetup: 6000,
-                unitMonthly: 1800,
-                firstLocationMonthly: 1000,
+                unitMonthly: 2500,
+                extraUnitMonthly: 1800,
                 perSite: false,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
@@ -286,6 +286,7 @@ const copy = {
         mockFraction: 'Cardboard',
         mockContainer: 'Container 4',
         optionFrom: 'From {setup} + {monthly} / month',
+        optionThen: 'Then {next} / month',
         tagline_sorting: 'Visitors show their waste. The guide shows the container and the way there.',
         tagline_monitoring: 'One camera sits over an entrance. One camera sits at a container. You see it in EasyTrack.',
         chooseOption: 'Choose a version',
@@ -297,7 +298,7 @@ const copy = {
         option_box_body: 'A screen and camera on site. We run and service it.',
         option_boxSelf_body: 'A screen and camera on site. We analyze the images, you run the box. Fault-finding {hourly} / hour.',
         option_reuse_body: 'Sits over the entrance to a container, a tent, or a room. Visitors, what they bring in and out, and what it weighs.',
-        firstLocationNote: 'First location: {monthly} / month for basic setup and support.',
+        nextCameraNote: 'Next camera: {setup} + {monthly} / month, instead of {fullMonthly} / month.',
         option_container_body: 'Sits at one container and looks at what is thrown in, including the difficult items.',
         name_app: 'App',
         name_box: 'Box with support',
@@ -445,6 +446,7 @@ const copy = {
         mockFraction: 'Pap og karton',
         mockContainer: 'Container 4',
         optionFrom: 'Fra {setup} + {monthly} / md.',
+        optionThen: 'Derefter {next} / md.',
         tagline_sorting: 'Borgeren viser affaldet. Guiden viser containeren og vejen derhen.',
         tagline_monitoring: 'Ét kamera sidder over indgangen. Ét kamera sidder ved en container. I ser det i EasyTrack.',
         chooseOption: 'Vælg løsning',
@@ -456,7 +458,7 @@ const copy = {
         option_box_body: 'Skærm og kamera på pladsen. Vi driver og servicerer den.',
         option_boxSelf_body: 'Skærm og kamera på pladsen. Vi analyserer billederne, I driver boksen. Fejlretning {hourly} / time.',
         option_reuse_body: 'Sidder over indgangen til en container, et telt eller et rum. Besøgende, hvad de har med ind og ud, og hvad det vejer.',
-        firstLocationNote: 'Første plads: {monthly} / md. for basisopsætning og support.',
+        nextCameraNote: 'Næste kamera: {setup} + {monthly} / md., i stedet for {fullMonthly} / md.',
         option_container_body: 'Sidder ved én container og kigger på det, der bliver smidt i, også de svære emner.',
         name_app: 'App',
         name_box: 'Boks med support',
@@ -604,6 +606,7 @@ const copy = {
         mockFraction: 'Pappe und Karton',
         mockContainer: 'Container 4',
         optionFrom: 'Ab {setup} + {monthly} / Monat',
+        optionThen: 'Danach {next} / Monat',
         tagline_sorting: 'Besucher zeigen ihren Abfall. Die Sortierhilfe zeigt den Container und den Weg dorthin.',
         tagline_monitoring: 'Eine Kamera sitzt über einem Eingang. Eine Kamera sitzt an einem Container. Sie sehen es in EasyTrack.',
         chooseOption: 'Version wählen',
@@ -615,7 +618,7 @@ const copy = {
         option_box_body: 'Bildschirm und Kamera vor Ort. Wir betreiben und warten sie.',
         option_boxSelf_body: 'Bildschirm und Kamera vor Ort. Wir analysieren die Bilder, Sie betreiben die Box. Fehlersuche {hourly} / Stunde.',
         option_reuse_body: 'Sitzt über dem Eingang zu einem Container, einem Zelt oder einem Raum. Besucher, was sie hinein- und hinausbringen, und was es wiegt.',
-        firstLocationNote: 'Erster Standort: {monthly} / Monat für Grundeinstellung und Support.',
+        nextCameraNote: 'Nächste Kamera: {setup} + {monthly} / Monat statt {fullMonthly} / Monat.',
         option_container_body: 'Sitzt an einem Container und sieht, was hineingeworfen wird, auch die schwierigen Gegenstände.',
         name_app: 'App',
         name_box: 'Box mit Support',
@@ -881,8 +884,9 @@ function completePrice(config, line) {
 }
 
 function unitTotals(config, line) {
-    const discounted = config.extraUnitSetup != null && line.locations > 0;
-    const full = discounted ? Math.min(line.units, line.locations) : line.units;
+    const perLocation = config.extraUnitSetup != null && line.locations > 0;
+    const furtherCameras = config.extraUnitMonthly != null && line.locations === 0 && line.units > 0;
+    const full = perLocation ? Math.min(line.units, line.locations) : (furtherCameras ? 1 : line.units);
     const extra = line.units - full;
     return {
         setup: config.unitSetup * full + (config.extraUnitSetup ?? config.unitSetup) * extra,
@@ -895,7 +899,7 @@ function priceFor(line) {
     const units = unitTotals(config, line);
     return {
         setup: units.setup + tiered(config.locationSetup, line.locations) + completePrice(config, line),
-        monthly: units.monthly + tieredMonthly(config.locationMonthly, line.locations) + (config.firstLocationMonthly && line.units > 0 ? config.firstLocationMonthly : 0)
+        monthly: units.monthly + tieredMonthly(config.locationMonthly, line.locations)
     };
 }
 
@@ -1004,8 +1008,17 @@ function renderOptions() {
         const name = document.createElement('strong');
         name.textContent = t(`name_${key}`);
         const price = document.createElement('em');
+        const config = PRODUCTS[product].options[key];
         const from = priceFor(lineFor(key, 1, 0, 1));
-        price.textContent = t('optionFrom', { setup: formatMoney(from.setup), monthly: formatMoney(from.monthly) });
+        if (config.extraUnitMonthly != null && !perSite(config)) {
+            price.append(
+                t('optionFrom', { setup: formatMoney(from.setup), monthly: formatMoney(from.monthly) }),
+                document.createElement('br'),
+                t('optionThen', { next: formatMoney(config.extraUnitMonthly) })
+            );
+        } else {
+            price.textContent = t('optionFrom', { setup: formatMoney(from.setup), monthly: formatMoney(from.monthly) });
+        }
         head.append(name, price);
         const detail = document.createElement('small');
         detail.textContent = t(`option_${key}_body`, { hourly: formatMoney(HOURLY_RATE) });
@@ -1089,9 +1102,15 @@ function renderQuantity() {
 
     const note = document.getElementById('saving-note');
     const extraComplete = config.complete && complete ? config.complete.perLocation : 0;
-    if (config.firstLocationMonthly) {
+    if (config.extraUnitMonthly != null && !perSite(config) && cameras < MAX_UNITS) {
+        const one = priceFor(lineFor(option, 1, 0, 1));
+        const two = priceFor(lineFor(option, 1, 0, 2));
         note.hidden = false;
-        note.textContent = t('firstLocationNote', { monthly: formatMoney(config.firstLocationMonthly) });
+        note.textContent = t('nextCameraNote', {
+            setup: formatMoney(two.setup - one.setup),
+            monthly: formatMoney(two.monthly - one.monthly),
+            fullMonthly: formatMoney(one.monthly)
+        });
     } else if (config.unit === null && config.locationMonthly.step && locations < MAX_LOCATIONS) {
         note.hidden = false;
         note.textContent = t('nextLocationNote', {
