@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Configure and order Easysort products.">
     <title>Configure — Easysort</title>
-    <link rel="stylesheet" href="configure.css?v=20261014c">
+    <link rel="stylesheet" href="configure.css?v=20261014g">
 </head>
 <body data-order-url="https://website-workers.lucas-vilsen.workers.dev/order">
     <header>
@@ -36,12 +36,6 @@
                 </div>
                 <h2 id="product-title">Sorting Guide</h2>
                 <p id="product-description"></p>
-                <div class="included">
-                    <h3 data-i18n="includedSetup">Included in setup</h3>
-                    <ul id="included-setup"></ul>
-                    <h3 data-i18n="includedOperation">Included in operation</h3>
-                    <ul id="included-operation"></ul>
-                </div>
             </section>
 
             <section class="choices">
@@ -62,7 +56,46 @@
                 <fieldset>
                     <legend><span>2</span><span data-i18n="chooseOption">Option</span></legend>
                     <div class="service-options" id="option-list"></div>
+                    <div class="support-choice" id="support-choice" hidden>
+                        <p class="support-label" data-i18n="supportLabel">Support</p>
+                        <div class="support-toggle" role="radiogroup">
+                            <label>
+                                <input type="radio" name="support" value="box" checked>
+                                <span>
+                                    <strong data-i18n="withSupport">With support</strong>
+                                    <small data-i18n="withSupportBody"></small>
+                                    <em id="support-with-price"></em>
+                                </span>
+                            </label>
+                            <label>
+                                <input type="radio" name="support" value="boxSelf">
+                                <span>
+                                    <strong data-i18n="withoutSupport">Without support</strong>
+                                    <small data-i18n="withoutSupportBody"></small>
+                                    <em id="support-without-price"></em>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
                 </fieldset>
+
+                <section class="benefits" aria-labelledby="benefits-title">
+                    <h3 id="benefits-title"></h3>
+                    <ul class="benefit-list" id="benefit-list"></ul>
+                    <details class="all-included" id="all-included">
+                        <summary id="all-included-summary"></summary>
+                        <div class="all-included-columns">
+                            <div>
+                                <h4 data-i18n="includedSetup">Included in setup</h4>
+                                <ul id="included-setup"></ul>
+                            </div>
+                            <div>
+                                <h4 id="operation-heading"></h4>
+                                <ul id="included-operation"></ul>
+                            </div>
+                        </div>
+                    </details>
+                </section>
 
                 <fieldset class="quantity-field">
                     <legend><span>3</span><span data-i18n="quantity">Quantity</span></legend>
@@ -122,47 +155,116 @@
                     <strong id="basket-monthly">—</strong>
                 </div>
             </div>
-            <p class="basket-note" id="basket-note"></p>
+            <p class="basket-note" data-i18n="vatNote">Prices excl. VAT.</p>
             <button class="continue-button" id="checkout-button" type="button">
                 <span data-i18n="order">Order</span><span>→</span>
             </button>
         </section>
+    </main>
 
-        <form class="checkout" id="checkout" hidden novalidate>
-            <div>
-                <p class="contact-eyebrow" data-i18n="lastStep">Last step</p>
-                <h2 data-i18n="checkoutTitle">Confirm your order.</h2>
-                <p data-i18n="checkoutLead">No payment now. We contact you to confirm delivery and payment before anything is binding.</p>
-                <div class="dpa">
-                    <h3 data-i18n="dpaTitle">Data processing agreement</h3>
-                    <p data-i18n="dpaBody">We sign it before we start.</p>
-                </div>
+    <dialog class="order-dialog" id="order-dialog" aria-labelledby="order-title">
+        <form class="order-form" id="checkout" method="dialog" novalidate>
+            <div class="dialog-head">
+                <p class="dialog-step" id="dialog-step"></p>
+                <button type="button" class="dialog-close" id="dialog-close" data-i18n-label="close" aria-label="Close">×</button>
             </div>
-            <div class="contact-fields">
-                <label class="wide"><span data-i18n="email">Work email</span><input type="email" name="email" autocomplete="email" required></label>
-                <label><span data-i18n="name">Name (optional)</span><input name="name" autocomplete="name"></label>
-                <label><span data-i18n="company">Organization (optional)</span><input name="organization" autocomplete="organization"></label>
-                <fieldset class="checklist wide">
-                    <legend data-i18n="checklistTitle">Before you send</legend>
-                    <label><input type="checkbox" name="decisionMaker" required><span data-i18n="checkDecision">I can approve this purchase, or the person who can is part of this request.</span></label>
-                    <label><input type="checkbox" name="budget" required><span data-i18n="checkBudget">We have budget for the amounts in the basket.</span></label>
-                    <label><input type="checkbox" name="timeline" required><span data-i18n="checkTimeline">We want to start within the next three months.</span></label>
-                    <label id="infrastructure-check"><input type="checkbox" name="infrastructure"><span data-i18n="checkInfrastructure">We have power and internet where the hardware will go.</span></label>
+
+            <div class="dialog-body" id="order-step">
+                <h2 id="order-title" data-i18n="checkoutTitle">Confirm your order</h2>
+
+                <section class="order-summary">
+                    <ul id="summary-lines"></ul>
+                    <dl class="summary-total">
+                        <div><dt data-i18n="setup">One-time</dt><dd id="summary-setup">—</dd></div>
+                        <div><dt data-i18n="monthly">Monthly</dt><dd id="summary-monthly">—</dd></div>
+                    </dl>
+                    <p data-i18n="summaryNote">Prices excl. VAT. No payment now.</p>
+                </section>
+
+                <section class="order-section">
+                    <h3 data-i18n="contactHeading">Where do we send the confirmation?</h3>
+                    <label class="field">
+                        <span data-i18n="email">Work email</span>
+                        <input type="email" name="email" autocomplete="email" inputmode="email" required>
+                    </label>
+                    <div class="field-row">
+                        <label class="field">
+                            <span data-i18n="company">Organization</span>
+                            <input name="organization" autocomplete="organization">
+                        </label>
+                        <label class="field">
+                            <span data-i18n="phone">Phone</span>
+                            <input type="tel" name="phone" autocomplete="tel" inputmode="tel">
+                        </label>
+                    </div>
+                    <p class="field-hint" data-i18n="optionalHint">Organization and phone are optional, but help us reply faster.</p>
+                </section>
+
+                <fieldset class="order-section checklist">
+                    <legend data-i18n="checklistTitle">Confirm before you send</legend>
+                    <label class="check-row">
+                        <input type="checkbox" name="decisionMaker" required>
+                        <span><strong data-i18n="checkDecision">I can approve the purchase</strong><small data-i18n="checkDecisionHint">Or the person who can is copied on the email.</small></span>
+                    </label>
+                    <label class="check-row">
+                        <input type="checkbox" name="budget" required>
+                        <span><strong data-i18n="checkBudget">The budget is in place</strong><small data-i18n="checkBudgetHint">For the amounts above.</small></span>
+                    </label>
+                    <label class="check-row">
+                        <input type="checkbox" name="timeline" required>
+                        <span><strong data-i18n="checkTimeline">We want to start within 3 months</strong><small data-i18n="checkTimelineHint">So we can plan delivery and setup.</small></span>
+                    </label>
+                    <label class="check-row" id="infrastructure-check">
+                        <input type="checkbox" name="infrastructure">
+                        <span><strong data-i18n="checkInfrastructure">There is power on site</strong><small data-i18n="checkInfrastructureHint">Where the box or camera will go.</small></span>
+                    </label>
                 </fieldset>
-                <label class="wide"><span data-i18n="note">Note (optional)</span><textarea name="note" rows="3"></textarea></label>
+
+                <details class="order-section dpa">
+                    <summary data-i18n="dpaTitle">Data processing agreement</summary>
+                    <p data-i18n="dpaBody">We sign it before we start.</p>
+                </details>
+
                 <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-                <button type="submit" id="send-button"><span data-i18n="send">Send order request</span><span>→</span></button>
                 <p class="form-error" id="form-error" role="alert" hidden></p>
             </div>
-        </form>
 
-        <section class="confirmation" id="confirmation" hidden>
-            <p class="contact-eyebrow" data-i18n="confirmedEyebrow">Request received</p>
-            <h2 data-i18n="confirmedTitle">Thank you. We have your order.</h2>
-            <p id="confirmed-body"></p>
-            <a class="continue-button" href="./" data-i18n="backHome">Back to Easysort</a>
-        </section>
-    </main>
+            <div class="dialog-foot" id="order-foot">
+                <button type="submit" class="send-button" id="send-button">
+                    <span data-i18n="send">Send order</span>
+                    <span id="send-total"></span>
+                </button>
+                <p data-i18n="sendNote">We confirm delivery and payment with you before anything is binding.</p>
+            </div>
+
+            <div class="dialog-body receipt" id="receipt-step" hidden>
+                <p class="receipt-ref" id="receipt-ref"></p>
+                <h2 data-i18n="confirmedTitle" tabindex="-1">Thank you. We have your order.</h2>
+                <p class="receipt-lead" id="receipt-lead"></p>
+                <section class="order-summary">
+                    <ul id="receipt-lines"></ul>
+                    <dl class="summary-total">
+                        <div><dt data-i18n="setup">One-time</dt><dd id="receipt-setup">—</dd></div>
+                        <div><dt data-i18n="monthly">Monthly</dt><dd id="receipt-monthly">—</dd></div>
+                    </dl>
+                </section>
+                <section class="next-steps">
+                    <h3 data-i18n="nextTitle">What happens now</h3>
+                    <ol>
+                        <li><strong data-i18n="nextOneTitle">We contact you</strong><span id="next-one-body"></span></li>
+                        <li><strong data-i18n="nextTwoTitle">We agree on the details</strong><span data-i18n="nextTwoBody">Delivery, start date, and payment. Nothing is binding before this.</span></li>
+                        <li><strong data-i18n="nextThreeTitle">We sign and get started</strong><span data-i18n="nextThreeBody">Data processing agreement, then setup on your site.</span></li>
+                    </ol>
+                </section>
+                <p class="receipt-contact">
+                    <span data-i18n="questions">Questions?</span>
+                    <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+                    <a href="tel:+4550205832">+45 50 20 58 32</a>
+                </p>
+                <a class="continue-button" href="./" data-i18n="backHome">Back to Easysort</a>
+            </div>
+        </form>
+    </dialog>
 
     <footer>
         <span>Easysort</span>
@@ -171,6 +273,6 @@
         <a href="privacy.html" data-i18n="privacy">Privacy</a>
     </footer>
 
-    <script src="configure.js?v=20261014d"></script>
+    <script src="configure.js?v=20261014g"></script>
 </body>
 </html>
