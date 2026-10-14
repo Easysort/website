@@ -496,6 +496,8 @@ p {
     border-bottom: 1px solid var(--line);
 }
 
+.products-configure { margin-top: 28px; }
+
 .product-link {
     align-self: flex-start;
     margin-top: auto;

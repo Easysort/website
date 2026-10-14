@@ -19,7 +19,9 @@ const MAX_LINES = 20;
  * which is a placeholder. An extra box at a location that already has one
  * costs 5,000 kr. less to set up and 1,000 kr. less per month; the complete
  * add-on is unchanged. Monitoring is priced per camera only, whatever the
- * number of locations. */
+ * number of locations. The app's monthly price starts at 4,000 kr. for the
+ * first location and falls by 100 kr. for each further location, down to a
+ * floor of 2,000 kr. */
 const HOURLY_RATE = 950;
 const PRODUCTS = {
     sorting: {
@@ -31,7 +33,7 @@ const PRODUCTS = {
                 unitSetup: 0,
                 unitMonthly: 0,
                 locationSetup: { first: 8500, extra: 2500 },
-                locationMonthly: { first: 4000, extra: 1800 },
+                locationMonthly: { first: 4000, step: 100, floor: 2000 },
                 complete: { perUnit: 0, perLocation: 6500 },
                 setupItems: ['signsA1', 'qrLabels', 'signDesign', 'qrFile', 'siteMap', 'easytrack', 'training', 'precision'],
                 completeItems: ['signsA1', 'qrLabels', 'signDesign'],
@@ -310,6 +312,9 @@ const copy = {
         locationCountOne: '1 location',
         locationCount: '{count} locations',
         extraLocationNote: 'Each extra location: {setup} setup and {monthly} / month.',
+        nextLocationNote: 'Next location: {setup} setup and {monthly} / month. Then {step} less per location each month.',
+        tryRoskilde: 'Try it in Roskilde',
+        tryRoskildeHint: 'The live guide. Scan with your phone.',
         signsA1: '2 A1 signs, designed and printed (worth 4,000 kr.)',
         qrLabels: '80 A4 QR labels for containers and signs (worth 2,500 kr.)',
         signDesign: 'Design of signs and labels. You can request changes.',
@@ -465,6 +470,9 @@ const copy = {
         locationCountOne: '1 plads',
         locationCount: '{count} pladser',
         extraLocationNote: 'Hver ekstra plads: {setup} i opsætning og {monthly} / md.',
+        nextLocationNote: 'Næste plads: {setup} i opsætning og {monthly} / md. Derefter {step} mindre pr. plads om måneden.',
+        tryRoskilde: 'Prøv den i Roskilde',
+        tryRoskildeHint: 'Den rigtige guide. Scan med telefonen.',
         signsA1: '2 A1-skilte med design og print, værdi 4.000 kr.',
         qrLabels: '80 A4 QR-mærker til containere og skilte, værdi 2.500 kr.',
         signDesign: 'Design af skilte og mærker. I kan komme med ændringer.',
@@ -620,6 +628,9 @@ const copy = {
         locationCountOne: '1 Standort',
         locationCount: '{count} Standorte',
         extraLocationNote: 'Jeder weitere Standort: {setup} Einrichtung und {monthly} / Monat.',
+        nextLocationNote: 'Nächster Standort: {setup} Einrichtung und {monthly} / Monat. Danach {step} weniger pro Standort und Monat.',
+        tryRoskilde: 'In Roskilde ausprobieren',
+        tryRoskildeHint: 'Die echte Sortierhilfe. Mit dem Handy scannen.',
         signsA1: '2 A1-Schilder mit Design und Druck (Wert 4.000 kr.)',
         qrLabels: '80 A4-QR-Etiketten für Container und Schilder (Wert 2.500 kr.)',
         signDesign: 'Design von Schildern und Etiketten. Änderungswünsche sind möglich.',
@@ -807,6 +818,17 @@ function tiered(tier, count) {
     return count > 0 ? tier.first + tier.extra * (count - 1) : 0;
 }
 
+function marginalMonthly(tier, index) {
+    if (!tier.step) return index === 0 ? tier.first : tier.extra;
+    return Math.max(tier.floor ?? 0, tier.first - index * tier.step);
+}
+
+function tieredMonthly(tier, count) {
+    let total = 0;
+    for (let index = 0; index < count; index += 1) total += marginalMonthly(tier, index);
+    return total;
+}
+
 function completePrice(config, line) {
     if (!config.complete || !line.complete) return 0;
     return config.complete.perUnit * line.units + config.complete.perLocation * line.locations;
@@ -827,7 +849,7 @@ function priceFor(line) {
     const units = unitTotals(config, line);
     return {
         setup: units.setup + tiered(config.locationSetup, line.locations) + completePrice(config, line),
-        monthly: units.monthly + tiered(config.locationMonthly, line.locations)
+        monthly: units.monthly + tieredMonthly(config.locationMonthly, line.locations)
     };
 }
 
@@ -915,6 +937,7 @@ function renderProduct() {
     image.src = PRODUCTS[product].image;
     image.hidden = option === 'app';
     document.getElementById('phone-mock').hidden = option !== 'app';
+    document.getElementById('try-qr').hidden = option !== 'app';
     document.getElementById('product-name').textContent = t(product);
     document.getElementById('product-tagline').textContent = t(`tagline_${product}`);
     document.querySelectorAll('input[name="product"]').forEach((input) => {
@@ -1026,13 +1049,22 @@ function renderQuantity() {
     }
 
     const note = document.getElementById('saving-note');
-    const extra = config.locationSetup.extra || config.locationMonthly.extra;
-    note.hidden = config.unit !== null || !extra;
     const extraComplete = config.complete && complete ? config.complete.perLocation : 0;
-    note.textContent = t('extraLocationNote', {
-        setup: formatMoney(config.locationSetup.extra + extraComplete),
-        monthly: formatMoney(config.locationMonthly.extra)
-    });
+    if (config.unit === null && config.locationMonthly.step && locations < MAX_LOCATIONS) {
+        note.hidden = false;
+        note.textContent = t('nextLocationNote', {
+            setup: formatMoney(config.locationSetup.extra + extraComplete),
+            monthly: formatMoney(marginalMonthly(config.locationMonthly, locations)),
+            step: formatMoney(config.locationMonthly.step)
+        });
+    } else {
+        const extra = config.locationSetup.extra || config.locationMonthly.extra;
+        note.hidden = config.unit !== null || !extra;
+        note.textContent = t('extraLocationNote', {
+            setup: formatMoney(config.locationSetup.extra + extraComplete),
+            monthly: formatMoney(config.locationMonthly.extra || 0)
+        });
+    }
 }
 
 function lineItem(line, action) {
