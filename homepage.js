@@ -64,10 +64,11 @@ const translations = {
         customBody: 'We also build camera systems for sorting plants and waste-to-energy plants. Each system is designed for the plant, so contact us directly.',
         customAction: 'Contact us',
         partnersLabel: 'Developed with teams in the Danish waste sector',
-        contactTitle: 'Write or call.',
-        contactPromise: 'I reply myself.',
-        contactBody: 'Order online. Payment by bank transfer.',
-        configureSystem: 'Configure your system'
+        consultationLabel: 'Free discovery call with Lucas',
+        consultationTitle: "Let's find where the opportunities are.",
+        consultationDescription: 'We use the call to understand your facility, point out practical improvement opportunities, and share ideas you can use whether you work with us, someone else, or solve it in-house. If there is a strong match, we also see whether you qualify for a project with us.',
+        consultationCta: 'Book a discovery call',
+        consultationNote: 'Practical pointers first. Project fit second.'
     },
     da: {
         pageTitle: 'Easysort — Sortér affaldet rigtigt',
@@ -116,10 +117,11 @@ const translations = {
         customBody: 'Vi bygger også kamerasystemer til sorteringsanlæg og forbrændingsanlæg. Hvert system tilpasses anlægget, så kontakt os direkte.',
         customAction: 'Kontakt os',
         partnersLabel: 'Udviklet med teams i den danske affaldssektor',
-        contactTitle: 'Skriv eller ring.',
-        contactPromise: 'Jeg svarer selv.',
-        contactBody: 'Bestil online. Betaling ved bankoverførsel.',
-        configureSystem: 'Konfigurér jeres system'
+        consultationLabel: 'Gratis introduktionsmøde med Lucas',
+        consultationTitle: 'Lad os finde ud af, hvor mulighederne er.',
+        consultationDescription: 'Vi bruger mødet på at forstå jeres anlæg, pege på praktiske forbedringsmuligheder og dele idéer, I kan bruge, uanset om I arbejder med os, en anden leverandør eller løser det internt. Hvis der er et stærkt match, ser vi også på, om I passer til et projekt med os.',
+        consultationCta: 'Book introduktionsmøde',
+        consultationNote: 'Praktiske input først. Projektmatch bagefter.'
     },
     de: {
         pageTitle: 'Easysort — Abfall richtig sortieren',
@@ -168,10 +170,11 @@ const translations = {
         customBody: 'Wir bauen auch Kamerasysteme für Sortieranlagen und Müllverbrennungsanlagen. Jedes System wird für die Anlage geplant, sprechen Sie uns daher direkt an.',
         customAction: 'Kontakt aufnehmen',
         partnersLabel: 'Mit Teams aus der dänischen Abfallwirtschaft entwickelt',
-        contactTitle: 'Schreiben oder anrufen.',
-        contactPromise: 'Ich antworte selbst.',
-        contactBody: 'Online bestellen. Zahlung per Banküberweisung.',
-        configureSystem: 'System konfigurieren'
+        consultationLabel: 'Kostenloses Kennenlerngespräch mit Lucas',
+        consultationTitle: 'Finden wir heraus, wo die Möglichkeiten liegen.',
+        consultationDescription: 'Im Gespräch verstehen wir Ihre Anlage, zeigen praktische Verbesserungsmöglichkeiten und teilen Ideen, die Sie nutzen können, ob mit uns, einem anderen Anbieter oder intern. Wenn es gut passt, sehen wir auch, ob ein Projekt mit uns infrage kommt.',
+        consultationCta: 'Kennenlerngespräch buchen',
+        consultationNote: 'Zuerst praktische Hinweise. Danach die Projektpassung.'
     }
 };
 
