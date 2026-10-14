@@ -47,7 +47,7 @@ const translations = {
         askStaff: 'Ask the staff',
         failed: 'Analysis failed. Try again.',
         productsTitle: 'Our products',
-        productsLead: 'Build one order with several products, options, and locations.',
+        productsLead: 'A sorting guide for visitors. Monitoring for the site.',
         productGuideTitle: 'Sorting Guide',
         productGuideBody: 'Visitors scan a QR code or use a screen on site, take a photo, and see where it goes.',
         guidePerkOne: 'App: from 15,000 kr. + 4,000 kr. / month',
@@ -64,7 +64,7 @@ const translations = {
         customAction: 'Contact us',
         partnersLabel: 'Developed with teams in the Danish waste sector',
         contactTitle: 'Want this at your site?',
-        contactBody: 'Build your order online. We confirm delivery and payment with you.',
+        contactBody: 'Order online. Pay by bank transfer.',
         configureSystem: 'Configure your system'
     },
     da: {
@@ -99,7 +99,7 @@ const translations = {
         askStaff: 'Spørg personalet',
         failed: 'Analysen mislykkedes. Prøv igen.',
         productsTitle: 'Vores produkter',
-        productsLead: 'Sammensæt én ordre med flere produkter, løsninger og lokationer.',
+        productsLead: 'En sorteringsguide til borgerne. Overvågning til pladsen.',
         productGuideTitle: 'Sorteringsguide',
         productGuideBody: 'Borgeren scanner en QR-kode eller bruger en skærm på pladsen, tager et billede og ser, hvor det skal hen.',
         guidePerkOne: 'App: fra 15.000 kr. + 4.000 kr. / md.',
@@ -116,7 +116,7 @@ const translations = {
         customAction: 'Kontakt os',
         partnersLabel: 'Udviklet med teams i den danske affaldssektor',
         contactTitle: 'Skal det bruges hos jer?',
-        contactBody: 'Sammensæt ordren online. Vi bekræfter levering og betaling med jer.',
+        contactBody: 'Bestil online. Betaling ved bankoverførsel.',
         configureSystem: 'Konfigurér jeres system'
     },
     de: {
@@ -151,7 +151,7 @@ const translations = {
         askStaff: 'Personal fragen',
         failed: 'Analyse fehlgeschlagen. Bitte erneut versuchen.',
         productsTitle: 'Unsere Produkte',
-        productsLead: 'Eine Bestellung mit mehreren Produkten, Lösungen und Standorten zusammenstellen.',
+        productsLead: 'Eine Sortierhilfe für Besucher. Überwachung für den Standort.',
         productGuideTitle: 'Sortierhilfe',
         productGuideBody: 'Besucher scannen einen QR-Code oder nutzen einen Bildschirm vor Ort, machen ein Foto und sehen, wohin es gehört.',
         guidePerkOne: 'App: ab 15.000 kr. + 4.000 kr. / Monat',
@@ -168,7 +168,7 @@ const translations = {
         customAction: 'Kontakt aufnehmen',
         partnersLabel: 'Mit Teams aus der dänischen Abfallwirtschaft entwickelt',
         contactTitle: 'Soll das an Ihrem Standort laufen?',
-        contactBody: 'Bestellung online zusammenstellen. Wir bestätigen Lieferung und Zahlung mit Ihnen.',
+        contactBody: 'Online bestellen. Zahlung per Banküberweisung.',
         configureSystem: 'System konfigurieren'
     }
 };
