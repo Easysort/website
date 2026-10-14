@@ -127,26 +127,6 @@
     font-weight: 730;
 }
 
-.simple-proof {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 9px 24px;
-    margin-top: 25px;
-    color: #607068;
-    font-size: 0.76rem;
-    font-weight: 680;
-}
-
-.simple-proof span::before {
-    margin-right: 15px;
-    color: #a5afa8;
-    content: "—";
-}
-
-.simple-proof span:first-child::before { display: none; }
-
 .products-section {
     padding-top: clamp(82px, 9vw, 120px);
     padding-bottom: clamp(82px, 9vw, 120px);
@@ -180,15 +160,47 @@
     border-top: 1px solid var(--line);
 }
 
-.contact-section {
+.simple-contact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 42px;
     max-width: 1220px;
-    margin-inline: auto;
-    padding: clamp(48px, 6vw, 76px);
+    margin: 72px auto;
+    padding: 38px 42px;
+    border: 1px solid #cae0d0;
+    border-radius: 22px;
+    background: #f1f8f3;
 }
 
-.contact-section h2 {
-    max-width: 800px;
-    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+.simple-contact .eyebrow {
+    margin-bottom: 8px;
+}
+
+.simple-contact h2 {
+    font-size: clamp(1.8rem, 3vw, 2.7rem);
+    letter-spacing: -0.045em;
+    line-height: 1;
+}
+
+.simple-contact > div:first-child > p:last-child {
+    max-width: 640px;
+    margin-top: 11px;
+    color: var(--muted);
+    font-size: 0.86rem;
+}
+
+.simple-contact-actions {
+    display: grid;
+    flex: 0 0 auto;
+    justify-items: center;
+    gap: 10px;
+}
+
+.simple-contact-actions > a:last-child {
+    color: #57635b;
+    font-size: 0.72rem;
+    text-decoration: none;
 }
 
 @media (max-width: 640px) {
@@ -241,13 +253,6 @@
         gap: 1px;
     }
 
-    .simple-proof {
-        grid-column: auto;
-        gap: 6px 15px;
-        margin-top: 18px;
-        font-size: 0.67rem;
-    }
-
     .products-section {
         padding-top: 72px;
         padding-bottom: 72px;
@@ -261,8 +266,19 @@
         width: max-content;
     }
 
-    .contact-section {
-        margin: 12px;
+    .simple-contact {
+        align-items: stretch;
+        flex-direction: column;
+        margin: 48px 12px;
+        padding: 27px 23px;
+    }
+
+    .simple-contact-actions {
+        justify-items: stretch;
+    }
+
+    .simple-contact-actions .button {
+        width: 100%;
     }
 }
 

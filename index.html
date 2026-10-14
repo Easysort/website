@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Free sorting help for Danish recycling centers and practical camera systems for waste facilities.">
     <title>Easysort — Sort waste correctly</title>
-    <link rel="stylesheet" href="simple-home.css?v=20261013">
+    <link rel="stylesheet" href="simple-home.css?v=20261014">
 </head>
 <body data-worker="https://website-workers.lucas-vilsen.workers.dev/classify">
     <header class="site-header">
@@ -21,6 +21,7 @@
             <div class="language-switch" role="group" aria-label="Language">
                 <button type="button" data-language-option="en" aria-pressed="true">EN</button>
                 <button type="button" data-language-option="da" aria-pressed="false">DA</button>
+                <button type="button" data-language-option="de" aria-pressed="false">DE</button>
             </div>
         </div>
     </header>
@@ -71,11 +72,6 @@
                     <span data-i18n="privacyShort">Only this photo is sent for analysis.</span>
                     <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
                 </p>
-            </div>
-            <div class="simple-proof">
-                <span data-i18n="proofFree">Always free</span>
-                <span data-i18n="proofNoAccount">No account</span>
-                <span data-i18n="proofLive">Used at Danish recycling centers</span>
             </div>
         </section>
 
@@ -130,13 +126,15 @@
             </div>
         </section>
 
-        <section class="contact-section">
-            <p class="eyebrow" data-i18n="contactEyebrow">Start a conversation</p>
-            <h2 data-i18n="contactTitle">What should be easier to see at your facility?</h2>
-            <p data-i18n="contactBody">Show us the operation, the difficult decision, or the blind spot. We will tell you honestly where better monitoring can help.</p>
-            <div class="contact-actions">
-                <a class="button button-white" href="https://app.cal.com/easysort" target="_blank" rel="noreferrer" data-i18n="bookCall">Book a conversation</a>
-                <a class="contact-mail" href="mailto:lucas@easysort.org">lucas@easysort.org <span>→</span></a>
+        <section class="simple-contact">
+            <div>
+                <p class="eyebrow" data-i18n="contactEyebrow">For recycling centers and facilities</p>
+                <h2 data-i18n="contactTitle">Want this at your site?</h2>
+                <p data-i18n="contactBody">Choose the product, service, units, and locations. We will follow up with the final setup and delivery.</p>
+            </div>
+            <div class="simple-contact-actions">
+                <a class="button button-green" href="configure.html" data-i18n="configureSystem">Configure your system</a>
+                <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
             </div>
         </section>
     </main>
@@ -156,6 +154,6 @@
         <p class="footer-note">© 2026 Easysort</p>
     </footer>
 
-    <script src="homepage.js?v=20261013b"></script>
+    <script src="homepage.js?v=20261014"></script>
 </body>
 </html>

@@ -5,13 +5,13 @@
 
 const WORKER_URL = document.body.dataset.worker;
 const LANGUAGE_STORAGE_KEY = 'easysort-language';
-const SUPPORTED_LANGUAGES = ['en', 'da'];
+const SUPPORTED_LANGUAGES = ['en', 'da', 'de'];
 const API_TIMEOUT_MS = 30000;
 
 const SITES = {
-    roskilde: { da: 'Roskilde Genbrugsplads', en: 'Roskilde Recycling Center', lat: 55.64, lon: 12.08 },
-    jyllinge: { da: 'Jyllinge Genbrugsplads', en: 'Jyllinge Recycling Center', lat: 55.75, lon: 12.10 },
-    vojens: { da: 'Vojens Genbrugsplads', en: 'Vojens Recycling Center', lat: 55.25, lon: 9.31 }
+    roskilde: { da: 'Roskilde Genbrugsplads', en: 'Roskilde Recycling Center', de: 'Recyclinghof Roskilde', lat: 55.64, lon: 12.08 },
+    jyllinge: { da: 'Jyllinge Genbrugsplads', en: 'Jyllinge Recycling Center', de: 'Recyclinghof Jyllinge', lat: 55.75, lon: 12.10 },
+    vojens: { da: 'Vojens Genbrugsplads', en: 'Vojens Recycling Center', de: 'Recyclinghof Vojens', lat: 55.25, lon: 9.31 }
 };
 
 const translations = {
@@ -102,9 +102,10 @@ const translations = {
         approachTwoBody: 'Develop with the changing objects, light, weather, and flow found on site.',
         approachThreeTitle: 'Connect the overview',
         approachThreeBody: 'Turn individual detections into useful operational knowledge.',
-        contactEyebrow: 'Start a conversation',
-        contactTitle: 'What should be easier to see at your facility?',
-        contactBody: 'Show us the operation, the difficult decision, or the blind spot. We will tell you honestly where better monitoring can help.',
+        contactEyebrow: 'For recycling centers and facilities',
+        contactTitle: 'Want this at your site?',
+        contactBody: 'Choose the product, service, units, and locations. We will follow up with the final setup and delivery.',
+        configureSystem: 'Configure your system',
         bookCall: 'Book a conversation',
         footerLine: 'Practical tools for sorting and monitoring waste.'
     },
@@ -195,11 +196,63 @@ const translations = {
         approachTwoBody: 'Udvikl med de skiftende ting, lysforhold, vejr og flows, der findes på pladsen.',
         approachThreeTitle: 'Skab det samlede overblik',
         approachThreeBody: 'Gør enkelte registreringer til brugbar viden om driften.',
-        contactEyebrow: 'Start en samtale',
-        contactTitle: 'Hvad burde være lettere at se på jeres anlæg?',
-        contactBody: 'Vis os driften, den svære beslutning eller den blinde vinkel. Vi fortæller ærligt, hvor bedre overvågning kan hjælpe.',
+        contactEyebrow: 'Til genbrugspladser og anlæg',
+        contactTitle: 'Skal det bruges hos jer?',
+        contactBody: 'Vælg produkt, service, enheder og lokationer. Vi følger op med den endelige opsætning og levering.',
+        configureSystem: 'Konfigurér jeres system',
         bookCall: 'Book en samtale',
         footerLine: 'Praktiske værktøjer til sortering og overvågning af affald.'
+    },
+    de: {
+        pageTitle: 'Easysort — Abfall richtig sortieren',
+        description: 'Kostenlose Sortierhilfe für dänische Recyclinghöfe und praktische Kamerasysteme für Abfallbetriebe.',
+        navProducts: 'Produkte',
+        navConfigure: 'Konfigurieren',
+        heroEyebrow: 'Kostenlose Sortierhilfe',
+        heroTitle: 'Abfall richtig sortieren.',
+        heroLead: 'Foto aufnehmen. Wir zeigen, was es ist und wohin es gehört.',
+        demoLive: 'Kamera bereit',
+        demoNoInstall: 'Kostenlos',
+        cameraLabel: 'Einen Gegenstand zeigen',
+        cameraStart: 'Zum Starten tippen',
+        cameraRequiresHttps: 'Die Kamera benötigt HTTPS.',
+        cameraApiUnsupported: 'Dieser Browser unterstützt keine Kamera.',
+        cameraAccessDenied: 'Kamerazugriff fehlgeschlagen. Zum Wiederholen tippen.',
+        cameraPermissionDenied: 'Kamerazugriff wurde abgelehnt. Bitte erlauben und erneut tippen.',
+        cameraNotFound: 'Keine Kamera gefunden.',
+        switchCamera: 'Kamera wechseln',
+        analyzeNeedCamera: 'Foto aufnehmen',
+        analyze: 'Foto aufnehmen',
+        analyzing: 'Wird analysiert…',
+        photo: 'Hochladen',
+        itemLabel: 'Wir glauben, das ist',
+        fractionLabel: 'Sortieren als',
+        centerLabel: 'Leitfaden',
+        automaticGuide: 'Dänischer Recyclinghof',
+        privacyShort: 'Nur dieses Foto wird zur Analyse gesendet.',
+        privacyLink: 'Datenschutz',
+        noItem: 'Kein Gegenstand auf dem Foto',
+        askStaff: 'Personal fragen',
+        failed: 'Analyse fehlgeschlagen. Bitte erneut versuchen.',
+        productsEyebrow: 'Produkte',
+        productsTitle: 'Zwei Produkte. Eine einfache Einrichtung.',
+        productsLead: 'Produkt, Service, Einheiten und Standorte in einem Konfigurator auswählen.',
+        availableNow: 'Jetzt verfügbar',
+        productGuideTitle: 'Sortierhilfe',
+        productGuideBody: 'Besuchern helfen, am Smartphone oder an einer festen Station richtig zu sortieren.',
+        configureGuide: 'Konfigurieren →',
+        productReuseTitle: 'Monitoring Box',
+        productReuseBody: 'Personen und Wiederverwendung erfassen oder falsch sortierte Gegenstände in Containern finden.',
+        monitorPerkOne: 'Personen und Aktivität',
+        monitorPerkTwo: 'Falsch sortierte Gegenstände',
+        monitorPerkThree: 'Übersicht und optionale Warnungen',
+        viewProduct: 'Konfigurieren →',
+        partnersLabel: 'Mit Teams aus der dänischen Abfallwirtschaft entwickelt und getestet',
+        contactEyebrow: 'Für Recyclinghöfe und Anlagen',
+        contactTitle: 'Soll das an Ihrem Standort eingesetzt werden?',
+        contactBody: 'Produkt, Service, Einheiten und Standorte auswählen. Wir melden uns zur endgültigen Einrichtung und Lieferung.',
+        configureSystem: 'System konfigurieren',
+        footerLine: 'Praktische Werkzeuge zum Sortieren und Überwachen von Abfall.'
     }
 };
 
@@ -216,13 +269,16 @@ let placeholderKey = 'cameraStart';
 let busy = false;
 
 function t(key) {
-    return translations[language][key] || translations.en[key] || key;
+    return (translations[language] || translations.en)[key] || translations.en[key] || key;
 }
 
 function preferredLanguage() {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
     if (SUPPORTED_LANGUAGES.includes(saved)) return saved;
-    return navigator.language && navigator.language.toLowerCase().startsWith('da') ? 'da' : 'en';
+    const browserLanguage = (navigator.language || '').toLowerCase();
+    if (browserLanguage.startsWith('da')) return 'da';
+    if (browserLanguage.startsWith('de')) return 'de';
+    return 'en';
 }
 
 function applyRichText(node, value) {

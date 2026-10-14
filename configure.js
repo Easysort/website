@@ -157,6 +157,69 @@ const copy = {
         mailSetup: 'Eksempel på opstart',
         mailMonthly: 'Eksempel pr. måned',
         mailDisclaimer: 'Kun midlertidige priser. Bekræft venligst endelig konfiguration, levering og betaling.'
+    },
+    de: {
+        pageTitle: 'Konfigurieren — Easysort',
+        back: 'Zurück',
+        eyebrow: 'Konfigurieren',
+        title: 'Ihr Easysort-System konfigurieren.',
+        chooseProduct: 'Produkt',
+        chooseService: 'Service',
+        quantity: 'Anzahl',
+        units: 'Einheiten',
+        locations: 'Standorte',
+        sorting: 'Sortierhilfe',
+        monitoring: 'Monitoring Box',
+        sortingDescription: 'Besuchern helfen, am Smartphone oder an einer festen Station richtig zu sortieren.',
+        monitoringDescription: 'Aktivität erfassen oder falsch sortierte Gegenstände in Containern finden.',
+        sortingFeatureOne: 'Lokale Sortierhilfe für jeden Recyclinghof',
+        sortingFeatureTwo: 'Am Smartphone, auf eigener Hardware oder an einer Easysort-Station',
+        sortingFeatureThree: 'Weitere Einheiten ohne ein neues System hinzufügen',
+        monitoringFeatureOne: 'Aktivitäts- oder Fehlwurfüberwachung auswählen',
+        monitoringFeatureTwo: 'Eine Übersicht über Einheiten und Standorte',
+        monitoringFeatureThree: 'Optionale Warnungen bei Handlungsbedarf',
+        serviceApp: 'App',
+        serviceSoftware: 'Eigene Hardware verwenden',
+        serviceHardware: 'Wir liefern; Sie betreiben',
+        serviceManaged: 'Vollständig von Easysort betreut',
+        localCatalog: 'Lokaler Sortierkatalog',
+        hosting: 'Hosting inklusive',
+        updates: 'Software-Updates',
+        ownHardware: 'Ihre Kamera und Ihr Bildschirm',
+        setupHelp: 'Hilfe bei der Einrichtung',
+        completeStation: 'Komplette Station',
+        monitoringBox: 'Kamerabox inklusive',
+        handover: 'Installation und Übergabe',
+        customerOperated: 'Sie steuern und warten das System',
+        dashboard: 'Übersichts-Dashboard',
+        healthMonitoring: 'Zustandsüberwachung',
+        maintenance: 'Wartung und Austausch',
+        setup: 'Beispiel Einrichtung',
+        monthly: 'Beispiel monatlich',
+        placeholder: 'Platzhalterpreise — kein Angebot.',
+        continue: 'Weiter',
+        saveMore: 'Weitere Einheiten hinzufügen, um einen Beispielrabatt zu sehen.',
+        saving: '{percent}% Beispielrabatt auf {units} Einheiten an {locations} Standorten.',
+        lastStep: 'Letzter Schritt',
+        contactTitle: 'Wie können wir Sie kontaktieren?',
+        contactLead: 'Jetzt keine Zahlung. Wir bestätigen die endgültige Einrichtung, Lieferung und Zahlung mit Ihnen.',
+        name: 'Name',
+        company: 'Organisation',
+        email: 'E-Mail',
+        locationsField: 'Standort(e)',
+        note: 'Notiz (optional)',
+        send: 'Anfrage vorbereiten',
+        mailNote: 'Öffnet eine vorbereitete E-Mail zum Versenden.',
+        privacy: 'Datenschutz',
+        perMonth: '/ Monat',
+        mailSubject: 'Easysort-Konfiguration',
+        mailProduct: 'Produkt',
+        mailService: 'Service',
+        mailUnits: 'Einheiten',
+        mailLocations: 'Standorte',
+        mailSetup: 'Beispiel Einrichtung',
+        mailMonthly: 'Beispiel monatlich',
+        mailDisclaimer: 'Nur Platzhalterpreise. Bitte endgültige Konfiguration, Lieferung und Zahlung bestätigen.'
     }
 };
 
@@ -168,8 +231,11 @@ let locations = 1;
 
 function preferredLanguage() {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === 'da' || saved === 'en') return saved;
-    return navigator.language && navigator.language.toLowerCase().startsWith('da') ? 'da' : 'en';
+    if (saved === 'da' || saved === 'en' || saved === 'de') return saved;
+    const browserLanguage = (navigator.language || '').toLowerCase();
+    if (browserLanguage.startsWith('da')) return 'da';
+    if (browserLanguage.startsWith('de')) return 'de';
+    return 'en';
 }
 
 function requestedProduct() {
@@ -182,7 +248,8 @@ function t(key, replacements = {}) {
 }
 
 function formatMoney(value) {
-    return `${new Intl.NumberFormat(language === 'da' ? 'da-DK' : 'en-GB').format(Math.round(value))} kr.`;
+    const locale = language === 'da' ? 'da-DK' : language === 'de' ? 'de-DE' : 'en-GB';
+    return `${new Intl.NumberFormat(locale).format(Math.round(value))} kr.`;
 }
 
 function discount() {
