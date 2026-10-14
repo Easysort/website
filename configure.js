@@ -12,8 +12,12 @@ const MAX_LINES = 20;
  * The offer prices include signs, banners, and QR labels. They are split out as
  * the "complete" add-on: for the app at the offer's own value (6,500 kr. per
  * location), for the boxes at a placeholder of the same amount, so base plus
- * add-on equals the offer price. The box without support is not in the offer;
- * its price is a placeholder. */
+ * add-on equals the offer price. The box without support follows the
+ * "Sorteringsguide på jeres hardware" offer of 5 October 2026: we host the page
+ * and classify the images, but have no access to the device, so fault-finding
+ * after setup is billed by the hour. Its setup matches the box with support,
+ * which is a placeholder. */
+const HOURLY_RATE = 950;
 const PRODUCTS = {
     sorting: {
         image: 'models/sorteringsguide.png',
@@ -48,15 +52,15 @@ const PRODUCTS = {
                 unit: 'box',
                 family: 'box',
                 hardware: true,
-                unitSetup: 33500,
-                unitMonthly: 0,
+                unitSetup: 23500,
+                unitMonthly: 4000,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
                 complete: { perUnit: 6500, perLocation: 0 },
-                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mountingBox', 'mountingSigns', 'siteMap', 'training', 'precision', 'localModel'],
+                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mountingBox', 'mountingSigns', 'locationConfig', 'siteMap', 'easytrack', 'trainingTested', 'precision'],
                 completeItems: ['banners', 'bannerDesign', 'mountingSigns'],
-                operationHeading: 'operationSelf',
-                operationItems: ['selfMonitoring', 'selfReplacement', 'selfService', 'selfUpdates']
+                operationItems: ['hostingClassifications', 'siteMonitoring', 'reviewGuidance', 'siteChanges', 'retraining'],
+                excludedItems: ['noAccess', 'selfReplacement', 'selfConnection', 'hourlyDebug']
             }
         }
     },
@@ -105,10 +109,10 @@ const BENEFITS = {
             ['Full service', 'We monitor the box, and replace it if it fails. New models are free.']
         ],
         boxSelf: [
-            ['A complete box', 'Computer, camera, and an outdoor screen. The model runs in the box.'],
+            ['A complete box', 'Computer, camera, and an outdoor screen.'],
             ['Set up by us', 'We mount the box, 2 banners, and an A1 sign on site.'],
-            ['Made for your site', 'Site map, fraction split, and a model trained for you.'],
-            ['You are in full control', 'We lock ourselves out. You handle monitoring, replacement, and service.']
+            ['We analyze the images', 'Hosting, unlimited classifications, and retraining every month.'],
+            ['You have the access', 'We cannot reach the box. You handle monitoring, replacement, and service.']
         ],
         app_basic: [
             ['Your own QR code', 'We send the QR code as a file, so you can print and put it up yourselves.'],
@@ -123,10 +127,10 @@ const BENEFITS = {
             ['Full service', 'We monitor the box, and replace it if it fails. New models are free.']
         ],
         boxSelf_basic: [
-            ['A complete box', 'Computer, camera, and an outdoor screen. The model runs in the box.'],
+            ['A complete box', 'Computer, camera, and an outdoor screen.'],
             ['Set up by us', 'We mount the box on site.'],
-            ['Made for your site', 'Site map, fraction split, and a model trained for you.'],
-            ['You are in full control', 'We lock ourselves out. You handle monitoring, replacement, and service.']
+            ['We analyze the images', 'Hosting, unlimited classifications, and retraining every month.'],
+            ['You have the access', 'We cannot reach the box. You handle monitoring, replacement, and service.']
         ],
         reuse: [
             ['Camera box on site', 'Mounted by us and tuned for movement and items.'],
@@ -155,10 +159,10 @@ const BENEFITS = {
             ['Fuld service', 'Vi overvåger boksen og skifter den ud, hvis den fejler. Nye modeller er gratis.']
         ],
         boxSelf: [
-            ['Komplet boks', 'Computer, kamera og udendørs skærm. Modellen kører i boksen.'],
+            ['Komplet boks', 'Computer, kamera og udendørs skærm.'],
             ['Sat op af os', 'Vi sætter boks, 2 bannere og et A1-skilt op på pladsen.'],
-            ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og en model trænet til jer.'],
-            ['I har fuld kontrol', 'Vi låser os ude. I står selv for overvågning, udskiftning og service.']
+            ['Vi analyserer billederne', 'Hosting, ubegrænsede klassificeringer og gentræning hver måned.'],
+            ['I har adgangen', 'Vi har ikke adgang til boksen. I står for overvågning, udskiftning og service.']
         ],
         app_basic: [
             ['Jeres egen QR-kode', 'Vi sender QR-koden som fil, så I selv kan printe og sætte den op.'],
@@ -173,10 +177,10 @@ const BENEFITS = {
             ['Fuld service', 'Vi overvåger boksen og skifter den ud, hvis den fejler. Nye modeller er gratis.']
         ],
         boxSelf_basic: [
-            ['Komplet boks', 'Computer, kamera og udendørs skærm. Modellen kører i boksen.'],
+            ['Komplet boks', 'Computer, kamera og udendørs skærm.'],
             ['Sat op af os', 'Vi sætter boksen op på pladsen.'],
-            ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og en model trænet til jer.'],
-            ['I har fuld kontrol', 'Vi låser os ude. I står selv for overvågning, udskiftning og service.']
+            ['Vi analyserer billederne', 'Hosting, ubegrænsede klassificeringer og gentræning hver måned.'],
+            ['I har adgangen', 'Vi har ikke adgang til boksen. I står for overvågning, udskiftning og service.']
         ],
         reuse: [
             ['Kameraboks på pladsen', 'Sat op af os og kørt ind på bevægelse og emner.'],
@@ -205,10 +209,10 @@ const BENEFITS = {
             ['Voller Service', 'Wir überwachen die Box und tauschen sie bei Ausfall aus. Neue Modelle sind kostenlos.']
         ],
         boxSelf: [
-            ['Komplette Box', 'Computer, Kamera und Outdoor-Bildschirm. Das Modell läuft in der Box.'],
+            ['Komplette Box', 'Computer, Kamera und Outdoor-Bildschirm.'],
             ['Von uns montiert', 'Wir montieren Box, 2 Banner und ein A1-Schild vor Ort.'],
-            ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und ein für Sie trainiertes Modell.'],
-            ['Volle Kontrolle bei Ihnen', 'Wir sperren uns aus. Überwachung, Austausch und Service übernehmen Sie.']
+            ['Wir analysieren die Bilder', 'Hosting, unbegrenzte Klassifizierungen und monatliches Nachtraining.'],
+            ['Der Zugang liegt bei Ihnen', 'Wir haben keinen Zugriff auf die Box. Überwachung, Austausch und Service übernehmen Sie.']
         ],
         app_basic: [
             ['Ihr eigener QR-Code', 'Wir senden den QR-Code als Datei, damit Sie ihn selbst drucken und aufhängen können.'],
@@ -223,10 +227,10 @@ const BENEFITS = {
             ['Voller Service', 'Wir überwachen die Box und tauschen sie bei Ausfall aus. Neue Modelle sind kostenlos.']
         ],
         boxSelf_basic: [
-            ['Komplette Box', 'Computer, Kamera und Outdoor-Bildschirm. Das Modell läuft in der Box.'],
+            ['Komplette Box', 'Computer, Kamera und Outdoor-Bildschirm.'],
             ['Von uns montiert', 'Wir montieren die Box vor Ort.'],
-            ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und ein für Sie trainiertes Modell.'],
-            ['Volle Kontrolle bei Ihnen', 'Wir sperren uns aus. Überwachung, Austausch und Service übernehmen Sie.']
+            ['Wir analysieren die Bilder', 'Hosting, unbegrenzte Klassifizierungen und monatliches Nachtraining.'],
+            ['Der Zugang liegt bei Ihnen', 'Wir haben keinen Zugriff auf die Box. Überwachung, Austausch und Service übernehmen Sie.']
         ],
         reuse: [
             ['Kamerabox vor Ort', 'Von uns montiert und auf Bewegung und Gegenstände abgestimmt.'],
@@ -261,7 +265,7 @@ const copy = {
         option_box: 'Physical box',
         option_box_body: 'A screen on site shows where the waste goes.',
         option_box_price: 'From {setup} per box, with or without support',
-        option_boxSelf_body: 'A screen on site shows where the waste goes. You run it yourselves.',
+        option_boxSelf_body: 'A screen on site shows where the waste goes. We analyze the images, you look after the box.',
         option_reuse: 'Reuse monitoring',
         option_reuse_body: 'A camera on site tracks movement and items. Over 100,000 images a day.',
         option_reuse_price: '{setup} + {monthly} / month per camera, + {location} / month per location',
@@ -277,14 +281,14 @@ const copy = {
         withSupport: 'With support',
         withSupportBody: 'We monitor, replace, and service the box.',
         withoutSupport: 'Without support',
-        withoutSupportBody: 'We lock ourselves out. You run everything.',
+        withoutSupportBody: 'We analyze the images, but cannot reach the box. You run it.',
         supportWithPrice: '{setup} + {monthly} / month per box',
-        supportWithoutPrice: '{setup} per box. No monthly fee.',
+        supportWithoutPrice: '{setup} + {monthly} / month per box. Fault-finding {hourly} / hour.',
         benefitsTitle: 'What you get',
         allIncluded: 'See everything included ({count})',
         includedSetup: 'Included in setup',
         includedOperation: 'Included in operation',
-        operationSelf: 'You handle yourselves',
+        excludedHeading: 'Not included, because you have the access',
         unit_box: 'Boxes',
         unit_camera: 'Cameras',
         count_box_one: '1 box',
@@ -315,7 +319,8 @@ const copy = {
         completePriceLocation: '+ {price} per location',
         completePriceUnit: '+ {price} per box',
         completeTag: 'Complete solution',
-        localModel: 'The model is installed and runs locally in the box',
+        locationConfig: 'Location setup: where the screen sits on the map, the crop area, and when a person is close enough',
+        trainingTested: 'Training for your fractions, tested by us before the guide goes live',
         reuseCamera: 'Camera box for monitoring, mounted on site',
         reuseModel: 'Model deployed and tuned for movement and items',
         containerCamera: 'Camera box mounted at the container',
@@ -337,10 +342,13 @@ const copy = {
         reuseImages: 'Over 100,000 images a day, for movement and items',
         serverOperation: 'Data connection and model operation on our servers',
         containerAnalysis: 'In-depth analysis of complex items',
-        selfMonitoring: 'Monitoring of uptime and errors',
-        selfReplacement: 'Replacement of the box if it fails',
-        selfService: 'Service and repairs on site',
-        selfUpdates: 'Updates to fractions and the model',
+        hostingClassifications: 'Hosting and unlimited classifications',
+        siteMonitoring: 'Monitoring of the page and the API',
+        siteChanges: 'Changes to fractions, containers, and the map',
+        noAccess: 'Access to the box. We monitor the API, not the box',
+        selfReplacement: 'Replacement if the box fails',
+        selfConnection: 'Power, network, and data connection',
+        hourlyDebug: 'Fault-finding and development after the first setup, at {hourly} / hour',
         setup: 'Setup',
         monthly: 'Monthly',
         vatNote: 'Prices excl. VAT.',
@@ -412,7 +420,7 @@ const copy = {
         option_box: 'Fysisk boks',
         option_box_body: 'En skærm på pladsen viser, hvor affaldet skal hen.',
         option_box_price: 'Fra {setup} pr. boks, med eller uden support',
-        option_boxSelf_body: 'En skærm på pladsen viser, hvor affaldet skal hen. I driver den selv.',
+        option_boxSelf_body: 'En skærm på pladsen viser, hvor affaldet skal hen. Vi analyserer billederne, I passer boksen.',
         option_reuse: 'Genbrugsovervågning',
         option_reuse_body: 'Et kamera på pladsen følger bevægelse og emner. Over 100.000 billeder om dagen.',
         option_reuse_price: '{setup} + {monthly} / md. pr. kamera, + {location} / md. pr. plads',
@@ -428,14 +436,14 @@ const copy = {
         withSupport: 'Med support',
         withSupportBody: 'Vi overvåger, udskifter og servicerer boksen.',
         withoutSupport: 'Uden support',
-        withoutSupportBody: 'Vi låser os ude. I står selv for driften.',
+        withoutSupportBody: 'Vi analyserer billederne, men har ikke adgang til boksen. I driver den.',
         supportWithPrice: '{setup} + {monthly} / md. pr. boks',
-        supportWithoutPrice: '{setup} pr. boks. Ingen månedlig betaling.',
+        supportWithoutPrice: '{setup} + {monthly} / md. pr. boks. Fejlretning {hourly} / time.',
         benefitsTitle: 'Det får I',
         allIncluded: 'Se alt, der er med ({count})',
         includedSetup: 'Med i opsætningen',
         includedOperation: 'Med i driften',
-        operationSelf: 'I står selv for',
+        excludedHeading: 'Ikke med, fordi I har adgangen',
         unit_box: 'Bokse',
         unit_camera: 'Kameraer',
         count_box_one: '1 boks',
@@ -466,7 +474,8 @@ const copy = {
         completePriceLocation: '+ {price} pr. plads',
         completePriceUnit: '+ {price} pr. boks',
         completeTag: 'Komplet løsning',
-        localModel: 'Modellen installeres og kører lokalt i boksen',
+        locationConfig: 'Konfiguration af lokationen: hvor skærmen står på kortet, beskæringsfeltet, og hvornår en person er tæt nok på',
+        trainingTested: 'Træning til jeres fraktioner, og test hos os før siden tages i brug',
         reuseCamera: 'Kameraboks til overvågning, sat op på pladsen',
         reuseModel: 'Modellen implementeres og køres ind på bevægelse og emner',
         containerCamera: 'Kameraboks, sat op ved containeren',
@@ -488,10 +497,13 @@ const copy = {
         reuseImages: 'Over 100.000 billeder om dagen, for bevægelse og emner',
         serverOperation: 'Dataforbindelse og drift af modellen på vores servere',
         containerAnalysis: 'Dybdegående analyse af komplekse emner',
-        selfMonitoring: 'Overvågning af driftstid og fejl',
-        selfReplacement: 'Udskiftning af boksen, hvis den fejler',
-        selfService: 'Service og reparation på pladsen',
-        selfUpdates: 'Opdatering af fraktioner og model',
+        hostingClassifications: 'Hosting og ubegrænsede klassificeringer',
+        siteMonitoring: 'Overvågning af siden og API\'et',
+        siteChanges: 'Ændringer af fraktioner, containere og kort',
+        noAccess: 'Adgang til boksen. Vi overvåger API\'et, ikke boksen',
+        selfReplacement: 'Udskiftning, hvis boksen fejler',
+        selfConnection: 'Strøm, net og dataforbindelse',
+        hourlyDebug: 'Fejlretning og udvikling efter den første opsætning, {hourly} / time',
         setup: 'Opsætning',
         monthly: 'Drift pr. måned',
         vatNote: 'Priser ekskl. moms.',
@@ -563,7 +575,7 @@ const copy = {
         option_box: 'Physische Box',
         option_box_body: 'Ein Bildschirm vor Ort zeigt, wohin der Abfall gehört.',
         option_box_price: 'Ab {setup} pro Box, mit oder ohne Support',
-        option_boxSelf_body: 'Ein Bildschirm vor Ort zeigt, wohin der Abfall gehört. Sie betreiben ihn selbst.',
+        option_boxSelf_body: 'Ein Bildschirm vor Ort zeigt, wohin der Abfall gehört. Wir analysieren die Bilder, Sie betreuen die Box.',
         option_reuse: 'Wiederverwendungsüberwachung',
         option_reuse_body: 'Eine Kamera vor Ort erfasst Bewegungen und Gegenstände. Über 100.000 Bilder pro Tag.',
         option_reuse_price: '{setup} + {monthly} / Monat pro Kamera, + {location} / Monat pro Standort',
@@ -579,14 +591,14 @@ const copy = {
         withSupport: 'Mit Support',
         withSupportBody: 'Wir überwachen, tauschen und warten die Box.',
         withoutSupport: 'Ohne Support',
-        withoutSupportBody: 'Wir sperren uns aus. Sie übernehmen den Betrieb.',
+        withoutSupportBody: 'Wir analysieren die Bilder, haben aber keinen Zugriff auf die Box. Sie betreiben sie.',
         supportWithPrice: '{setup} + {monthly} / Monat pro Box',
-        supportWithoutPrice: '{setup} pro Box. Keine monatliche Gebühr.',
+        supportWithoutPrice: '{setup} + {monthly} / Monat pro Box. Fehlersuche {hourly} / Stunde.',
         benefitsTitle: 'Das bekommen Sie',
         allIncluded: 'Alle Leistungen ansehen ({count})',
         includedSetup: 'In der Einrichtung enthalten',
         includedOperation: 'Im Betrieb enthalten',
-        operationSelf: 'Das übernehmen Sie selbst',
+        excludedHeading: 'Nicht enthalten, weil der Zugang bei Ihnen liegt',
         unit_box: 'Boxen',
         unit_camera: 'Kameras',
         count_box_one: '1 Box',
@@ -617,7 +629,8 @@ const copy = {
         completePriceLocation: '+ {price} pro Standort',
         completePriceUnit: '+ {price} pro Box',
         completeTag: 'Komplettlösung',
-        localModel: 'Das Modell wird installiert und läuft lokal in der Box',
+        locationConfig: 'Konfiguration des Standorts: Position des Bildschirms auf dem Plan, Bildausschnitt und wann eine Person nah genug ist',
+        trainingTested: 'Training für Ihre Fraktionen, von uns getestet vor dem Start',
         reuseCamera: 'Kamerabox zur Überwachung, vor Ort montiert',
         reuseModel: 'Modell eingerichtet und auf Bewegung und Gegenstände abgestimmt',
         containerCamera: 'Kamerabox, am Container montiert',
@@ -639,10 +652,13 @@ const copy = {
         reuseImages: 'Über 100.000 Bilder pro Tag für Bewegung und Gegenstände',
         serverOperation: 'Datenverbindung und Betrieb des Modells auf unseren Servern',
         containerAnalysis: 'Detaillierte Analyse komplexer Gegenstände',
-        selfMonitoring: 'Überwachung von Verfügbarkeit und Fehlern',
-        selfReplacement: 'Austausch der Box bei Ausfall',
-        selfService: 'Service und Reparaturen vor Ort',
-        selfUpdates: 'Updates von Fraktionen und Modell',
+        hostingClassifications: 'Hosting und unbegrenzte Klassifizierungen',
+        siteMonitoring: 'Überwachung der Seite und der API',
+        siteChanges: 'Änderungen an Fraktionen, Containern und Plan',
+        noAccess: 'Zugriff auf die Box. Wir überwachen die API, nicht die Box',
+        selfReplacement: 'Austausch, wenn die Box ausfällt',
+        selfConnection: 'Strom, Netz und Datenverbindung',
+        hourlyDebug: 'Fehlersuche und Entwicklung nach der ersten Einrichtung, {hourly} / Stunde',
         setup: 'Einrichtung',
         monthly: 'Betrieb pro Monat',
         vatNote: 'Preise zzgl. MwSt.',
@@ -850,7 +866,7 @@ function fillList(id, keys) {
     list.textContent = '';
     keys.forEach((key) => {
         const item = document.createElement('li');
-        item.textContent = t(key);
+        item.textContent = t(key, { hourly: formatMoney(HOURLY_RATE) });
         list.append(item);
     });
 }
@@ -908,7 +924,9 @@ function renderSupport() {
         monthly: formatMoney(withSupport.unitMonthly)
     });
     document.getElementById('support-without-price').textContent = t('supportWithoutPrice', {
-        setup: formatMoney(withoutSupport.unitSetup)
+        setup: formatMoney(withoutSupport.unitSetup),
+        monthly: formatMoney(withoutSupport.unitMonthly),
+        hourly: formatMoney(HOURLY_RATE)
     });
     document.querySelectorAll('input[name="support"]').forEach((input) => {
         input.checked = input.value === option;
@@ -946,7 +964,9 @@ function renderBenefits() {
     document.getElementById('all-included-summary').textContent = t('allIncluded', {
         count: setupItems.length + config.operationItems.length
     });
-    document.getElementById('operation-heading').textContent = t(config.operationHeading || 'includedOperation');
+    document.getElementById('operation-heading').textContent = t('includedOperation');
+    document.getElementById('excluded-group').hidden = !config.excludedItems;
+    fillList('excluded-items', config.excludedItems || []);
     fillList('included-setup', setupItems);
     fillList('included-operation', config.operationItems);
 }

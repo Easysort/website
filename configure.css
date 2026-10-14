@@ -221,6 +221,7 @@ legend {
 .support-toggle label > span {
     display: grid;
     gap: 3px;
+    align-content: start;
     height: 100%;
     padding: 14px 16px;
     border: 1px solid var(--line);
@@ -409,6 +410,14 @@ legend {
 
 .all-included ul {
     list-style: none;
+}
+
+.all-included .excluded {
+    grid-column: 1 / -1;
+}
+
+.all-included .excluded h4 {
+    color: #8a4b1d;
 }
 
 .all-included li {
@@ -1066,6 +1075,7 @@ footer a { text-decoration: none; }
 
     .choices { gap: 24px; }
 
+    .support-toggle { grid-template-columns: 1fr; }
     .benefits { padding: 18px; }
     .benefit-list,
     .all-included-columns { grid-template-columns: 1fr; }
