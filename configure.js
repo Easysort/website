@@ -20,8 +20,9 @@ const MAX_LINES = 20;
  * after setup is billed by the hour. Its setup matches the box with support,
  * which is a placeholder. An extra box at a location that already has one
  * costs 5,000 kr. less to set up and 1,000 kr. less per month; the complete
- * add-on is unchanged. Monitoring is priced per camera only, whatever the
- * number of locations. The app's monthly price starts at 4,000 kr. for the
+ * add-on is unchanged. Monitoring is priced per camera. Reuse monitoring
+ * also adds 1,000 kr. per month for the first location, for basic setup and
+ * support. The app's monthly price starts at 4,000 kr. for the
  * first location and falls by 300 kr. for each further location, down to a
  * floor of 2,000 kr. Euros use the ERM II central rate, 7.46038 kr. per euro,
  * rounded up to the next 50 euros. */
@@ -83,6 +84,7 @@ const PRODUCTS = {
                 hardware: true,
                 unitSetup: 6000,
                 unitMonthly: 1800,
+                firstLocationMonthly: 1000,
                 perSite: false,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
@@ -145,14 +147,14 @@ const BENEFITS = {
             ['You have the access', 'We cannot reach the box. You handle monitoring, replacement, and service.']
         ],
         reuse: [
-            ['Watches the site', 'Movement and items, over 100,000 images a day.'],
-            ['You see it in EasyTrack', 'What happens on the site, in one place.'],
-            ['We keep it running', 'Hosting, uptime monitoring, and replacement if it fails.'],
-            ['Better every month', 'Retraining every month, and new models for free.']
+            ['Sits over the entrance', 'To a container, a tent, or a room.'],
+            ['Visitors, in and out', 'How many come, and what they bring in and out.'],
+            ['And what it weighs', 'The weight of what comes in and out.'],
+            ['You see it in EasyTrack', 'In one place.']
         ],
         container: [
             ['Sits at one container', 'It looks at what is thrown in.'],
-            ['Including the difficult items', 'A closer look than the camera that watches the whole site.'],
+            ['Including the difficult items', 'A closer look at what is thrown in.'],
             ['We keep it running', 'Hosting, uptime monitoring, and replacement if it fails.'],
             ['Better every month', 'Retraining every month, and new models for free.']
         ]
@@ -195,14 +197,14 @@ const BENEFITS = {
             ['I har adgangen', 'Vi har ikke adgang til boksen. I står for overvågning, udskiftning og service.']
         ],
         reuse: [
-            ['Ser pladsen', 'Bevægelse og emner, over 100.000 billeder om dagen.'],
-            ['I ser det i EasyTrack', 'Hvad der sker på pladsen, samlet ét sted.'],
-            ['Vi holder den kørende', 'Hosting, overvågning af driftstid og udskiftning, hvis den fejler.'],
-            ['Bliver bedre hver måned', 'Gentræning hver måned og gratis nye modeller.']
+            ['Sidder over indgangen', 'Til en container, et telt eller et rum.'],
+            ['Besøgende, ind og ud', 'Hvor mange der kommer, og hvad de har med ind og ud.'],
+            ['Og hvad det vejer', 'Vægten på det, der kommer ind og ud.'],
+            ['I ser det i EasyTrack', 'Samlet ét sted.']
         ],
         container: [
             ['Sidder ved én container', 'Den kigger på det, der bliver smidt i.'],
-            ['Også de svære emner', 'Et nærmere kig end kameraet, der ser hele pladsen.'],
+            ['Også de svære emner', 'Et nærmere kig på det, der bliver smidt i.'],
             ['Vi holder den kørende', 'Hosting, overvågning af driftstid og udskiftning, hvis den fejler.'],
             ['Bliver bedre hver måned', 'Gentræning hver måned og gratis nye modeller.']
         ]
@@ -245,14 +247,14 @@ const BENEFITS = {
             ['Der Zugang liegt bei Ihnen', 'Wir haben keinen Zugriff auf die Box. Überwachung, Austausch und Service übernehmen Sie.']
         ],
         reuse: [
-            ['Sieht den Platz', 'Bewegung und Gegenstände, über 100.000 Bilder pro Tag.'],
-            ['Sie sehen es in EasyTrack', 'Was vor Ort passiert, an einem Ort.'],
-            ['Wir halten es am Laufen', 'Hosting, Überwachung der Verfügbarkeit und Austausch bei Ausfall.'],
-            ['Jeden Monat besser', 'Monatliches Nachtraining und kostenlose neue Modelle.']
+            ['Sitzt über dem Eingang', 'Zu einem Container, einem Zelt oder einem Raum.'],
+            ['Besucher, hinein und hinaus', 'Wie viele kommen, und was sie hinein- und hinausbringen.'],
+            ['Und was es wiegt', 'Das Gewicht dessen, was hinein- und hinausgeht.'],
+            ['Sie sehen es in EasyTrack', 'An einem Ort.']
         ],
         container: [
             ['Sitzt an einem Container', 'Sie schaut auf das, was hineingeworfen wird.'],
-            ['Auch die schwierigen Gegenstände', 'Ein genauerer Blick als die Kamera, die den ganzen Platz sieht.'],
+            ['Auch die schwierigen Gegenstände', 'Ein genauerer Blick auf das, was hineingeworfen wird.'],
             ['Wir halten es am Laufen', 'Hosting, Überwachung der Verfügbarkeit und Austausch bei Ausfall.'],
             ['Jeden Monat besser', 'Monatliches Nachtraining und kostenlose neue Modelle.']
         ]
@@ -285,7 +287,7 @@ const copy = {
         mockContainer: 'Container 4',
         optionFrom: 'From {setup} + {monthly} / month',
         tagline_sorting: 'Visitors show their waste. The guide shows the container and the way there.',
-        tagline_monitoring: 'One camera watches the site. One camera sits at a container. You see it in EasyTrack.',
+        tagline_monitoring: 'One camera sits over an entrance. One camera sits at a container. You see it in EasyTrack.',
         chooseOption: 'Choose a version',
         quantity: 'Quantity',
         locations: 'Locations',
@@ -294,7 +296,8 @@ const copy = {
         option_app_body: 'Visitors scan a QR code, take a photo, and get the route on their phone.',
         option_box_body: 'A screen and camera on site. We run and service it.',
         option_boxSelf_body: 'A screen and camera on site. We analyze the images, you run the box. Fault-finding {hourly} / hour.',
-        option_reuse_body: 'Watches the whole site: movement and items, over 100,000 images a day. You see it in EasyTrack.',
+        option_reuse_body: 'Sits over the entrance to a container, a tent, or a room. Visitors, what they bring in and out, and what it weighs.',
+        firstLocationNote: 'First location: {monthly} / month for basic setup and support.',
         option_container_body: 'Sits at one container and looks at what is thrown in, including the difficult items.',
         name_app: 'App',
         name_box: 'Box with support',
@@ -443,7 +446,7 @@ const copy = {
         mockContainer: 'Container 4',
         optionFrom: 'Fra {setup} + {monthly} / md.',
         tagline_sorting: 'Borgeren viser affaldet. Guiden viser containeren og vejen derhen.',
-        tagline_monitoring: 'Ét kamera ser pladsen. Ét kamera sidder ved en container. I ser det i EasyTrack.',
+        tagline_monitoring: 'Ét kamera sidder over indgangen. Ét kamera sidder ved en container. I ser det i EasyTrack.',
         chooseOption: 'Vælg løsning',
         quantity: 'Antal',
         locations: 'Pladser',
@@ -452,7 +455,8 @@ const copy = {
         option_app_body: 'Borgeren scanner en QR-kode, tager et billede og får ruten på telefonen.',
         option_box_body: 'Skærm og kamera på pladsen. Vi driver og servicerer den.',
         option_boxSelf_body: 'Skærm og kamera på pladsen. Vi analyserer billederne, I driver boksen. Fejlretning {hourly} / time.',
-        option_reuse_body: 'Ser hele pladsen: bevægelse og emner, over 100.000 billeder om dagen. I ser det i EasyTrack.',
+        option_reuse_body: 'Sidder over indgangen til en container, et telt eller et rum. Besøgende, hvad de har med ind og ud, og hvad det vejer.',
+        firstLocationNote: 'Første plads: {monthly} / md. for basisopsætning og support.',
         option_container_body: 'Sidder ved én container og kigger på det, der bliver smidt i, også de svære emner.',
         name_app: 'App',
         name_box: 'Boks med support',
@@ -601,7 +605,7 @@ const copy = {
         mockContainer: 'Container 4',
         optionFrom: 'Ab {setup} + {monthly} / Monat',
         tagline_sorting: 'Besucher zeigen ihren Abfall. Die Sortierhilfe zeigt den Container und den Weg dorthin.',
-        tagline_monitoring: 'Eine Kamera sieht den Platz. Eine Kamera sitzt an einem Container. Sie sehen es in EasyTrack.',
+        tagline_monitoring: 'Eine Kamera sitzt über einem Eingang. Eine Kamera sitzt an einem Container. Sie sehen es in EasyTrack.',
         chooseOption: 'Version wählen',
         quantity: 'Anzahl',
         locations: 'Standorte',
@@ -610,7 +614,8 @@ const copy = {
         option_app_body: 'Besucher scannen einen QR-Code, machen ein Foto und sehen den Weg auf dem Handy.',
         option_box_body: 'Bildschirm und Kamera vor Ort. Wir betreiben und warten sie.',
         option_boxSelf_body: 'Bildschirm und Kamera vor Ort. Wir analysieren die Bilder, Sie betreiben die Box. Fehlersuche {hourly} / Stunde.',
-        option_reuse_body: 'Sieht den ganzen Platz: Bewegungen und Gegenstände, über 100.000 Bilder pro Tag. Sie sehen es in EasyTrack.',
+        option_reuse_body: 'Sitzt über dem Eingang zu einem Container, einem Zelt oder einem Raum. Besucher, was sie hinein- und hinausbringen, und was es wiegt.',
+        firstLocationNote: 'Erster Standort: {monthly} / Monat für Grundeinstellung und Support.',
         option_container_body: 'Sitzt an einem Container und sieht, was hineingeworfen wird, auch die schwierigen Gegenstände.',
         name_app: 'App',
         name_box: 'Box mit Support',
@@ -890,7 +895,7 @@ function priceFor(line) {
     const units = unitTotals(config, line);
     return {
         setup: units.setup + tiered(config.locationSetup, line.locations) + completePrice(config, line),
-        monthly: units.monthly + tieredMonthly(config.locationMonthly, line.locations)
+        monthly: units.monthly + tieredMonthly(config.locationMonthly, line.locations) + (config.firstLocationMonthly && line.units > 0 ? config.firstLocationMonthly : 0)
     };
 }
 
@@ -1084,7 +1089,10 @@ function renderQuantity() {
 
     const note = document.getElementById('saving-note');
     const extraComplete = config.complete && complete ? config.complete.perLocation : 0;
-    if (config.unit === null && config.locationMonthly.step && locations < MAX_LOCATIONS) {
+    if (config.firstLocationMonthly) {
+        note.hidden = false;
+        note.textContent = t('firstLocationNote', { monthly: formatMoney(config.firstLocationMonthly) });
+    } else if (config.unit === null && config.locationMonthly.step && locations < MAX_LOCATIONS) {
         note.hidden = false;
         note.textContent = t('nextLocationNote', {
             setup: formatMoney(config.locationSetup.extra + extraComplete),
