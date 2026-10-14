@@ -5,27 +5,29 @@ const PRODUCTS = {
         image: 'models/sorteringsguide.png',
         titleKey: 'sorting',
         descriptionKey: 'sortingDescription',
+        featureKeys: ['sortingFeatureOne', 'sortingFeatureTwo', 'sortingFeatureThree'],
         services: ['app', 'software', 'hardware', 'managed']
     },
     monitoring: {
         image: 'models/teltovervågning.png',
         titleKey: 'monitoring',
         descriptionKey: 'monitoringDescription',
+        featureKeys: ['monitoringFeatureOne', 'monitoringFeatureTwo', 'monitoringFeatureThree'],
         services: ['software', 'hardware', 'managed']
     }
 };
 
 const SERVICES = {
     sorting: {
-        app: { setup: 15000, monthly: 1500, label: 'serviceApp', perks: ['localCatalog', 'hosting', 'updates'] },
-        software: { setup: 20000, monthly: 2500, label: 'serviceSoftware', perks: ['ownHardware', 'setupHelp', 'updates'] },
-        hardware: { setup: 35000, monthly: 2000, label: 'serviceHardware', perks: ['completeStation', 'handover', 'customerOperated'] },
-        managed: { setup: 45000, monthly: 5500, label: 'serviceManaged', perks: ['completeStation', 'healthMonitoring', 'maintenance'] }
+        app: { unitSetup: 2000, unitMonthly: 300, locationSetup: 10000, locationMonthly: 1200, label: 'serviceApp', perks: ['localCatalog', 'hosting', 'updates'] },
+        software: { unitSetup: 5000, unitMonthly: 500, locationSetup: 15000, locationMonthly: 2000, label: 'serviceSoftware', perks: ['ownHardware', 'setupHelp', 'updates'] },
+        hardware: { unitSetup: 30000, unitMonthly: 1000, locationSetup: 5000, locationMonthly: 1000, label: 'serviceHardware', perks: ['completeStation', 'handover', 'customerOperated'] },
+        managed: { unitSetup: 40000, unitMonthly: 3500, locationSetup: 5000, locationMonthly: 2000, label: 'serviceManaged', perks: ['completeStation', 'healthMonitoring', 'maintenance'] }
     },
     monitoring: {
-        software: { setup: 18000, monthly: 2000, label: 'serviceSoftware', perks: ['ownHardware', 'dashboard', 'updates'] },
-        hardware: { setup: 28000, monthly: 1500, label: 'serviceHardware', perks: ['monitoringBox', 'handover', 'customerOperated'] },
-        managed: { setup: 38000, monthly: 4500, label: 'serviceManaged', perks: ['monitoringBox', 'healthMonitoring', 'maintenance'] }
+        software: { unitSetup: 6000, unitMonthly: 500, locationSetup: 12000, locationMonthly: 1500, label: 'serviceSoftware', perks: ['ownHardware', 'dashboard', 'updates'] },
+        hardware: { unitSetup: 23000, unitMonthly: 700, locationSetup: 5000, locationMonthly: 800, label: 'serviceHardware', perks: ['monitoringBox', 'handover', 'customerOperated'] },
+        managed: { unitSetup: 32000, unitMonthly: 2800, locationSetup: 6000, locationMonthly: 1700, label: 'serviceManaged', perks: ['monitoringBox', 'healthMonitoring', 'maintenance'] }
     }
 };
 
@@ -34,14 +36,22 @@ const copy = {
         pageTitle: 'Configure — Easysort',
         back: 'Back',
         eyebrow: 'Configure',
-        title: 'Choose what you need.',
+        title: 'Configure your Easysort system.',
         chooseProduct: 'Product',
         chooseService: 'Service',
-        quantity: 'Locations',
+        quantity: 'Quantity',
+        units: 'Units',
+        locations: 'Locations',
         sorting: 'Sorting Guide',
         monitoring: 'Monitoring Box',
         sortingDescription: 'Help visitors sort correctly on a phone or at a fixed station.',
         monitoringDescription: 'Monitor activity or find misplaced items in containers.',
+        sortingFeatureOne: 'Local sorting guide for each recycling center',
+        sortingFeatureTwo: 'Use on phones, your hardware, or an Easysort station',
+        sortingFeatureThree: 'Add more units without creating another system',
+        monitoringFeatureOne: 'Choose activity or misplaced-item monitoring',
+        monitoringFeatureTwo: 'One overview across units and locations',
+        monitoringFeatureThree: 'Optional alerts for events that need action',
         serviceApp: 'App',
         serviceSoftware: 'Use your hardware',
         serviceHardware: 'We supply it; you operate it',
@@ -62,15 +72,15 @@ const copy = {
         monthly: 'Example monthly',
         placeholder: 'Placeholder prices—not an offer.',
         continue: 'Continue',
-        saveMore: 'Add more locations to see example savings.',
-        saving: '{percent}% example saving for {quantity} locations.',
+        saveMore: 'Add more units to see example volume savings.',
+        saving: '{percent}% example unit saving on {units} units across {locations} locations.',
         lastStep: 'Last step',
         contactTitle: 'Where should we contact you?',
         contactLead: 'No payment now. We will confirm the final setup, delivery, and payment with you.',
         name: 'Name',
         company: 'Organization',
         email: 'Email',
-        locations: 'Location(s)',
+        locationsField: 'Location(s)',
         note: 'Note (optional)',
         send: 'Prepare request',
         mailNote: 'Opens a prepared email for you to send.',
@@ -79,7 +89,8 @@ const copy = {
         mailSubject: 'Easysort configuration',
         mailProduct: 'Product',
         mailService: 'Service',
-        mailQuantity: 'Locations',
+        mailUnits: 'Units',
+        mailLocations: 'Locations',
         mailSetup: 'Example setup',
         mailMonthly: 'Example monthly',
         mailDisclaimer: 'Placeholder prices only. Please confirm final configuration, delivery, and payment.'
@@ -88,14 +99,22 @@ const copy = {
         pageTitle: 'Konfigurér — Easysort',
         back: 'Tilbage',
         eyebrow: 'Konfigurér',
-        title: 'Vælg det, I har brug for.',
+        title: 'Konfigurér jeres Easysort-system.',
         chooseProduct: 'Produkt',
         chooseService: 'Service',
-        quantity: 'Placeringer',
+        quantity: 'Antal',
+        units: 'Enheder',
+        locations: 'Lokationer',
         sorting: 'Sorteringsguide',
         monitoring: 'Overvågningsboks',
         sortingDescription: 'Hjælp besøgende med at sortere korrekt på telefonen eller ved en fast station.',
         monitoringDescription: 'Følg aktivitet, eller find fejlsorterede ting i containere.',
+        sortingFeatureOne: 'Lokal sorteringsguide til hver genbrugsplads',
+        sortingFeatureTwo: 'Brug på telefoner, jeres hardware eller en Easysort-station',
+        sortingFeatureThree: 'Tilføj flere enheder uden at oprette et nyt system',
+        monitoringFeatureOne: 'Vælg aktivitet eller overvågning af fejlsorterede ting',
+        monitoringFeatureTwo: 'Ét overblik på tværs af enheder og lokationer',
+        monitoringFeatureThree: 'Valgfrie advarsler ved hændelser, der kræver handling',
         serviceApp: 'App',
         serviceSoftware: 'Brug jeres hardware',
         serviceHardware: 'Vi leverer; I driver',
@@ -116,15 +135,15 @@ const copy = {
         monthly: 'Eksempel pr. måned',
         placeholder: 'Midlertidige priser—ikke et tilbud.',
         continue: 'Fortsæt',
-        saveMore: 'Tilføj flere placeringer for at se en eksempelrabat.',
-        saving: '{percent}% eksempelrabat ved {quantity} placeringer.',
+        saveMore: 'Tilføj flere enheder for at se en eksempelrabat.',
+        saving: '{percent}% eksempelrabat på {units} enheder fordelt på {locations} lokationer.',
         lastStep: 'Sidste trin',
         contactTitle: 'Hvor skal vi kontakte jer?',
         contactLead: 'Ingen betaling nu. Vi bekræfter endelig opsætning, levering og betaling med jer.',
         name: 'Navn',
         company: 'Organisation',
         email: 'E-mail',
-        locations: 'Placering(er)',
+        locationsField: 'Lokation(er)',
         note: 'Note (valgfri)',
         send: 'Forbered forespørgsel',
         mailNote: 'Åbner en forberedt mail, som I kan sende.',
@@ -133,7 +152,8 @@ const copy = {
         mailSubject: 'Easysort-konfiguration',
         mailProduct: 'Produkt',
         mailService: 'Service',
-        mailQuantity: 'Placeringer',
+        mailUnits: 'Enheder',
+        mailLocations: 'Lokationer',
         mailSetup: 'Eksempel på opstart',
         mailMonthly: 'Eksempel pr. måned',
         mailDisclaimer: 'Kun midlertidige priser. Bekræft venligst endelig konfiguration, levering og betaling.'
@@ -142,8 +162,9 @@ const copy = {
 
 let language = preferredLanguage();
 let product = requestedProduct();
-let service = product === 'sorting' ? 'managed' : 'managed';
-let quantity = 1;
+let service = 'managed';
+let units = 1;
+let locations = 1;
 
 function preferredLanguage() {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -165,9 +186,9 @@ function formatMoney(value) {
 }
 
 function discount() {
-    if (quantity >= 10) return 0.20;
-    if (quantity >= 5) return 0.15;
-    if (quantity >= 2) return 0.08;
+    if (units >= 10) return 0.20;
+    if (units >= 5) return 0.15;
+    if (units >= 2) return 0.08;
     return 0;
 }
 
@@ -179,8 +200,8 @@ function totals() {
     const selected = selectedService();
     const factor = 1 - discount();
     return {
-        setup: selected.setup * quantity * factor,
-        monthly: selected.monthly * quantity * factor
+        setup: selected.unitSetup * units * factor + selected.locationSetup * locations,
+        monthly: selected.unitMonthly * units * factor + selected.locationMonthly * locations
     };
 }
 
@@ -207,7 +228,9 @@ function renderServices() {
         const name = document.createElement('strong');
         name.textContent = t(selected.label);
         const price = document.createElement('em');
-        price.textContent = `${formatMoney(selected.setup)} + ${formatMoney(selected.monthly)} ${t('perMonth')}`;
+        const exampleSetup = selected.unitSetup + selected.locationSetup;
+        const exampleMonthly = selected.unitMonthly + selected.locationMonthly;
+        price.textContent = `${formatMoney(exampleSetup)} + ${formatMoney(exampleMonthly)} ${t('perMonth')}`;
         body.append(name, price);
         label.append(input, body);
         container.append(label);
@@ -229,6 +252,13 @@ function renderProduct() {
     document.getElementById('product-image').src = selected.image;
     document.getElementById('product-title').textContent = t(selected.titleKey);
     document.getElementById('product-description').textContent = t(selected.descriptionKey);
+    const features = document.getElementById('product-features');
+    features.textContent = '';
+    selected.featureKeys.forEach((key) => {
+        const item = document.createElement('li');
+        item.textContent = t(key);
+        features.append(item);
+    });
     document.querySelectorAll('input[name="product"]').forEach((input) => {
         input.checked = input.value === product;
     });
@@ -239,14 +269,17 @@ function update() {
     renderServices();
     renderPerks();
     const price = totals();
-    document.getElementById('quantity-output').textContent = String(quantity);
+    document.getElementById('unit-output').textContent = String(units);
+    document.getElementById('location-output').textContent = String(locations);
     document.getElementById('setup-price').textContent = formatMoney(price.setup);
     document.getElementById('monthly-price').textContent = `${formatMoney(price.monthly)} ${t('perMonth')}`;
     document.getElementById('saving-note').textContent = discount()
-        ? t('saving', { percent: Math.round(discount() * 100), quantity })
+        ? t('saving', { percent: Math.round(discount() * 100), units, locations })
         : t('saveMore');
-    document.getElementById('decrease').disabled = quantity === 1;
-    document.getElementById('increase').disabled = quantity === 20;
+    document.getElementById('unit-decrease').disabled = units <= locations;
+    document.getElementById('unit-increase').disabled = units === 50;
+    document.getElementById('location-decrease').disabled = locations === 1;
+    document.getElementById('location-increase').disabled = locations === 20;
 }
 
 function applyLanguage() {
@@ -269,14 +302,15 @@ function prepareMail(event) {
     const lines = [
         `${t('mailProduct')}: ${t(PRODUCTS[product].titleKey)}`,
         `${t('mailService')}: ${t(selectedService().label)}`,
-        `${t('mailQuantity')}: ${quantity}`,
+        `${t('mailUnits')}: ${units}`,
+        `${t('mailLocations')}: ${locations}`,
         `${t('mailSetup')}: ${formatMoney(price.setup)}`,
         `${t('mailMonthly')}: ${formatMoney(price.monthly)}`,
         '',
         `${t('name')}: ${data.get('name')}`,
         `${t('company')}: ${data.get('company')}`,
         `${t('email')}: ${data.get('email')}`,
-        `${t('locations')}: ${data.get('locations')}`,
+        `${t('locationsField')}: ${data.get('locations')}`,
         `${t('note')}: ${data.get('note') || '—'}`,
         '',
         t('mailDisclaimer')
@@ -302,12 +336,21 @@ document.querySelectorAll('input[name="product"]').forEach((input) => {
     });
 });
 
-document.getElementById('decrease').addEventListener('click', () => {
-    quantity = Math.max(1, quantity - 1);
+document.getElementById('unit-decrease').addEventListener('click', () => {
+    units = Math.max(locations, units - 1);
     update();
 });
-document.getElementById('increase').addEventListener('click', () => {
-    quantity = Math.min(20, quantity + 1);
+document.getElementById('unit-increase').addEventListener('click', () => {
+    units = Math.min(50, units + 1);
+    update();
+});
+document.getElementById('location-decrease').addEventListener('click', () => {
+    locations = Math.max(1, locations - 1);
+    update();
+});
+document.getElementById('location-increase').addEventListener('click', () => {
+    locations = Math.min(20, locations + 1);
+    units = Math.max(units, locations);
     update();
 });
 document.getElementById('continue-button').addEventListener('click', () => {

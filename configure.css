@@ -142,6 +142,21 @@ main {
     line-height: 1.6;
 }
 
+.product-features {
+    display: grid;
+    margin-top: 20px;
+    border-top: 1px solid var(--line);
+    list-style: none;
+}
+
+.product-features li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    color: #536057;
+    font-size: 0.76rem;
+    line-height: 1.45;
+}
+
 .choices {
     display: grid;
     gap: 30px;
@@ -160,15 +175,13 @@ legend {
 }
 
 legend > span:first-child {
-    display: grid;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    width: 20px;
     color: var(--green-dark);
-    background: var(--green-soft);
     font-size: 0.65rem;
+    letter-spacing: 0.08em;
 }
+
+legend > span:first-child::before { content: "0"; }
 
 .product-toggle {
     display: grid;
@@ -219,33 +232,16 @@ legend > span:first-child {
     justify-content: space-between;
     gap: 18px;
     min-height: 52px;
-    padding: 15px 16px 14px 42px;
+    padding: 15px 16px 14px;
     border: 1px solid var(--line);
     border-radius: 12px;
     font-size: 0.8rem;
-}
-
-.service-option > span::before {
-    position: absolute;
-    top: 20px;
-    left: 17px;
-    width: 11px;
-    height: 11px;
-    border: 1px solid #a9b4ac;
-    border-radius: 50%;
-    content: "";
 }
 
 .service-option input:checked + span {
     border-color: var(--green);
     background: #fbfefc;
     box-shadow: inset 0 0 0 1px var(--green);
-}
-
-.service-option input:checked + span::before {
-    border-color: var(--green);
-    background: var(--green);
-    box-shadow: inset 0 0 0 3px var(--white);
 }
 
 .service-option strong { font-weight: 730; }
@@ -281,6 +277,23 @@ legend > span:first-child {
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 11px;
+}
+
+.quantity-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.quantity-groups > div {
+    display: grid;
+    gap: 6px;
+}
+
+.quantity-groups label {
+    color: #5b675e;
+    font-size: 0.68rem;
+    font-weight: 720;
 }
 
 .quantity-control button,

@@ -22,7 +22,7 @@
     <main>
         <div class="intro">
             <p data-i18n="eyebrow">Configure</p>
-            <h1 data-i18n="title">Choose what you need.</h1>
+            <h1 data-i18n="title">Configure your Easysort system.</h1>
         </div>
 
         <form id="config-form">
@@ -33,6 +33,7 @@
                     </div>
                     <h2 id="product-title">Sorting Guide</h2>
                     <p id="product-description">Help visitors sort correctly on a phone or at a fixed station.</p>
+                    <ul class="product-features" id="product-features"></ul>
                 </section>
 
                 <section class="choices">
@@ -57,11 +58,24 @@
                     </fieldset>
 
                     <fieldset class="quantity-field">
-                        <legend><span>3</span><span data-i18n="quantity">Locations</span></legend>
-                        <div class="quantity-control">
-                            <button type="button" id="decrease" aria-label="Decrease">−</button>
-                            <output id="quantity-output">1</output>
-                            <button type="button" id="increase" aria-label="Increase">+</button>
+                        <legend><span>3</span><span data-i18n="quantity">Quantity</span></legend>
+                        <div class="quantity-groups">
+                            <div>
+                                <label data-i18n="units">Units</label>
+                                <div class="quantity-control">
+                                    <button type="button" id="unit-decrease" aria-label="Decrease units">−</button>
+                                    <output id="unit-output">1</output>
+                                    <button type="button" id="unit-increase" aria-label="Increase units">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label data-i18n="locations">Locations</label>
+                                <div class="quantity-control">
+                                    <button type="button" id="location-decrease" aria-label="Decrease locations">−</button>
+                                    <output id="location-output">1</output>
+                                    <button type="button" id="location-increase" aria-label="Increase locations">+</button>
+                                </div>
+                            </div>
                         </div>
                         <p id="saving-note"></p>
                     </fieldset>
@@ -94,7 +108,7 @@
                     <label><span data-i18n="name">Name</span><input name="name" autocomplete="name" required></label>
                     <label><span data-i18n="company">Organization</span><input name="company" autocomplete="organization" required></label>
                     <label><span data-i18n="email">Email</span><input type="email" name="email" autocomplete="email" required></label>
-                    <label><span data-i18n="locations">Location(s)</span><input name="locations" required></label>
+                    <label><span data-i18n="locationsField">Location(s)</span><input name="locations" required></label>
                     <label class="wide"><span data-i18n="note">Note (optional)</span><textarea name="note" rows="3"></textarea></label>
                     <button type="submit"><span data-i18n="send">Prepare request</span><span>→</span></button>
                     <p class="mail-note" data-i18n="mailNote">Opens a prepared email for you to send.</p>

@@ -2,15 +2,17 @@
 
 .simple-hero {
     display: grid;
-    justify-items: center;
-    min-height: 100vh;
-    padding: 130px 20px 56px;
+    grid-template-columns: minmax(320px, 0.82fr) minmax(520px, 1.18fr);
+    gap: clamp(50px, 7vw, 105px);
+    align-items: center;
+    min-height: 760px;
+    padding: 125px clamp(28px, 7vw, 110px) 58px;
     background: linear-gradient(180deg, #f8fbf9 0%, #edf7f0 100%);
 }
 
 .simple-intro {
-    max-width: 720px;
-    text-align: center;
+    max-width: 560px;
+    text-align: left;
 }
 
 .simple-intro .eyebrow {
@@ -18,7 +20,7 @@
 }
 
 .simple-intro h1 {
-    font-size: clamp(3rem, 6.2vw, 5.8rem);
+    font-size: clamp(3.4rem, 6vw, 6rem);
     font-weight: 790;
     letter-spacing: -0.07em;
     line-height: 0.93;
@@ -32,10 +34,14 @@
 
 .simple-hero .demo-card {
     width: min(100%, 680px);
-    margin-top: 32px;
+    margin: 0;
     padding: 13px;
     border-color: rgba(17, 24, 39, 0.08);
     box-shadow: 0 28px 70px rgba(17, 24, 39, 0.13);
+}
+
+.simple-hero .demo-toolbar i {
+    display: none;
 }
 
 .simple-hero .camera-stage {
@@ -122,6 +128,7 @@
 }
 
 .simple-proof {
+    grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -133,15 +140,12 @@
 }
 
 .simple-proof span::before {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    margin-right: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    content: "";
-    vertical-align: 1px;
+    margin-right: 15px;
+    color: #a5afa8;
+    content: "—";
 }
+
+.simple-proof span:first-child::before { display: none; }
 
 .products-section {
     padding-top: clamp(82px, 9vw, 120px);
@@ -189,12 +193,15 @@
 
 @media (max-width: 640px) {
     .simple-hero {
+        grid-template-columns: 1fr;
         min-height: auto;
+        gap: 0;
         padding: 96px 11px 36px;
     }
 
     .simple-intro {
         padding-inline: 8px;
+        text-align: center;
     }
 
     .simple-intro .eyebrow {
@@ -235,6 +242,7 @@
     }
 
     .simple-proof {
+        grid-column: auto;
         gap: 6px 15px;
         margin-top: 18px;
         font-size: 0.67rem;
@@ -255,5 +263,17 @@
 
     .contact-section {
         margin: 12px;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 980px) {
+    .simple-hero {
+        grid-template-columns: 1fr 1.15fr;
+        gap: 35px;
+        padding-inline: 28px;
+    }
+
+    .simple-intro h1 {
+        font-size: clamp(3rem, 7vw, 4.6rem);
     }
 }
