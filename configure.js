@@ -20,7 +20,7 @@ const MAX_LINES = 20;
  * costs 5,000 kr. less to set up and 1,000 kr. less per month; the complete
  * add-on is unchanged. Monitoring is priced per camera only, whatever the
  * number of locations. The app's monthly price starts at 4,000 kr. for the
- * first location and falls by 100 kr. for each further location, down to a
+ * first location and falls by 300 kr. for each further location, down to a
  * floor of 2,000 kr. */
 const HOURLY_RATE = 950;
 const PRODUCTS = {
@@ -33,7 +33,7 @@ const PRODUCTS = {
                 unitSetup: 0,
                 unitMonthly: 0,
                 locationSetup: { first: 8500, extra: 2500 },
-                locationMonthly: { first: 4000, step: 100, floor: 2000 },
+                locationMonthly: { first: 4000, step: 300, floor: 2000 },
                 complete: { perUnit: 0, perLocation: 6500 },
                 setupItems: ['signsA1', 'qrLabels', 'signDesign', 'qrFile', 'siteMap', 'easytrack', 'training', 'precision'],
                 completeItems: ['signsA1', 'qrLabels', 'signDesign'],
@@ -142,14 +142,14 @@ const BENEFITS = {
             ['You have the access', 'We cannot reach the box. You handle monitoring, replacement, and service.']
         ],
         reuse: [
-            ['Camera box on site', 'Mounted by us and tuned for movement and items.'],
-            ['Over 100,000 images a day', 'Of movement and items on site.'],
+            ['Watches the site', 'Movement and items, over 100,000 images a day.'],
+            ['You see it in EasyTrack', 'What happens on the site, in one place.'],
             ['We keep it running', 'Hosting, uptime monitoring, and replacement if it fails.'],
             ['Better every month', 'Retraining every month, and new models for free.']
         ],
         container: [
-            ['Camera box at the container', 'Mounted by us and tuned for complex items.'],
-            ['In-depth analysis', 'Complex items in the container, analyzed in detail.'],
+            ['Sits at one container', 'It looks at what is thrown in.'],
+            ['Including the difficult items', 'A closer look than the camera that watches the whole site.'],
             ['We keep it running', 'Hosting, uptime monitoring, and replacement if it fails.'],
             ['Better every month', 'Retraining every month, and new models for free.']
         ]
@@ -192,14 +192,14 @@ const BENEFITS = {
             ['I har adgangen', 'Vi har ikke adgang til boksen. I står for overvågning, udskiftning og service.']
         ],
         reuse: [
-            ['Kameraboks på pladsen', 'Sat op af os og kørt ind på bevægelse og emner.'],
-            ['Over 100.000 billeder om dagen', 'Af bevægelse og emner på pladsen.'],
+            ['Ser pladsen', 'Bevægelse og emner, over 100.000 billeder om dagen.'],
+            ['I ser det i EasyTrack', 'Hvad der sker på pladsen, samlet ét sted.'],
             ['Vi holder den kørende', 'Hosting, overvågning af driftstid og udskiftning, hvis den fejler.'],
             ['Bliver bedre hver måned', 'Gentræning hver måned og gratis nye modeller.']
         ],
         container: [
-            ['Kameraboks ved containeren', 'Sat op af os og kørt ind på komplekse emner.'],
-            ['Dybdegående analyse', 'Komplekse emner i containeren, analyseret i detaljer.'],
+            ['Sidder ved én container', 'Den kigger på det, der bliver smidt i.'],
+            ['Også de svære emner', 'Et nærmere kig end kameraet, der ser hele pladsen.'],
             ['Vi holder den kørende', 'Hosting, overvågning af driftstid og udskiftning, hvis den fejler.'],
             ['Bliver bedre hver måned', 'Gentræning hver måned og gratis nye modeller.']
         ]
@@ -242,14 +242,14 @@ const BENEFITS = {
             ['Der Zugang liegt bei Ihnen', 'Wir haben keinen Zugriff auf die Box. Überwachung, Austausch und Service übernehmen Sie.']
         ],
         reuse: [
-            ['Kamerabox vor Ort', 'Von uns montiert und auf Bewegung und Gegenstände abgestimmt.'],
-            ['Über 100.000 Bilder pro Tag', 'Von Bewegung und Gegenständen vor Ort.'],
+            ['Sieht den Platz', 'Bewegung und Gegenstände, über 100.000 Bilder pro Tag.'],
+            ['Sie sehen es in EasyTrack', 'Was vor Ort passiert, an einem Ort.'],
             ['Wir halten es am Laufen', 'Hosting, Überwachung der Verfügbarkeit und Austausch bei Ausfall.'],
             ['Jeden Monat besser', 'Monatliches Nachtraining und kostenlose neue Modelle.']
         ],
         container: [
-            ['Kamerabox am Container', 'Von uns montiert und auf komplexe Gegenstände abgestimmt.'],
-            ['Detaillierte Analyse', 'Komplexe Gegenstände im Container, im Detail analysiert.'],
+            ['Sitzt an einem Container', 'Sie schaut auf das, was hineingeworfen wird.'],
+            ['Auch die schwierigen Gegenstände', 'Ein genauerer Blick als die Kamera, die den ganzen Platz sieht.'],
             ['Wir halten es am Laufen', 'Hosting, Überwachung der Verfügbarkeit und Austausch bei Ausfall.'],
             ['Jeden Monat besser', 'Monatliches Nachtraining und kostenlose neue Modelle.']
         ]
@@ -282,7 +282,7 @@ const copy = {
         mockContainer: 'Container 4',
         optionFrom: 'From {setup} + {monthly} / month',
         tagline_sorting: 'Visitors show their waste. The guide shows the container and the way there.',
-        tagline_monitoring: 'A camera on site that sees what happens: visitors, items, and missorted waste.',
+        tagline_monitoring: 'One camera watches the site. One camera sits at a container. You see it in EasyTrack.',
         chooseOption: 'Choose a version',
         quantity: 'Quantity',
         locations: 'Locations',
@@ -291,8 +291,8 @@ const copy = {
         option_app_body: 'Visitors scan a QR code, take a photo, and get the route on their phone.',
         option_box_body: 'A screen and camera on site. We run and service it.',
         option_boxSelf_body: 'A screen and camera on site. We analyze the images, you run the box. Fault-finding {hourly} / hour.',
-        option_reuse_body: 'A camera on site tracks movement and items. Over 100,000 images a day.',
-        option_container_body: 'A camera at the container analyzes complex items in depth.',
+        option_reuse_body: 'Watches the whole site: movement and items, over 100,000 images a day. You see it in EasyTrack.',
+        option_container_body: 'Sits at one container and looks at what is thrown in, including the difficult items.',
         name_app: 'App',
         name_box: 'Box with support',
         name_boxSelf: 'Box without support',
@@ -440,7 +440,7 @@ const copy = {
         mockContainer: 'Container 4',
         optionFrom: 'Fra {setup} + {monthly} / md.',
         tagline_sorting: 'Borgeren viser affaldet. Guiden viser containeren og vejen derhen.',
-        tagline_monitoring: 'Et kamera på pladsen, der ser, hvad der sker: besøgende, emner og fejlsortering.',
+        tagline_monitoring: 'Ét kamera ser pladsen. Ét kamera sidder ved en container. I ser det i EasyTrack.',
         chooseOption: 'Vælg løsning',
         quantity: 'Antal',
         locations: 'Pladser',
@@ -449,8 +449,8 @@ const copy = {
         option_app_body: 'Borgeren scanner en QR-kode, tager et billede og får ruten på telefonen.',
         option_box_body: 'Skærm og kamera på pladsen. Vi driver og servicerer den.',
         option_boxSelf_body: 'Skærm og kamera på pladsen. Vi analyserer billederne, I driver boksen. Fejlretning {hourly} / time.',
-        option_reuse_body: 'Et kamera på pladsen følger bevægelse og emner. Over 100.000 billeder om dagen.',
-        option_container_body: 'Et kamera ved containeren laver en dybdegående analyse af komplekse emner.',
+        option_reuse_body: 'Ser hele pladsen: bevægelse og emner, over 100.000 billeder om dagen. I ser det i EasyTrack.',
+        option_container_body: 'Sidder ved én container og kigger på det, der bliver smidt i, også de svære emner.',
         name_app: 'App',
         name_box: 'Boks med support',
         name_boxSelf: 'Boks uden support',
@@ -598,7 +598,7 @@ const copy = {
         mockContainer: 'Container 4',
         optionFrom: 'Ab {setup} + {monthly} / Monat',
         tagline_sorting: 'Besucher zeigen ihren Abfall. Die Sortierhilfe zeigt den Container und den Weg dorthin.',
-        tagline_monitoring: 'Eine Kamera vor Ort, die sieht, was passiert: Besucher, Gegenstände und Fehlwürfe.',
+        tagline_monitoring: 'Eine Kamera sieht den Platz. Eine Kamera sitzt an einem Container. Sie sehen es in EasyTrack.',
         chooseOption: 'Version wählen',
         quantity: 'Anzahl',
         locations: 'Standorte',
@@ -607,8 +607,8 @@ const copy = {
         option_app_body: 'Besucher scannen einen QR-Code, machen ein Foto und sehen den Weg auf dem Handy.',
         option_box_body: 'Bildschirm und Kamera vor Ort. Wir betreiben und warten sie.',
         option_boxSelf_body: 'Bildschirm und Kamera vor Ort. Wir analysieren die Bilder, Sie betreiben die Box. Fehlersuche {hourly} / Stunde.',
-        option_reuse_body: 'Eine Kamera vor Ort erfasst Bewegungen und Gegenstände. Über 100.000 Bilder pro Tag.',
-        option_container_body: 'Eine Kamera am Container analysiert komplexe Gegenstände im Detail.',
+        option_reuse_body: 'Sieht den ganzen Platz: Bewegungen und Gegenstände, über 100.000 Bilder pro Tag. Sie sehen es in EasyTrack.',
+        option_container_body: 'Sitzt an einem Container und sieht, was hineingeworfen wird, auch die schwierigen Gegenstände.',
         name_app: 'App',
         name_box: 'Box mit Support',
         name_boxSelf: 'Box ohne Support',
