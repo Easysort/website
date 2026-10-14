@@ -684,12 +684,12 @@ p {
         --gutter: 16px;
     }
 
-    .main-nav {
+    .main-nav a:not(.nav-easytrack) {
         display: none;
     }
 
     .language-switch {
-        margin-left: auto;
+        margin-left: 16px;
     }
 
     .brand img {

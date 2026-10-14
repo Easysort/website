@@ -46,6 +46,15 @@ header {
     gap: 10px;
 }
 
+.header-easytrack {
+    color: #3f4855;
+    font-size: 0.88rem;
+    font-weight: 620;
+    text-decoration: none;
+}
+
+.header-easytrack:hover { color: var(--ink); }
+
 .cart-link {
     display: flex;
     align-items: center;
