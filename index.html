@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Free sorting help for Danish recycling centers and practical camera systems for waste facilities.">
+    <meta name="description" content="Free sorting help for Danish recycling centers and camera systems for waste facilities.">
     <title>Easysort — Sort waste correctly</title>
-    <link rel="stylesheet" href="simple-home.css?v=20261014b">
+    <link rel="stylesheet" href="simple-home.css?v=20261014c">
 </head>
 <body data-worker="https://website-workers.lucas-vilsen.workers.dev/classify">
     <header class="site-header">
-        <a class="brand" href="#top" aria-label="Easysort home">
-            <img src="logo.png" alt="Easysort">
-        </a>
-        <nav class="main-nav" aria-label="Main navigation">
-            <a href="#products" data-i18n="navProducts">Products</a>
-            <a href="configure.html" data-i18n="navConfigure">Configure</a>
-            <a href="https://track.easysort.org" target="_blank" rel="noreferrer">EasyTrack</a>
-        </nav>
-        <div class="header-actions">
+        <div class="wrap header-inner">
+            <a class="brand" href="#top" aria-label="Easysort home">
+                <img src="logo.png" alt="Easysort">
+            </a>
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="#products" data-i18n="navProducts">Products</a>
+                <a href="configure.html" data-i18n="navConfigure">Configure</a>
+                <a href="#contact" data-i18n="navContact">Contact</a>
+            </nav>
             <div class="language-switch" role="group" aria-label="Language">
                 <button type="button" data-language-option="en" aria-pressed="true">EN</button>
                 <button type="button" data-language-option="da" aria-pressed="false">DA</button>
@@ -27,136 +27,145 @@
     </header>
 
     <main id="top">
-        <section class="simple-hero" id="demo">
-            <div class="simple-intro">
-                <p class="eyebrow" data-i18n="heroEyebrow">Free Sorting Guide</p>
-                <h1 data-i18n="heroTitle">Sort waste correctly.</h1>
-                <p class="hero-lead" data-i18n="heroLead">Take a photo. We show you what it is and where it goes.</p>
-            </div>
-            <div class="demo-card">
-                <div class="demo-toolbar">
-                    <span><i></i><span data-i18n="demoLive">Camera ready</span></span>
-                    <span data-i18n="demoNoInstall">Free</span>
+        <section class="hero-band" id="demo">
+            <div class="wrap simple-hero">
+                <div class="simple-intro">
+                    <p class="eyebrow" data-i18n="heroEyebrow">Free Sorting Guide</p>
+                    <h1 data-i18n="heroTitle">Sort waste correctly.</h1>
+                    <p class="hero-lead" data-i18n="heroLead">Take a photo. We show you what it is and where it goes.</p>
                 </div>
-                <div class="camera-stage" id="webcam-area">
-                    <div class="camera-placeholder" id="webcam-placeholder">
-                        <div class="camera-icon" aria-hidden="true"><span></span></div>
-                        <strong data-i18n="cameraLabel">Show one item</strong>
-                        <p id="camera-status" data-i18n="cameraStart">Tap to start</p>
+                <div class="demo-card">
+                    <div class="camera-stage" id="webcam-area">
+                        <div class="camera-placeholder" id="webcam-placeholder">
+                            <div class="camera-icon" aria-hidden="true"><span></span></div>
+                            <strong data-i18n="cameraLabel">Show one item</strong>
+                            <p id="camera-status" data-i18n="cameraStart">Tap to start</p>
+                        </div>
+                        <video id="webcam-video" autoplay playsinline muted></video>
+                        <canvas id="frozen-frame"></canvas>
+                        <button type="button" id="camera-switch-btn" hidden data-i18n="switchCamera">Switch camera</button>
                     </div>
-                    <video id="webcam-video" autoplay playsinline muted></video>
-                    <canvas id="frozen-frame"></canvas>
-                    <button type="button" id="camera-switch-btn" hidden data-i18n="switchCamera">Switch camera</button>
+                    <div class="demo-actions">
+                        <button type="button" id="analyze-btn" disabled data-i18n="analyzeNeedCamera">Take photo</button>
+                        <button type="button" id="photo-btn" data-i18n="photo">Upload</button>
+                        <input id="photo-input" type="file" accept="image/*" hidden>
+                    </div>
+                    <div class="analysis-result" id="analysis-result" aria-live="polite" hidden>
+                        <div class="analysis-item">
+                            <span data-i18n="itemLabel">We think this is</span>
+                            <strong id="result-item">—</strong>
+                        </div>
+                        <div class="analysis-destination">
+                            <span data-i18n="fractionLabel">Sort it as</span>
+                            <strong id="result-fraction">—</strong>
+                        </div>
+                        <p class="analysis-site">
+                            <span data-i18n="centerLabel">Guide</span>
+                            <strong id="result-center">Danish recycling center</strong>
+                        </p>
+                    </div>
+                    <p class="demo-note">
+                        <span data-i18n="demoModelNote">This web demo uses our smaller general model. Our larger, purpose-trained models deliver higher accuracy.</span>
+                        <span data-i18n="privacyShort">Only this photo is sent for analysis.</span>
+                        <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
+                    </p>
                 </div>
-                <div class="demo-actions">
-                    <button type="button" id="analyze-btn" disabled data-i18n="analyzeNeedCamera">Take photo</button>
-                    <button type="button" id="photo-btn" data-i18n="photo">Upload</button>
-                    <input id="photo-input" type="file" accept="image/*" hidden>
-                </div>
-                <div class="analysis-result" id="analysis-result" aria-live="polite" hidden>
-                    <div class="analysis-item">
-                        <span data-i18n="itemLabel">We think this is</span>
-                        <strong id="result-item">—</strong>
-                    </div>
-                    <div class="analysis-arrow" aria-hidden="true">↓</div>
-                    <div class="analysis-destination">
-                        <span data-i18n="fractionLabel">Sort it as</span>
-                        <strong id="result-fraction">—</strong>
-                    </div>
-                    <div class="analysis-site">
-                        <span data-i18n="centerLabel">Guide</span>
-                        <strong id="result-center">Danish recycling center</strong>
-                    </div>
-                </div>
-                <p class="demo-model-note" data-i18n="demoModelNote">
-                    This web demo uses our smaller general model. Our larger, purpose-trained models deliver higher accuracy.
-                </p>
-                <p class="demo-privacy">
-                    <span data-i18n="privacyShort">Only this photo is sent for analysis.</span>
-                    <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
-                </p>
             </div>
         </section>
 
-        <section class="section products-section" id="products">
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow" data-i18n="productsEyebrow">Products</p>
-                    <h2 data-i18n="productsTitle">Two products. One simple setup.</h2>
+        <section class="section" id="products">
+            <div class="wrap">
+                <div class="section-heading">
+                    <h2 data-i18n="productsTitle">Our products</h2>
+                    <p data-i18n="productsLead">Pick a product, service level, units, and locations in one configurator.</p>
                 </div>
-                <p data-i18n="productsLead">Choose a product, service level, and number of locations in one configurator.</p>
-            </div>
-            <div class="product-grid">
-                <article class="product-card product-card-featured">
-                    <div class="product-image">
-                        <img src="models/sorteringsguide.png" alt="">
-                        <span class="product-status" data-i18n="availableNow">Available now</span>
+                <div class="product-grid">
+                    <article class="product-card">
+                        <div class="product-image">
+                            <img src="models/sorteringsguide.png" alt="">
+                        </div>
+                        <div class="product-copy">
+                            <h3 data-i18n="productGuideTitle">Sorting Guide</h3>
+                            <p data-i18n="productGuideBody">Helps visitors sort correctly on their phone or at a fixed station.</p>
+                            <ul class="product-perks">
+                                <li data-i18n="guidePerkOne">Works on any phone</li>
+                                <li data-i18n="guidePerkTwo">Local sorting rules</li>
+                                <li data-i18n="guidePerkThree">Optional fixed station</li>
+                            </ul>
+                            <a class="product-link" href="configure.html?product=sorting" data-i18n="configureProduct">Configure</a>
+                        </div>
+                    </article>
+                    <article class="product-card">
+                        <div class="product-image">
+                            <img src="models/teltovervågning.png" alt="">
+                        </div>
+                        <div class="product-copy">
+                            <h3 data-i18n="productReuseTitle">Monitoring Box</h3>
+                            <p data-i18n="productReuseBody">A camera box you can mount anywhere on site.</p>
+                            <ul class="product-perks">
+                                <li data-i18n="monitorPerkOne">People and activity</li>
+                                <li data-i18n="monitorPerkTwo">Misplaced items</li>
+                                <li data-i18n="monitorPerkThree">Optional alerts</li>
+                            </ul>
+                            <a class="product-link" href="configure.html?product=monitoring" data-i18n="configureProduct">Configure</a>
+                        </div>
+                    </article>
+                </div>
+
+                <aside class="custom-systems">
+                    <div>
+                        <h3 data-i18n="customTitle">Sorting and incineration plants</h3>
+                        <p data-i18n="customBody">We also build camera systems for sorting plants and waste-to-energy plants. Each system is designed for the plant, so contact us directly.</p>
                     </div>
-                    <div class="product-copy">
-                        <p class="product-number">01</p>
-                        <h3 data-i18n="productGuideTitle">Sorting Guide</h3>
-                        <p data-i18n="productGuideBody">Help visitors sort correctly on their phone or at a fixed station.</p>
-                        <a href="configure.html?product=sorting" data-i18n="configureGuide">Configure <span>→</span></a>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="models/teltovervågning.png" alt="">
-                    </div>
-                    <div class="product-copy">
-                        <p class="product-number">02</p>
-                        <h3 data-i18n="productReuseTitle">Monitoring Box</h3>
-                        <p data-i18n="productReuseBody">Monitor people and reuse activity, or find misplaced items in containers.</p>
-                        <ul class="product-perks">
-                            <li data-i18n="monitorPerkOne">People and activity</li>
-                            <li data-i18n="monitorPerkTwo">Misplaced items</li>
-                            <li data-i18n="monitorPerkThree">Overview and optional alerts</li>
-                        </ul>
-                        <a href="configure.html?product=monitoring" data-i18n="viewProduct">Configure <span>→</span></a>
-                    </div>
-                </article>
+                    <a class="button button-dark" href="mailto:lucas@easysort.org?subject=Easysort%20plant%20system" data-i18n="customAction">Contact us</a>
+                </aside>
             </div>
         </section>
 
         <section class="partner-strip" aria-label="Organizations we work with">
-            <p data-i18n="partnersLabel">Developed and tested with teams in the Danish waste sector</p>
-            <div class="partner-logos">
-                <img src="logos/argo.png" alt="ARGO">
-                <img src="logos/dtu.png" alt="DTU">
-                <img src="logos/kk.webp" alt="Københavns Kommune">
-                <img src="logos/norfors.png" alt="Norfors">
-                <img src="logos/verdis.png" alt="Verdis">
+            <div class="wrap">
+                <p data-i18n="partnersLabel">Developed with teams in the Danish waste sector</p>
+                <div class="partner-logos">
+                    <img src="logos/argo.png" alt="ARGO">
+                    <img src="logos/dtu.png" alt="DTU">
+                    <img src="logos/kk.webp" alt="Københavns Kommune">
+                    <img src="logos/norfors.png" alt="Norfors">
+                    <img src="logos/verdis.png" alt="Verdis">
+                </div>
             </div>
         </section>
 
-        <section class="simple-contact">
-            <div>
-                <p class="eyebrow" data-i18n="contactEyebrow">For recycling centers and facilities</p>
-                <h2 data-i18n="contactTitle">Want this at your site?</h2>
-                <p data-i18n="contactBody">Choose the product, service, units, and locations. We will follow up with the final setup and delivery.</p>
-            </div>
-            <div class="simple-contact-actions">
-                <a class="button button-green" href="configure.html" data-i18n="configureSystem">Configure your system</a>
-                <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+        <section class="section section-tight" id="contact">
+            <div class="wrap">
+                <div class="simple-contact">
+                    <div>
+                        <h2 data-i18n="contactTitle">Want this at your site?</h2>
+                        <p data-i18n="contactBody">Configure your setup and we will follow up on delivery and payment.</p>
+                    </div>
+                    <div class="simple-contact-actions">
+                        <a class="button button-green" href="configure.html" data-i18n="configureSystem">Configure your system</a>
+                        <a class="contact-mail" href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
     <footer class="site-footer">
-        <div class="footer-brand">
+        <div class="wrap footer-inner">
             <img src="logo.png" alt="Easysort">
-            <p data-i18n="footerLine">Practical tools for sorting and monitoring waste.</p>
+            <nav class="footer-links" aria-label="Footer">
+                <a href="#products" data-i18n="navProducts">Products</a>
+                <a href="configure.html" data-i18n="navConfigure">Configure</a>
+                <a href="https://track.easysort.org" target="_blank" rel="noreferrer">EasyTrack</a>
+                <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
+                <a href="https://docs.easysort.org">Docs</a>
+                <a href="https://github.com/Easysort">GitHub</a>
+            </nav>
+            <p class="footer-note">© 2026 Easysort</p>
         </div>
-        <div class="footer-links">
-            <a href="#products" data-i18n="navProducts">Products</a>
-            <a href="configure.html" data-i18n="navConfigure">Configure</a>
-            <a href="privacy.html" data-i18n="privacyLink">Privacy</a>
-            <a href="https://docs.easysort.org">Docs</a>
-            <a href="https://github.com/Easysort">GitHub</a>
-        </div>
-        <p class="footer-note">© 2026 Easysort</p>
     </footer>
 
-    <script src="homepage.js?v=20261014b"></script>
+    <script src="homepage.js?v=20261014c"></script>
 </body>
 </html>
