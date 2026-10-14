@@ -496,7 +496,10 @@ p {
     border-bottom: 1px solid var(--line);
 }
 
-.products-configure { margin-top: 28px; }
+.product-configure {
+    align-self: flex-start;
+    margin-top: auto;
+}
 
 .product-link {
     align-self: flex-start;
