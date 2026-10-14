@@ -64,8 +64,9 @@ const translations = {
         customBody: 'We also build camera systems for sorting plants and waste-to-energy plants. Each system is designed for the plant, so contact us directly.',
         customAction: 'Contact us',
         partnersLabel: 'Developed with teams in the Danish waste sector',
-        contactTitle: 'Want this at your site?',
-        contactBody: 'Order online. Pay by bank transfer.',
+        contactTitle: 'Write or call.',
+        contactPromise: 'I reply myself.',
+        contactBody: 'Order online. Payment by bank transfer.',
         configureSystem: 'Configure your system'
     },
     da: {
@@ -115,7 +116,8 @@ const translations = {
         customBody: 'Vi bygger også kamerasystemer til sorteringsanlæg og forbrændingsanlæg. Hvert system tilpasses anlægget, så kontakt os direkte.',
         customAction: 'Kontakt os',
         partnersLabel: 'Udviklet med teams i den danske affaldssektor',
-        contactTitle: 'Skal det bruges hos jer?',
+        contactTitle: 'Skriv eller ring.',
+        contactPromise: 'Jeg svarer selv.',
         contactBody: 'Bestil online. Betaling ved bankoverførsel.',
         configureSystem: 'Konfigurér jeres system'
     },
@@ -166,7 +168,8 @@ const translations = {
         customBody: 'Wir bauen auch Kamerasysteme für Sortieranlagen und Müllverbrennungsanlagen. Jedes System wird für die Anlage geplant, sprechen Sie uns daher direkt an.',
         customAction: 'Kontakt aufnehmen',
         partnersLabel: 'Mit Teams aus der dänischen Abfallwirtschaft entwickelt',
-        contactTitle: 'Soll das an Ihrem Standort laufen?',
+        contactTitle: 'Schreiben oder anrufen.',
+        contactPromise: 'Ich antworte selbst.',
         contactBody: 'Online bestellen. Zahlung per Banküberweisung.',
         configureSystem: 'System konfigurieren'
     }
