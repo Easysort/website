@@ -9,7 +9,11 @@ const MAX_LINES = 20;
 
 /* Prices from the Easysort offer of 29 September 2026 (DKK, excl. VAT).
  * Location prices: the first location costs `first`, each further one `extra`.
- * The box without support is not in that offer; its price is a placeholder. */
+ * The offer prices include signs, banners, and QR labels. They are split out as
+ * the "complete" add-on: for the app at the offer's own value (6,500 kr. per
+ * location), for the boxes at a placeholder of the same amount, so base plus
+ * add-on equals the offer price. The box without support is not in the offer;
+ * its price is a placeholder. */
 const PRODUCTS = {
     sorting: {
         image: 'models/sorteringsguide.png',
@@ -19,31 +23,38 @@ const PRODUCTS = {
                 unit: null,
                 unitSetup: 0,
                 unitMonthly: 0,
-                locationSetup: { first: 15000, extra: 9000 },
+                locationSetup: { first: 8500, extra: 2500 },
                 locationMonthly: { first: 4000, extra: 1800 },
-                setupItems: ['signsA1', 'qrLabels', 'signDesign', 'siteMap', 'easytrack', 'training', 'precision'],
+                complete: { perUnit: 0, perLocation: 6500 },
+                setupItems: ['signsA1', 'qrLabels', 'signDesign', 'qrFile', 'siteMap', 'easytrack', 'training', 'precision'],
+                completeItems: ['signsA1', 'qrLabels', 'signDesign'],
+                basicItems: ['qrFile'],
                 operationItems: ['hostingRequests', 'uptimeAlerts', 'reviewGuidance', 'apiDevelopment', 'retraining', 'guideChanges', 'freeImprovements']
             },
             box: {
                 unit: 'box',
                 family: 'box',
                 hardware: true,
-                unitSetup: 30000,
+                unitSetup: 23500,
                 unitMonthly: 6000,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
-                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mounting', 'siteMap', 'easytrack', 'training', 'precision'],
+                complete: { perUnit: 6500, perLocation: 0 },
+                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mountingBox', 'mountingSigns', 'siteMap', 'easytrack', 'training', 'precision'],
+                completeItems: ['banners', 'bannerDesign', 'mountingSigns'],
                 operationItems: ['hostingRequests', 'dataConnection', 'serverModel', 'uptimeReplace', 'reviewGuidance', 'recognitionUpdates', 'retraining', 'freeModels']
             },
             boxSelf: {
                 unit: 'box',
                 family: 'box',
                 hardware: true,
-                unitSetup: 40000,
+                unitSetup: 33500,
                 unitMonthly: 0,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
-                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mounting', 'siteMap', 'training', 'precision', 'localModel'],
+                complete: { perUnit: 6500, perLocation: 0 },
+                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mountingBox', 'mountingSigns', 'siteMap', 'training', 'precision', 'localModel'],
+                completeItems: ['banners', 'bannerDesign', 'mountingSigns'],
                 operationHeading: 'operationSelf',
                 operationItems: ['selfMonitoring', 'selfReplacement', 'selfService', 'selfUpdates']
             }
@@ -77,7 +88,8 @@ const PRODUCTS = {
     }
 };
 
-/* Four headline benefits per option: [title, one line]. */
+/* Four headline benefits per option: [title, one line]. `<option>_basic`
+ * replaces them when the complete add-on is not chosen. */
 const BENEFITS = {
     en: {
         app: [
@@ -95,6 +107,24 @@ const BENEFITS = {
         boxSelf: [
             ['A complete box', 'Computer, camera, and an outdoor screen. The model runs in the box.'],
             ['Set up by us', 'We mount the box, 2 banners, and an A1 sign on site.'],
+            ['Made for your site', 'Site map, fraction split, and a model trained for you.'],
+            ['You are in full control', 'We lock ourselves out. You handle monitoring, replacement, and service.']
+        ],
+        app_basic: [
+            ['Your own QR code', 'We send the QR code as a file, so you can print and put it up yourselves.'],
+            ['Made for your site', 'Site map, fraction split, and your special rules.'],
+            ['We keep it running', 'Monitoring, weekly review, and retraining every month.'],
+            ['Unlimited use', 'Unlimited requests and unlimited changes to the guide.']
+        ],
+        box_basic: [
+            ['A complete box', 'Computer, camera, internet, and an outdoor screen.'],
+            ['Set up by us', 'We mount the box on site.'],
+            ['Made for your site', 'Site map, fraction split, and a model trained for you.'],
+            ['Full service', 'We monitor the box, and replace it if it fails. New models are free.']
+        ],
+        boxSelf_basic: [
+            ['A complete box', 'Computer, camera, and an outdoor screen. The model runs in the box.'],
+            ['Set up by us', 'We mount the box on site.'],
             ['Made for your site', 'Site map, fraction split, and a model trained for you.'],
             ['You are in full control', 'We lock ourselves out. You handle monitoring, replacement, and service.']
         ],
@@ -130,6 +160,24 @@ const BENEFITS = {
             ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og en model trænet til jer.'],
             ['I har fuld kontrol', 'Vi låser os ude. I står selv for overvågning, udskiftning og service.']
         ],
+        app_basic: [
+            ['Jeres egen QR-kode', 'Vi sender QR-koden som fil, så I selv kan printe og sætte den op.'],
+            ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og jeres særskilte regler.'],
+            ['Vi holder den kørende', 'Overvågning, ugentlig gennemgang og gentræning hver måned.'],
+            ['Ubegrænset brug', 'Ubegrænsede forespørgsler og ubegrænsede ændringer til guiden.']
+        ],
+        box_basic: [
+            ['Komplet boks', 'Computer, kamera, internet og udendørs skærm.'],
+            ['Sat op af os', 'Vi sætter boksen op på pladsen.'],
+            ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og en model trænet til jer.'],
+            ['Fuld service', 'Vi overvåger boksen og skifter den ud, hvis den fejler. Nye modeller er gratis.']
+        ],
+        boxSelf_basic: [
+            ['Komplet boks', 'Computer, kamera og udendørs skærm. Modellen kører i boksen.'],
+            ['Sat op af os', 'Vi sætter boksen op på pladsen.'],
+            ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og en model trænet til jer.'],
+            ['I har fuld kontrol', 'Vi låser os ude. I står selv for overvågning, udskiftning og service.']
+        ],
         reuse: [
             ['Kameraboks på pladsen', 'Sat op af os og kørt ind på bevægelse og emner.'],
             ['Over 100.000 billeder om dagen', 'Bevægelse og emner, døgnet rundt.'],
@@ -159,6 +207,24 @@ const BENEFITS = {
         boxSelf: [
             ['Komplette Box', 'Computer, Kamera und Outdoor-Bildschirm. Das Modell läuft in der Box.'],
             ['Von uns montiert', 'Wir montieren Box, 2 Banner und ein A1-Schild vor Ort.'],
+            ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und ein für Sie trainiertes Modell.'],
+            ['Volle Kontrolle bei Ihnen', 'Wir sperren uns aus. Überwachung, Austausch und Service übernehmen Sie.']
+        ],
+        app_basic: [
+            ['Ihr eigener QR-Code', 'Wir senden den QR-Code als Datei, damit Sie ihn selbst drucken und aufhängen können.'],
+            ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und Ihre Sonderregeln.'],
+            ['Wir halten es am Laufen', 'Überwachung, wöchentliche Prüfung und monatliches Nachtraining.'],
+            ['Unbegrenzte Nutzung', 'Unbegrenzte Anfragen und unbegrenzte Änderungen an der Sortierhilfe.']
+        ],
+        box_basic: [
+            ['Komplette Box', 'Computer, Kamera, Internet und Outdoor-Bildschirm.'],
+            ['Von uns montiert', 'Wir montieren die Box vor Ort.'],
+            ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und ein für Sie trainiertes Modell.'],
+            ['Voller Service', 'Wir überwachen die Box und tauschen sie bei Ausfall aus. Neue Modelle sind kostenlos.']
+        ],
+        boxSelf_basic: [
+            ['Komplette Box', 'Computer, Kamera und Outdoor-Bildschirm. Das Modell läuft in der Box.'],
+            ['Von uns montiert', 'Wir montieren die Box vor Ort.'],
             ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und ein für Sie trainiertes Modell.'],
             ['Volle Kontrolle bei Ihnen', 'Wir sperren uns aus. Überwachung, Austausch und Service übernehmen Sie.']
         ],
@@ -239,7 +305,16 @@ const copy = {
         outdoorScreen: 'Outdoor screen fitted in the box',
         banners: '2 banners and 1 A1 sign',
         bannerDesign: 'Design of banners and sign, adapted to your design guide',
-        mounting: 'We mount the box, signs, and banners on site',
+        mountingBox: 'We mount the box on site',
+        mountingSigns: 'We put up the signs and banners on site',
+        qrFile: 'QR code as a file, ready to print',
+        addonLabel: 'Add-on',
+        complete: 'Complete solution',
+        completeBody: 'We make sure visitors know how to use the guide: 2 banners and an A1 sign, designed, printed, and put up.',
+        completeAppBody: 'We make sure visitors know how to use the guide: 2 A1 signs and 80 QR labels, designed and printed.',
+        completePriceLocation: '+ {price} per location',
+        completePriceUnit: '+ {price} per box',
+        completeTag: 'Complete solution',
         localModel: 'The model is installed and runs locally in the box',
         reuseCamera: 'Camera box for monitoring, mounted on site',
         reuseModel: 'Model deployed and tuned for movement and items',
@@ -381,7 +456,16 @@ const copy = {
         outdoorScreen: 'Udendørs skærm, sat i boksen',
         banners: '2 bannere og 1 A1-skilt',
         bannerDesign: 'Design af bannere og skilt. I kan rette efter jeres designguide.',
-        mounting: 'Vi sætter boks, skilte og bannere op på pladsen',
+        mountingBox: 'Vi sætter boksen op på pladsen',
+        mountingSigns: 'Vi sætter skilte og bannere op på pladsen',
+        qrFile: 'QR-kode som fil, klar til print',
+        addonLabel: 'Tilvalg',
+        complete: 'Komplet løsning',
+        completeBody: 'Vi sikrer, at borgerne ved, hvordan de bruger guiden: 2 bannere og et A1-skilt med design, print og opsætning.',
+        completeAppBody: 'Vi sikrer, at borgerne ved, hvordan de bruger guiden: 2 A1-skilte og 80 QR-mærker med design og print.',
+        completePriceLocation: '+ {price} pr. plads',
+        completePriceUnit: '+ {price} pr. boks',
+        completeTag: 'Komplet løsning',
         localModel: 'Modellen installeres og kører lokalt i boksen',
         reuseCamera: 'Kameraboks til overvågning, sat op på pladsen',
         reuseModel: 'Modellen implementeres og køres ind på bevægelse og emner',
@@ -523,7 +607,16 @@ const copy = {
         outdoorScreen: 'Outdoor-Bildschirm in der Box',
         banners: '2 Banner und 1 A1-Schild',
         bannerDesign: 'Design von Bannern und Schild nach Ihrem Designleitfaden',
-        mounting: 'Wir montieren Box, Schilder und Banner vor Ort',
+        mountingBox: 'Wir montieren die Box vor Ort',
+        mountingSigns: 'Wir bringen Schilder und Banner vor Ort an',
+        qrFile: 'QR-Code als Datei, druckfertig',
+        addonLabel: 'Zusatzoption',
+        complete: 'Komplettlösung',
+        completeBody: 'Wir sorgen dafür, dass Besucher wissen, wie sie die Sortierhilfe nutzen: 2 Banner und ein A1-Schild mit Design, Druck und Montage.',
+        completeAppBody: 'Wir sorgen dafür, dass Besucher wissen, wie sie die Sortierhilfe nutzen: 2 A1-Schilder und 80 QR-Etiketten mit Design und Druck.',
+        completePriceLocation: '+ {price} pro Standort',
+        completePriceUnit: '+ {price} pro Box',
+        completeTag: 'Komplettlösung',
         localModel: 'Das Modell wird installiert und läuft lokal in der Box',
         reuseCamera: 'Kamerabox zur Überwachung, vor Ort montiert',
         reuseModel: 'Modell eingerichtet und auf Bewegung und Gegenstände abgestimmt',
@@ -610,6 +703,7 @@ let language = preferredLanguage();
 let product = requestedProduct();
 let option = PRODUCTS[product].defaultOption;
 let boxOption = 'box';
+let complete = true;
 let units = 1;
 let locations = 1;
 let basket = loadBasket();
@@ -652,13 +746,18 @@ function isValidLine(line) {
     const unitsOk = config.unit
         ? Number.isInteger(line.units) && line.units >= 1 && line.units <= MAX_UNITS
         : line.units === 0;
-    return unitsOk && Number.isInteger(line.locations) && line.locations >= 1 && line.locations <= MAX_LOCATIONS;
+    const completeOk = config.complete ? typeof line.complete === 'boolean' : line.complete === undefined;
+    return unitsOk && completeOk && Number.isInteger(line.locations) && line.locations >= 1 && line.locations <= MAX_LOCATIONS;
 }
 
 function loadBasket() {
     try {
         const saved = JSON.parse(localStorage.getItem(BASKET_KEY) || '[]');
-        return Array.isArray(saved) ? saved.filter(isValidLine).slice(0, MAX_LINES) : [];
+        if (!Array.isArray(saved)) return [];
+        return saved
+            .map((line) => (optionConfig(line || {})?.complete && line.complete === undefined ? { ...line, complete: true } : line))
+            .filter(isValidLine)
+            .slice(0, MAX_LINES);
     } catch {
         return [];
     }
@@ -672,10 +771,15 @@ function tiered(tier, count) {
     return count > 0 ? tier.first + tier.extra * (count - 1) : 0;
 }
 
+function completePrice(config, line) {
+    if (!config.complete || !line.complete) return 0;
+    return config.complete.perUnit * line.units + config.complete.perLocation * line.locations;
+}
+
 function priceFor(line) {
     const config = optionConfig(line);
     return {
-        setup: config.unitSetup * line.units + tiered(config.locationSetup, line.locations),
+        setup: config.unitSetup * line.units + tiered(config.locationSetup, line.locations) + completePrice(config, line),
         monthly: config.unitMonthly * line.units + tiered(config.locationMonthly, line.locations)
     };
 }
@@ -685,7 +789,18 @@ function currentConfig() {
 }
 
 function currentLine() {
-    return { product, option, units: currentConfig().unit ? units : 0, locations };
+    const config = currentConfig();
+    const line = { product, option, units: config.unit ? units : 0, locations };
+    if (config.complete) line.complete = complete;
+    return line;
+}
+
+function setupItemsFor(config, withComplete) {
+    return config.setupItems.filter((key) => {
+        if (config.completeItems?.includes(key)) return withComplete;
+        if (config.basicItems?.includes(key)) return !withComplete;
+        return true;
+    });
 }
 
 function countLabel(count, key) {
@@ -697,6 +812,7 @@ function lineSummary(line) {
     const parts = [];
     if (config.unit) parts.push(countLabel(line.units, `count_${config.unit}`));
     parts.push(line.locations === 1 ? t('locationCountOne') : t('locationCount', { count: line.locations }));
+    if (line.complete) parts.push(t('completeTag'));
     return parts.join(' · ');
 }
 
@@ -799,12 +915,26 @@ function renderSupport() {
     });
 }
 
+function renderAddon() {
+    const config = currentConfig();
+    document.getElementById('addon').hidden = !config.complete;
+    if (!config.complete) return;
+    document.getElementById('complete-input').checked = complete;
+    document.getElementById('complete-body').textContent = t(config.unit ? 'completeBody' : 'completeAppBody');
+    document.getElementById('complete-price').textContent = config.unit
+        ? t('completePriceUnit', { price: formatMoney(config.complete.perUnit) })
+        : t('completePriceLocation', { price: formatMoney(config.complete.perLocation) });
+}
+
 function renderBenefits() {
     const config = currentConfig();
+    const withComplete = Boolean(config.complete) && complete;
+    const setupItems = setupItemsFor(config, withComplete);
+    const benefitKey = config.complete && !complete ? `${option}_basic` : option;
     document.getElementById('benefits-title').textContent = t('benefitsTitle');
     const list = document.getElementById('benefit-list');
     list.textContent = '';
-    (BENEFITS[language][option] || BENEFITS.en[option]).forEach(([title, body]) => {
+    (BENEFITS[language][benefitKey] || BENEFITS.en[benefitKey]).forEach(([title, body]) => {
         const item = document.createElement('li');
         const strong = document.createElement('strong');
         strong.textContent = title;
@@ -814,10 +944,10 @@ function renderBenefits() {
         list.append(item);
     });
     document.getElementById('all-included-summary').textContent = t('allIncluded', {
-        count: config.setupItems.length + config.operationItems.length
+        count: setupItems.length + config.operationItems.length
     });
     document.getElementById('operation-heading').textContent = t(config.operationHeading || 'includedOperation');
-    fillList('included-setup', config.setupItems);
+    fillList('included-setup', setupItems);
     fillList('included-operation', config.operationItems);
 }
 
@@ -835,8 +965,9 @@ function renderQuantity() {
     const note = document.getElementById('saving-note');
     const extra = config.locationSetup.extra || config.locationMonthly.extra;
     note.hidden = config.unit !== null || !extra;
+    const extraComplete = config.complete && complete ? config.complete.perLocation : 0;
     note.textContent = t('extraLocationNote', {
-        setup: formatMoney(config.locationSetup.extra),
+        setup: formatMoney(config.locationSetup.extra + extraComplete),
         monthly: formatMoney(config.locationMonthly.extra)
     });
 
@@ -937,6 +1068,7 @@ function update() {
     renderProduct();
     renderOptions();
     renderSupport();
+    renderAddon();
     renderBenefits();
     renderQuantity();
     renderBasket();
@@ -1115,6 +1247,11 @@ document.querySelectorAll('input[name="support"]').forEach((input) => {
         option = input.value;
         update();
     });
+});
+
+document.getElementById('complete-input').addEventListener('change', (event) => {
+    complete = event.target.checked;
+    update();
 });
 
 document.getElementById('unit-decrease').addEventListener('click', () => {
