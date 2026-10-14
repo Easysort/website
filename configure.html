@@ -3,119 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Configure an Easysort product.">
+    <meta name="description" content="Configure and order Easysort products.">
     <title>Configure — Easysort</title>
-    <link rel="stylesheet" href="configure.css?v=20261013">
+    <link rel="stylesheet" href="configure.css?v=20261014b">
 </head>
-<body>
+<body data-order-url="https://website-workers.lucas-vilsen.workers.dev/order">
     <header>
         <a class="brand" href="./"><img src="logo.png" alt="Easysort"></a>
         <div class="header-actions">
+            <a class="basket-link" href="#basket" id="basket-link" hidden>
+                <span data-i18n="basket">Basket</span>
+                <span class="basket-count" id="basket-count">0</span>
+            </a>
             <div class="language-switch" role="group" aria-label="Language">
                 <button type="button" data-language-option="en" aria-pressed="true">EN</button>
                 <button type="button" data-language-option="da" aria-pressed="false">DA</button>
                 <button type="button" data-language-option="de" aria-pressed="false">DE</button>
             </div>
-            <a href="./" data-i18n="back">Back</a>
         </div>
     </header>
 
     <main>
         <div class="intro">
             <p data-i18n="eyebrow">Configure</p>
-            <h1 data-i18n="title">Configure your Easysort system.</h1>
+            <h1 data-i18n="title">Build your order.</h1>
         </div>
 
-        <form id="config-form">
-            <div class="config-grid">
-                <section class="product-view">
-                    <div class="image-stage">
-                        <img id="product-image" src="models/sorteringsguide.png" alt="">
-                    </div>
-                    <h2 id="product-title">Sorting Guide</h2>
-                    <p id="product-description">Help visitors sort correctly on a phone or at a fixed station.</p>
-                    <ul class="product-features" id="product-features"></ul>
-                </section>
-
-                <section class="choices">
-                    <fieldset>
-                        <legend><span>1</span><span data-i18n="chooseProduct">Product</span></legend>
-                        <div class="product-toggle">
-                            <label>
-                                <input type="radio" name="product" value="sorting" checked>
-                                <span data-i18n="sorting">Sorting Guide</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="product" value="monitoring">
-                                <span data-i18n="monitoring">Monitoring Box</span>
-                            </label>
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend><span>2</span><span data-i18n="chooseService">Service</span></legend>
-                        <div class="service-options" id="service-options"></div>
-                        <ul class="included-list" id="included-list"></ul>
-                    </fieldset>
-
-                    <fieldset class="quantity-field">
-                        <legend><span>3</span><span data-i18n="quantity">Quantity</span></legend>
-                        <div class="quantity-groups">
-                            <div>
-                                <label data-i18n="units">Units</label>
-                                <div class="quantity-control">
-                                    <button type="button" id="unit-decrease" aria-label="Decrease units">−</button>
-                                    <output id="unit-output">1</output>
-                                    <button type="button" id="unit-increase" aria-label="Increase units">+</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label data-i18n="locations">Locations</label>
-                                <div class="quantity-control">
-                                    <button type="button" id="location-decrease" aria-label="Decrease locations">−</button>
-                                    <output id="location-output">1</output>
-                                    <button type="button" id="location-increase" aria-label="Increase locations">+</button>
-                                </div>
-                            </div>
-                        </div>
-                        <p id="saving-note"></p>
-                    </fieldset>
-
-                    <section class="price-box">
-                        <div>
-                            <span data-i18n="setup">Example setup</span>
-                            <strong id="setup-price">—</strong>
-                        </div>
-                        <div>
-                            <span data-i18n="monthly">Example monthly</span>
-                            <strong id="monthly-price">—</strong>
-                        </div>
-                        <p data-i18n="placeholder">Placeholder prices—not an offer.</p>
-                    </section>
-
-                    <button class="continue-button" id="continue-button" type="button">
-                        <span data-i18n="continue">Continue</span><span>→</span>
-                    </button>
-                </section>
-            </div>
-
-            <section class="contact-panel" id="contact-panel" hidden>
-                <div>
-                    <p class="contact-eyebrow" data-i18n="lastStep">Last step</p>
-                    <h2 data-i18n="contactTitle">Where should we contact you?</h2>
-                    <p data-i18n="contactLead">No payment now. We will confirm the final setup, delivery, and payment with you.</p>
+        <div class="config-grid">
+            <section class="product-view">
+                <div class="image-stage">
+                    <img id="product-image" src="models/sorteringsguide.png" alt="">
                 </div>
-                <div class="contact-fields">
-                    <label><span data-i18n="name">Name</span><input name="name" autocomplete="name" required></label>
-                    <label><span data-i18n="company">Organization</span><input name="company" autocomplete="organization" required></label>
-                    <label><span data-i18n="email">Email</span><input type="email" name="email" autocomplete="email" required></label>
-                    <label><span data-i18n="locationsField">Location(s)</span><input name="locations" required></label>
-                    <label class="wide"><span data-i18n="note">Note (optional)</span><textarea name="note" rows="3"></textarea></label>
-                    <button type="submit"><span data-i18n="send">Prepare request</span><span>→</span></button>
-                    <p class="mail-note" data-i18n="mailNote">Opens a prepared email for you to send.</p>
-                </div>
+                <h2 id="product-title">Sorting Guide</h2>
+                <p id="product-description"></p>
+                <ul class="product-features" id="product-features"></ul>
             </section>
+
+            <section class="choices">
+                <fieldset>
+                    <legend><span>1</span><span data-i18n="chooseProduct">Product</span></legend>
+                    <div class="product-toggle">
+                        <label>
+                            <input type="radio" name="product" value="sorting" checked>
+                            <span data-i18n="sorting">Sorting Guide</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="product" value="monitoring">
+                            <span data-i18n="monitoring">Monitoring Box</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend><span>2</span><span data-i18n="chooseOption">Option</span></legend>
+                    <div class="service-options" id="option-list"></div>
+                    <label class="addon" id="installation-addon" hidden>
+                        <input type="checkbox" id="installation-input">
+                        <span>
+                            <strong data-i18n="installation">Installation by Easysort</strong>
+                            <em id="installation-price"></em>
+                        </span>
+                    </label>
+                </fieldset>
+
+                <fieldset class="quantity-field">
+                    <legend><span>3</span><span data-i18n="quantity">Quantity</span></legend>
+                    <div class="quantity-groups">
+                        <div id="unit-group">
+                            <label data-i18n="units">Units</label>
+                            <div class="quantity-control">
+                                <button type="button" id="unit-decrease" aria-label="Decrease units">−</button>
+                                <output id="unit-output">1</output>
+                                <button type="button" id="unit-increase" aria-label="Increase units">+</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label data-i18n="locations">Locations</label>
+                            <div class="quantity-control">
+                                <button type="button" id="location-decrease" aria-label="Decrease locations">−</button>
+                                <output id="location-output">1</output>
+                                <button type="button" id="location-increase" aria-label="Increase locations">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="saving-note"></p>
+                </fieldset>
+
+                <section class="price-box">
+                    <div>
+                        <span data-i18n="setup">One-time</span>
+                        <strong id="setup-price">—</strong>
+                    </div>
+                    <div>
+                        <span data-i18n="monthly">Monthly</span>
+                        <strong id="monthly-price">—</strong>
+                    </div>
+                    <p data-i18n="placeholder">Placeholder prices, excl. VAT — not an offer.</p>
+                </section>
+
+                <button class="continue-button" id="add-button" type="button">
+                    <span data-i18n="addToBasket">Add to basket</span><span>+</span>
+                </button>
+                <p class="added-note" id="added-note" aria-live="polite"></p>
+            </section>
+        </div>
+
+        <section class="basket" id="basket" hidden>
+            <div class="basket-head">
+                <h2 data-i18n="basketTitle">Your basket</h2>
+                <p data-i18n="basketLead">Mix products, options, and locations. Add as many lines as you need.</p>
+            </div>
+            <ul class="basket-lines" id="basket-lines"></ul>
+            <div class="basket-total">
+                <div>
+                    <span data-i18n="setup">One-time</span>
+                    <strong id="basket-setup">—</strong>
+                </div>
+                <div>
+                    <span data-i18n="monthly">Monthly</span>
+                    <strong id="basket-monthly">—</strong>
+                </div>
+            </div>
+            <p class="basket-note" id="basket-note"></p>
+            <button class="continue-button" id="checkout-button" type="button">
+                <span data-i18n="order">Order</span><span>→</span>
+            </button>
+        </section>
+
+        <form class="checkout" id="checkout" hidden novalidate>
+            <div>
+                <p class="contact-eyebrow" data-i18n="lastStep">Last step</p>
+                <h2 data-i18n="checkoutTitle">Confirm your order.</h2>
+                <p data-i18n="checkoutLead">No payment now. We contact you to confirm the final price, delivery, and payment before anything is binding.</p>
+            </div>
+            <div class="contact-fields">
+                <label class="wide"><span data-i18n="email">Work email</span><input type="email" name="email" autocomplete="email" required></label>
+                <label><span data-i18n="name">Name (optional)</span><input name="name" autocomplete="name"></label>
+                <label><span data-i18n="company">Organization (optional)</span><input name="organization" autocomplete="organization"></label>
+                <fieldset class="checklist wide">
+                    <legend data-i18n="checklistTitle">Before you send</legend>
+                    <label><input type="checkbox" name="decisionMaker" required><span data-i18n="checkDecision">I can approve this purchase, or the person who can is part of this request.</span></label>
+                    <label><input type="checkbox" name="budget" required><span data-i18n="checkBudget">We have budget for the amounts in the basket.</span></label>
+                    <label><input type="checkbox" name="timeline" required><span data-i18n="checkTimeline">We want to start within the next three months.</span></label>
+                    <label id="infrastructure-check"><input type="checkbox" name="infrastructure"><span data-i18n="checkInfrastructure">We have power and internet where the hardware will go.</span></label>
+                </fieldset>
+                <label class="wide"><span data-i18n="note">Note (optional)</span><textarea name="note" rows="3"></textarea></label>
+                <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+                <button type="submit" id="send-button"><span data-i18n="send">Send order request</span><span>→</span></button>
+                <p class="form-error" id="form-error" role="alert" hidden></p>
+            </div>
         </form>
+
+        <section class="confirmation" id="confirmation" hidden>
+            <p class="contact-eyebrow" data-i18n="confirmedEyebrow">Request received</p>
+            <h2 data-i18n="confirmedTitle">Thank you. We have your order.</h2>
+            <p id="confirmed-body"></p>
+            <a class="continue-button" href="./" data-i18n="backHome">Back to Easysort</a>
+        </section>
     </main>
 
     <footer>
@@ -124,6 +168,6 @@
         <a href="privacy.html" data-i18n="privacy">Privacy</a>
     </footer>
 
-    <script src="configure.js?v=20261014"></script>
+    <script src="configure.js?v=20261014c"></script>
 </body>
 </html>
