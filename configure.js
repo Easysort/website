@@ -16,7 +16,8 @@ const MAX_LINES = 20;
  * "Sorteringsguide på jeres hardware" offer of 5 October 2026: we host the page
  * and classify the images, but have no access to the device, so fault-finding
  * after setup is billed by the hour. Its setup matches the box with support,
- * which is a placeholder. */
+ * which is a placeholder. Monitoring is priced per camera only, whatever the
+ * number of locations. */
 const HOURLY_RATE = 950;
 const PRODUCTS = {
     sorting: {
@@ -71,8 +72,9 @@ const PRODUCTS = {
                 hardware: true,
                 unitSetup: 6000,
                 unitMonthly: 1800,
+                perSite: false,
                 locationSetup: { first: 0, extra: 0 },
-                locationMonthly: { first: 1000, extra: 1000 },
+                locationMonthly: { first: 0, extra: 0 },
                 setupItems: ['reuseCamera', 'reuseModel', 'easytrack', 'precision'],
                 operationItems: ['reuseImages', 'hostingOnly', 'serverOperation', 'uptimeReplace', 'reviewImages', 'retraining', 'freeModels']
             },
@@ -81,6 +83,7 @@ const PRODUCTS = {
                 hardware: true,
                 unitSetup: 10000,
                 unitMonthly: 3500,
+                perSite: false,
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
                 setupItems: ['containerCamera', 'containerModel', 'easytrack', 'precision'],
@@ -132,7 +135,7 @@ const BENEFITS = {
         ],
         reuse: [
             ['Camera box on site', 'Mounted by us and tuned for movement and items.'],
-            ['Over 100,000 images a day', 'Movement and items, around the clock.'],
+            ['Over 100,000 images a day', 'Of movement and items on site.'],
             ['We keep it running', 'Hosting, uptime monitoring, and replacement if it fails.'],
             ['Better every month', 'Retraining every month, and new models for free.']
         ],
@@ -182,7 +185,7 @@ const BENEFITS = {
         ],
         reuse: [
             ['Kameraboks på pladsen', 'Sat op af os og kørt ind på bevægelse og emner.'],
-            ['Over 100.000 billeder om dagen', 'Bevægelse og emner, døgnet rundt.'],
+            ['Over 100.000 billeder om dagen', 'Af bevægelse og emner på pladsen.'],
             ['Vi holder den kørende', 'Hosting, overvågning af driftstid og udskiftning, hvis den fejler.'],
             ['Bliver bedre hver måned', 'Gentræning hver måned og gratis nye modeller.']
         ],
@@ -232,7 +235,7 @@ const BENEFITS = {
         ],
         reuse: [
             ['Kamerabox vor Ort', 'Von uns montiert und auf Bewegung und Gegenstände abgestimmt.'],
-            ['Über 100.000 Bilder pro Tag', 'Bewegung und Gegenstände, rund um die Uhr.'],
+            ['Über 100.000 Bilder pro Tag', 'Von Bewegung und Gegenständen vor Ort.'],
             ['Wir halten es am Laufen', 'Hosting, Überwachung der Verfügbarkeit und Austausch bei Ausfall.'],
             ['Jeden Monat besser', 'Monatliches Nachtraining und kostenlose neue Modelle.']
         ],
@@ -245,25 +248,23 @@ const BENEFITS = {
     }
 };
 
-/* Three short facts per product, shown under the product name. */
-const FACTS = {
-    en: {
-        sorting: [['Unlimited', 'use and changes'], ['Monthly', 'retraining'], ['Blurred', 'faces and plates']],
-        monitoring: [['Around the clock', 'on site'], ['Monthly', 'retraining'], ['Blurred', 'faces and plates']]
-    },
-    da: {
-        sorting: [['Ubegrænset', 'brug og ændringer'], ['Hver måned', 'gentræning'], ['Sløret', 'ansigter og nummerplader']],
-        monitoring: [['Døgnet rundt', 'på pladsen'], ['Hver måned', 'gentræning'], ['Sløret', 'ansigter og nummerplader']]
-    },
-    de: {
-        sorting: [['Unbegrenzt', 'Nutzung und Änderungen'], ['Monatlich', 'Nachtraining'], ['Unkenntlich', 'Gesichter und Kennzeichen']],
-        monitoring: [['Rund um die Uhr', 'vor Ort'], ['Monatlich', 'Nachtraining'], ['Unkenntlich', 'Gesichter und Kennzeichen']]
-    }
-};
-
 const copy = {
     en: {
         pageTitle: 'Configure — Easysort',
+        cart: 'Basket',
+        addToCart: 'Add to basket',
+        cartTitle: 'Your basket',
+        toCheckout: 'Check out',
+        shopMore: 'Add more products',
+        backToCart: 'Back to basket',
+        boxesPerSite: '{boxes}, one per location.',
+        boxesMinimum: 'At least one box per location.',
+        moreBoxes: 'More boxes per location',
+        stepCartOne: 'Basket · 1 line',
+        stepCartMany: 'Basket · {count} lines',
+        stepCheckout: 'Checkout',
+        checkBinding: 'The order is binding',
+        checkBindingHint: 'We send an invoice. Pay it within 14 days to secure the purchase.',
         chooseProduct: 'Product',
         mockLabel: 'Fraction',
         mockFraction: 'Cardboard',
@@ -271,10 +272,6 @@ const copy = {
         optionFrom: 'From {setup} + {monthly} / month',
         tagline_sorting: 'Visitors show their waste. The guide shows the container and the way there.',
         tagline_monitoring: 'A camera on site that sees what happens: visitors, items, and missorted waste.',
-        addAnother: 'Add another product',
-        orderListTitle: 'Your order',
-        thisConfiguration: 'This configuration',
-        barLines: '{count} lines',
         chooseOption: 'Choose a version',
         quantity: 'Quantity',
         locations: 'Locations',
@@ -295,7 +292,7 @@ const copy = {
         includedSetup: 'Included in setup',
         includedOperation: 'Included in operation',
         excludedHeading: 'Not included, because you have the access',
-        unit_box: 'Boxes',
+        unit_box: 'Boxes in total',
         unit_camera: 'Cameras',
         count_box_one: '1 box',
         count_box: '{count} boxes',
@@ -359,48 +356,42 @@ const copy = {
         monthly: 'Monthly',
         vatNote: 'Prices excl. VAT.',
         perMonth: '/ month',
-        added: 'Added to your order. Choose the next product, or order now.',
         remove: 'Remove',
-        order: 'Order',
         close: 'Close',
-        stepOrderOne: 'Order · 1 line',
-        stepOrderMany: 'Order · {count} lines',
         stepSent: 'Order sent',
-        checkoutTitle: 'Confirm your order',
-        summaryNote: 'Prices excl. VAT. No payment now.',
-        contactHeading: 'How do we reach you?',
+        checkoutTitle: 'Place your order',
+        summaryNote: 'Prices excl. VAT. Paid by invoice within 14 days.',
+        contactHeading: 'Where do we send the invoice?',
         email: 'Work email',
         company: 'Organization',
         phone: 'Phone',
         optionalHint: 'Organization and phone are optional, but help us reply faster.',
-        checklistTitle: 'Confirm before you send',
+        checklistTitle: 'Confirm before you order',
         checkDecision: 'I can approve the purchase',
-        checkDecisionHint: 'Or the person who can is part of this request.',
-        checkBudget: 'The budget is in place',
-        checkBudgetHint: 'For the amounts above.',
+        checkDecisionHint: 'Or the person who can is part of this order.',
         checkTimeline: 'We want to start within 3 months',
         checkTimelineHint: 'So we can plan delivery and setup.',
         checkInfrastructure: 'There is power on site',
         checkInfrastructureHint: 'Where the box or camera will go.',
         dpaTitle: 'Data processing agreement',
         dpaBody: 'We sign it before we start. It covers every image, and faces and license plates are blurred immediately. Images are kept for at most 30 days and almost always deleted within 24 hours. Selected anonymous images are kept longer to improve accuracy.',
-        send: 'Send order',
+        send: 'Place binding order',
         sending: 'Sending…',
-        sendNote: 'Nothing is binding until we have agreed on delivery and payment with you.',
+        sendNote: 'The order is binding. We send an invoice, due within 14 days.',
         errorEmail: 'Enter a valid email address.',
         errorChecklist: 'Confirm every point in the checklist.',
         errorSend: 'We could not send your order. ',
         errorSendLink: 'Email it to us instead',
         receiptRef: 'Order {ref}',
         confirmedTitle: 'Thank you. We have your order.',
-        receiptLead: 'It went straight to Easysort. There is nothing to pay now.',
+        receiptLead: 'The order is binding. The invoice comes by email and must be paid within 14 days to secure the purchase.',
         nextTitle: 'What happens now',
-        nextOneTitle: 'We contact you',
-        nextOneBody: 'We write to {email} to go through the order.',
-        nextTwoTitle: 'We agree on the details',
-        nextTwoBody: 'Delivery, start date, and payment. Nothing is binding before this.',
-        nextThreeTitle: 'We sign and get started',
-        nextThreeBody: 'Data processing agreement, then setup on your site.',
+        nextOneTitle: 'Invoice by email',
+        nextOneBody: 'We send the invoice to {email}.',
+        nextTwoTitle: 'You pay within 14 days',
+        nextTwoBody: 'Once we have the payment, the purchase is secured and we plan the start with you.',
+        nextThreeTitle: 'We set it up',
+        nextThreeBody: 'We sign the data processing agreement and set up the solution on your site.',
         questions: 'Questions?',
         backHome: 'Back to Easysort',
         privacy: 'Privacy',
@@ -408,6 +399,20 @@ const copy = {
     },
     da: {
         pageTitle: 'Konfigurér — Easysort',
+        cart: 'Kurv',
+        addToCart: 'Læg i kurv',
+        cartTitle: 'Jeres kurv',
+        toCheckout: 'Til bestilling',
+        shopMore: 'Tilføj flere produkter',
+        backToCart: 'Tilbage til kurven',
+        boxesPerSite: '{boxes}, én pr. plads.',
+        boxesMinimum: 'Mindst én boks pr. plads.',
+        moreBoxes: 'Flere bokse pr. plads',
+        stepCartOne: 'Kurv · 1 linje',
+        stepCartMany: 'Kurv · {count} linjer',
+        stepCheckout: 'Bestilling',
+        checkBinding: 'Ordren er bindende',
+        checkBindingHint: 'Vi sender en faktura. Den betales inden for 14 dage for at sikre købet.',
         chooseProduct: 'Produkt',
         mockLabel: 'Fraktion',
         mockFraction: 'Pap og karton',
@@ -415,10 +420,6 @@ const copy = {
         optionFrom: 'Fra {setup} + {monthly} / md.',
         tagline_sorting: 'Borgeren viser affaldet. Guiden viser containeren og vejen derhen.',
         tagline_monitoring: 'Et kamera på pladsen, der ser, hvad der sker: besøgende, emner og fejlsortering.',
-        addAnother: 'Tilføj et produkt mere',
-        orderListTitle: 'Jeres ordre',
-        thisConfiguration: 'Denne konfiguration',
-        barLines: '{count} linjer',
         chooseOption: 'Vælg løsning',
         quantity: 'Antal',
         locations: 'Pladser',
@@ -439,7 +440,7 @@ const copy = {
         includedSetup: 'Med i opsætningen',
         includedOperation: 'Med i driften',
         excludedHeading: 'Ikke med, fordi I har adgangen',
-        unit_box: 'Bokse',
+        unit_box: 'Bokse i alt',
         unit_camera: 'Kameraer',
         count_box_one: '1 boks',
         count_box: '{count} bokse',
@@ -503,48 +504,42 @@ const copy = {
         monthly: 'Drift pr. måned',
         vatNote: 'Priser ekskl. moms.',
         perMonth: '/ md.',
-        added: 'Lagt i ordren. Vælg det næste produkt, eller bestil nu.',
         remove: 'Fjern',
-        order: 'Bestil',
         close: 'Luk',
-        stepOrderOne: 'Ordre · 1 linje',
-        stepOrderMany: 'Ordre · {count} linjer',
         stepSent: 'Ordre sendt',
-        checkoutTitle: 'Bekræft jeres ordre',
-        summaryNote: 'Priser ekskl. moms. Ingen betaling nu.',
-        contactHeading: 'Hvordan fanger vi jer?',
+        checkoutTitle: 'Afgiv ordre',
+        summaryNote: 'Priser ekskl. moms. Betales på faktura inden for 14 dage.',
+        contactHeading: 'Hvor sender vi fakturaen?',
         email: 'Arbejdsmail',
         company: 'Organisation',
         phone: 'Telefon',
         optionalHint: 'Organisation og telefon er valgfrie, men hjælper os med at svare hurtigere.',
-        checklistTitle: 'Bekræft, før I sender',
+        checklistTitle: 'Bekræft, før I bestiller',
         checkDecision: 'Jeg kan godkende købet',
         checkDecisionHint: 'Eller den, der kan, er med på denne ordre.',
-        checkBudget: 'Budgettet er på plads',
-        checkBudgetHint: 'Til beløbene ovenfor.',
         checkTimeline: 'Vi vil i gang inden for 3 måneder',
         checkTimelineHint: 'Så vi kan planlægge levering og opsætning.',
         checkInfrastructure: 'Der er strøm på pladsen',
         checkInfrastructureHint: 'Der, hvor boksen eller kameraet skal sidde.',
         dpaTitle: 'Databehandleraftale',
         dpaBody: 'Vi underskriver den, før vi går i gang. Den gælder alle billeder, og ansigter og nummerplader sløres med det samme. Billeder gemmes i højst 30 dage og slettes næsten altid inden for 24 timer. Udvalgte anonyme billeder holdes længere for at øge præcisionen.',
-        send: 'Send ordre',
+        send: 'Afgiv bindende ordre',
         sending: 'Sender…',
-        sendNote: 'Intet er bindende, før vi har aftalt levering og betaling med jer.',
+        sendNote: 'Ordren er bindende. Vi sender en faktura, som betales inden for 14 dage.',
         errorEmail: 'Skriv en gyldig e-mailadresse.',
         errorChecklist: 'Bekræft alle punkter på tjeklisten.',
         errorSend: 'Vi kunne ikke sende ordren. ',
         errorSendLink: 'Send den til os på mail i stedet',
         receiptRef: 'Ordre {ref}',
         confirmedTitle: 'Tak. Vi har modtaget jeres ordre.',
-        receiptLead: 'Den er sendt direkte til Easysort. Der er intet at betale nu.',
+        receiptLead: 'Ordren er bindende. Fakturaen kommer på mail og skal betales inden for 14 dage for at sikre købet.',
         nextTitle: 'Det sker nu',
-        nextOneTitle: 'Vi kontakter jer',
-        nextOneBody: 'Vi skriver til {email} og gennemgår ordren med jer.',
-        nextTwoTitle: 'Vi aftaler detaljerne',
-        nextTwoBody: 'Levering, opstart og betaling. Intet er bindende før da.',
-        nextThreeTitle: 'Vi underskriver og går i gang',
-        nextThreeBody: 'Databehandleraftale, og derefter opsætning på pladsen.',
+        nextOneTitle: 'Faktura på mail',
+        nextOneBody: 'Vi sender fakturaen til {email}.',
+        nextTwoTitle: 'I betaler inden for 14 dage',
+        nextTwoBody: 'Når betalingen er modtaget, er købet sikret, og vi planlægger opstarten med jer.',
+        nextThreeTitle: 'Vi sætter det op',
+        nextThreeBody: 'Vi underskriver databehandleraftalen og sætter løsningen op på pladsen.',
         questions: 'Spørgsmål?',
         backHome: 'Tilbage til Easysort',
         privacy: 'Privatliv',
@@ -552,6 +547,20 @@ const copy = {
     },
     de: {
         pageTitle: 'Konfigurieren — Easysort',
+        cart: 'Warenkorb',
+        addToCart: 'In den Warenkorb',
+        cartTitle: 'Ihr Warenkorb',
+        toCheckout: 'Zur Kasse',
+        shopMore: 'Weitere Produkte hinzufügen',
+        backToCart: 'Zurück zum Warenkorb',
+        boxesPerSite: '{boxes}, eine pro Standort.',
+        boxesMinimum: 'Mindestens eine Box pro Standort.',
+        moreBoxes: 'Mehr Boxen pro Standort',
+        stepCartOne: 'Warenkorb · 1 Position',
+        stepCartMany: 'Warenkorb · {count} Positionen',
+        stepCheckout: 'Kasse',
+        checkBinding: 'Die Bestellung ist verbindlich',
+        checkBindingHint: 'Wir senden eine Rechnung. Zahlen Sie sie innerhalb von 14 Tagen, um den Kauf zu sichern.',
         chooseProduct: 'Produkt',
         mockLabel: 'Fraktion',
         mockFraction: 'Pappe und Karton',
@@ -559,10 +568,6 @@ const copy = {
         optionFrom: 'Ab {setup} + {monthly} / Monat',
         tagline_sorting: 'Besucher zeigen ihren Abfall. Die Sortierhilfe zeigt den Container und den Weg dorthin.',
         tagline_monitoring: 'Eine Kamera vor Ort, die sieht, was passiert: Besucher, Gegenstände und Fehlwürfe.',
-        addAnother: 'Weiteres Produkt hinzufügen',
-        orderListTitle: 'Ihre Bestellung',
-        thisConfiguration: 'Diese Konfiguration',
-        barLines: '{count} Positionen',
         chooseOption: 'Version wählen',
         quantity: 'Anzahl',
         locations: 'Standorte',
@@ -583,7 +588,7 @@ const copy = {
         includedSetup: 'In der Einrichtung enthalten',
         includedOperation: 'Im Betrieb enthalten',
         excludedHeading: 'Nicht enthalten, weil der Zugang bei Ihnen liegt',
-        unit_box: 'Boxen',
+        unit_box: 'Boxen insgesamt',
         unit_camera: 'Kameras',
         count_box_one: '1 Box',
         count_box: '{count} Boxen',
@@ -647,48 +652,42 @@ const copy = {
         monthly: 'Betrieb pro Monat',
         vatNote: 'Preise zzgl. MwSt.',
         perMonth: '/ Monat',
-        added: 'Zur Bestellung hinzugefügt. Nächstes Produkt wählen oder jetzt bestellen.',
         remove: 'Entfernen',
-        order: 'Bestellen',
         close: 'Schließen',
-        stepOrderOne: 'Bestellung · 1 Position',
-        stepOrderMany: 'Bestellung · {count} Positionen',
         stepSent: 'Bestellung gesendet',
-        checkoutTitle: 'Bestellung bestätigen',
-        summaryNote: 'Preise zzgl. MwSt. Jetzt keine Zahlung.',
-        contactHeading: 'Wie erreichen wir Sie?',
+        checkoutTitle: 'Bestellung aufgeben',
+        summaryNote: 'Preise zzgl. MwSt. Zahlung per Rechnung innerhalb von 14 Tagen.',
+        contactHeading: 'Wohin senden wir die Rechnung?',
         email: 'Geschäftliche E-Mail',
         company: 'Organisation',
         phone: 'Telefon',
         optionalHint: 'Organisation und Telefon sind optional, helfen uns aber, schneller zu antworten.',
-        checklistTitle: 'Vor dem Absenden bestätigen',
+        checklistTitle: 'Vor der Bestellung bestätigen',
         checkDecision: 'Ich kann den Kauf freigeben',
         checkDecisionHint: 'Oder die Person, die es kann, ist an dieser Bestellung beteiligt.',
-        checkBudget: 'Das Budget steht',
-        checkBudgetHint: 'Für die Beträge oben.',
         checkTimeline: 'Wir möchten innerhalb von 3 Monaten starten',
         checkTimelineHint: 'Damit wir Lieferung und Einrichtung planen können.',
         checkInfrastructure: 'Vor Ort gibt es Strom',
         checkInfrastructureHint: 'Dort, wo Box oder Kamera montiert wird.',
         dpaTitle: 'Auftragsverarbeitungsvertrag',
         dpaBody: 'Wir unterzeichnen ihn vor dem Start. Er gilt für alle Bilder, Gesichter und Kennzeichen werden sofort unkenntlich gemacht. Bilder werden höchstens 30 Tage gespeichert und fast immer innerhalb von 24 Stunden gelöscht. Ausgewählte anonyme Bilder werden länger aufbewahrt, um die Genauigkeit zu verbessern.',
-        send: 'Bestellung senden',
+        send: 'Verbindlich bestellen',
         sending: 'Wird gesendet…',
-        sendNote: 'Nichts ist verbindlich, bevor wir Lieferung und Zahlung mit Ihnen vereinbart haben.',
+        sendNote: 'Die Bestellung ist verbindlich. Wir senden eine Rechnung, zahlbar innerhalb von 14 Tagen.',
         errorEmail: 'Bitte eine gültige E-Mail-Adresse eingeben.',
         errorChecklist: 'Bitte alle Punkte der Checkliste bestätigen.',
         errorSend: 'Die Bestellung konnte nicht gesendet werden. ',
         errorSendLink: 'Stattdessen per E-Mail senden',
         receiptRef: 'Bestellung {ref}',
         confirmedTitle: 'Vielen Dank. Ihre Bestellung ist eingegangen.',
-        receiptLead: 'Sie ging direkt an Easysort. Jetzt ist nichts zu bezahlen.',
+        receiptLead: 'Die Bestellung ist verbindlich. Die Rechnung kommt per E-Mail und ist innerhalb von 14 Tagen zu zahlen, um den Kauf zu sichern.',
         nextTitle: 'So geht es weiter',
-        nextOneTitle: 'Wir melden uns',
-        nextOneBody: 'Wir schreiben an {email} und gehen die Bestellung mit Ihnen durch.',
-        nextTwoTitle: 'Wir klären die Details',
-        nextTwoBody: 'Lieferung, Start und Zahlung. Vorher ist nichts verbindlich.',
-        nextThreeTitle: 'Wir unterschreiben und legen los',
-        nextThreeBody: 'Auftragsverarbeitungsvertrag, dann Einrichtung vor Ort.',
+        nextOneTitle: 'Rechnung per E-Mail',
+        nextOneBody: 'Wir senden die Rechnung an {email}.',
+        nextTwoTitle: 'Sie zahlen innerhalb von 14 Tagen',
+        nextTwoBody: 'Sobald die Zahlung eingegangen ist, ist der Kauf gesichert und wir planen den Start mit Ihnen.',
+        nextThreeTitle: 'Wir richten es ein',
+        nextThreeBody: 'Wir unterzeichnen den Auftragsverarbeitungsvertrag und richten die Lösung vor Ort ein.',
         questions: 'Fragen?',
         backHome: 'Zurück zu Easysort',
         privacy: 'Datenschutz',
@@ -700,12 +699,13 @@ let language = preferredLanguage();
 let product = requestedProduct();
 let option = PRODUCTS[product].defaultOption;
 let complete = true;
-let units = 1;
 let locations = 1;
+/* Boxes follow locations: one per location, plus any extra the visitor adds. */
+let extraBoxes = 0;
+let moreBoxesOpen = false;
+let cameras = 1;
 let basket = loadBasket();
-/* After "add another", the configurator is not part of the order until the
- * visitor changes something, so ordering right away does not add a duplicate. */
-let draftIncluded = true;
+let step = 'cart';
 let sending = false;
 let receipt = null;
 
@@ -739,14 +739,18 @@ function optionConfig(line) {
     return PRODUCTS[line.product]?.options[line.option];
 }
 
+function perSite(config) {
+    return config.perSite !== false;
+}
+
 function isValidLine(line) {
     const config = optionConfig(line || {});
     if (!config) return false;
-    const unitsOk = config.unit
-        ? Number.isInteger(line.units) && line.units >= 1 && line.units <= MAX_UNITS
-        : line.units === 0;
     const completeOk = config.complete ? typeof line.complete === 'boolean' : line.complete === undefined;
-    return unitsOk && completeOk && Number.isInteger(line.locations) && line.locations >= 1 && line.locations <= MAX_LOCATIONS;
+    if (!completeOk || !Number.isInteger(line.units) || !Number.isInteger(line.locations)) return false;
+    if (!perSite(config)) return line.locations === 0 && line.units >= 1 && line.units <= MAX_UNITS;
+    if (line.locations < 1 || line.locations > MAX_LOCATIONS) return false;
+    return config.unit ? line.units >= line.locations && line.units <= MAX_UNITS : line.units === 0;
 }
 
 function loadBasket() {
@@ -754,9 +758,16 @@ function loadBasket() {
         const saved = JSON.parse(localStorage.getItem(BASKET_KEY) || '[]');
         if (!Array.isArray(saved)) return [];
         return saved
-            .map((line) => (optionConfig(line || {})?.complete && line.complete === undefined ? { ...line, complete: true } : line))
+            .map((line) => {
+                const config = optionConfig(line || {});
+                if (!config) return line;
+                const next = { ...line };
+                if (config.complete && next.complete === undefined) next.complete = true;
+                if (!perSite(config)) next.locations = 0;
+                return next;
+            })
             .filter(isValidLine)
-            .slice(0, MAX_LINES - 1);
+            .slice(0, MAX_LINES);
     } catch {
         return [];
     }
@@ -787,19 +798,18 @@ function currentConfig() {
     return PRODUCTS[product].options[option];
 }
 
-function lineFor(key, unitCount, locationCount) {
+function lineFor(key, siteCount, extraUnits, cameraCount) {
     const config = PRODUCTS[product].options[key];
-    const line = { product, option: key, units: config.unit ? unitCount : 0, locations: locationCount };
+    const sites = perSite(config) ? siteCount : 0;
+    let unitCount = 0;
+    if (config.unit) unitCount = sites ? sites + extraUnits : cameraCount;
+    const line = { product, option: key, units: unitCount, locations: sites };
     if (config.complete) line.complete = complete;
     return line;
 }
 
 function currentLine() {
-    return lineFor(option, units, locations);
-}
-
-function orderLines() {
-    return draftIncluded ? [...basket, currentLine()] : [...basket];
+    return lineFor(option, locations, extraBoxes, cameras);
 }
 
 function setupItemsFor(config, withComplete) {
@@ -818,7 +828,7 @@ function lineSummary(line) {
     const config = optionConfig(line);
     const parts = [];
     if (config.unit) parts.push(countLabel(line.units, `count_${config.unit}`));
-    parts.push(line.locations === 1 ? t('locationCountOne') : t('locationCount', { count: line.locations }));
+    if (line.locations) parts.push(line.locations === 1 ? t('locationCountOne') : t('locationCount', { count: line.locations }));
     if (line.complete) parts.push(t('completeTag'));
     return parts.join(' · ');
 }
@@ -856,10 +866,8 @@ function fillList(id, keys) {
     });
 }
 
-function changeDraft(change) {
-    change();
-    draftIncluded = true;
-    document.getElementById('added-note').textContent = '';
+function change(apply) {
+    apply();
     update();
 }
 
@@ -870,17 +878,6 @@ function renderProduct() {
     document.getElementById('phone-mock').hidden = option !== 'app';
     document.getElementById('product-name').textContent = t(product);
     document.getElementById('product-tagline').textContent = t(`tagline_${product}`);
-    const facts = document.getElementById('product-facts');
-    facts.textContent = '';
-    (FACTS[language][product] || FACTS.en[product]).forEach(([value, label]) => {
-        const item = document.createElement('div');
-        const dt = document.createElement('dt');
-        dt.textContent = value;
-        const dd = document.createElement('dd');
-        dd.textContent = label;
-        item.append(dt, dd);
-        facts.append(item);
-    });
     document.querySelectorAll('input[name="product"]').forEach((input) => {
         input.checked = input.value === product;
     });
@@ -889,7 +886,7 @@ function renderProduct() {
 function renderOptions() {
     const container = document.getElementById('option-list');
     container.textContent = '';
-    Object.entries(PRODUCTS[product].options).forEach(([key, config]) => {
+    Object.keys(PRODUCTS[product].options).forEach((key) => {
         const label = document.createElement('label');
         label.className = 'option-card';
 
@@ -898,7 +895,7 @@ function renderOptions() {
         input.name = 'option';
         input.value = key;
         input.checked = key === option;
-        input.addEventListener('change', () => changeDraft(() => { option = key; }));
+        input.addEventListener('change', () => change(() => { option = key; }));
 
         const body = document.createElement('span');
         const head = document.createElement('span');
@@ -906,7 +903,7 @@ function renderOptions() {
         const name = document.createElement('strong');
         name.textContent = t(`name_${key}`);
         const price = document.createElement('em');
-        const from = priceFor(lineFor(key, 1, 1));
+        const from = priceFor(lineFor(key, 1, 0, 1));
         price.textContent = t('optionFrom', { setup: formatMoney(from.setup), monthly: formatMoney(from.monthly) });
         head.append(name, price);
         const detail = document.createElement('small');
@@ -957,14 +954,26 @@ function renderBenefits() {
 
 function renderQuantity() {
     const config = currentConfig();
-    document.getElementById('unit-group').hidden = !config.unit;
-    if (config.unit) document.getElementById('unit-label').textContent = t(`unit_${config.unit}`);
-    document.getElementById('unit-output').textContent = String(units);
+    const sites = perSite(config);
+    const boxes = sites && config.unit === 'box';
+    const line = currentLine();
+
+    document.getElementById('location-group').hidden = !sites;
     document.getElementById('location-output').textContent = String(locations);
-    document.getElementById('unit-decrease').disabled = units <= locations;
-    document.getElementById('unit-increase').disabled = units >= MAX_UNITS;
     document.getElementById('location-decrease').disabled = locations <= 1;
     document.getElementById('location-increase').disabled = locations >= MAX_LOCATIONS;
+
+    document.getElementById('unit-group').hidden = !config.unit || (boxes && !moreBoxesOpen);
+    if (config.unit) document.getElementById('unit-label').textContent = t(`unit_${config.unit}`);
+    document.getElementById('unit-output').textContent = String(line.units);
+    document.getElementById('unit-decrease').disabled = boxes ? extraBoxes <= 0 : cameras <= 1;
+    document.getElementById('unit-increase').disabled = line.units >= MAX_UNITS;
+
+    document.getElementById('box-note').hidden = !boxes;
+    document.getElementById('box-note-text').textContent = moreBoxesOpen
+        ? t('boxesMinimum')
+        : t('boxesPerSite', { boxes: countLabel(line.units, 'count_box') });
+    document.getElementById('more-boxes').hidden = moreBoxesOpen;
 
     const note = document.getElementById('saving-note');
     const extra = config.locationSetup.extra || config.locationMonthly.extra;
@@ -1006,10 +1015,39 @@ function renderLines(listId, lines) {
     lines.forEach((line) => list.append(lineItem(line)));
 }
 
-function renderOrderList() {
-    document.getElementById('order-list').hidden = basket.length === 0;
-    document.getElementById('add-button').disabled = basket.length >= MAX_LINES - 1;
-    const list = document.getElementById('order-lines');
+function renderHeaderCart() {
+    document.getElementById('cart-link').hidden = basket.length === 0;
+    document.getElementById('cart-count').textContent = String(basket.length);
+}
+
+function renderBar() {
+    const line = currentLine();
+    document.getElementById('bar-label').textContent = `${lineTitle(line)} · ${lineSummary(line)}`;
+    const price = priceFor(line);
+    const setup = document.createElement('span');
+    setup.textContent = formatMoney(price.setup);
+    const monthly = document.createElement('span');
+    monthly.textContent = monthlyText(price.monthly);
+    document.getElementById('bar-price').replaceChildren(setup, ' + ', monthly);
+    document.getElementById('add-button').disabled = basket.length >= MAX_LINES;
+}
+
+function showStep(name) {
+    step = name;
+    document.getElementById('cart-step').hidden = name !== 'cart';
+    document.getElementById('cart-foot').hidden = name !== 'cart';
+    document.getElementById('order-step').hidden = name !== 'checkout';
+    document.getElementById('order-foot').hidden = name !== 'checkout';
+    document.getElementById('receipt-step').hidden = name !== 'receipt';
+    renderDialog();
+}
+
+function renderCart() {
+    const totals = totalsFor(basket);
+    document.getElementById('dialog-step').textContent = basket.length === 1
+        ? t('stepCartOne')
+        : t('stepCartMany', { count: basket.length });
+    const list = document.getElementById('cart-lines');
     list.textContent = '';
     basket.forEach((line, index) => {
         const remove = document.createElement('button');
@@ -1020,42 +1058,25 @@ function renderOrderList() {
         remove.addEventListener('click', () => {
             basket.splice(index, 1);
             saveBasket();
-            if (!basket.length) draftIncluded = true;
+            if (!basket.length) dialog.close();
             update();
         });
         list.append(lineItem(line, remove));
     });
-    if (draftIncluded && basket.length) {
-        const draft = lineItem(currentLine(), document.createElement('span'));
-        draft.className = 'draft-line';
-        const tag = document.createElement('small');
-        tag.textContent = t('thisConfiguration');
-        draft.firstChild.prepend(tag);
-        list.append(draft);
-    }
-}
-
-function renderBar() {
-    const lines = orderLines();
-    document.getElementById('bar-label').textContent = lines.length === 1
-        ? `${lineTitle(lines[0])} · ${lineSummary(lines[0])}`
-        : t('barLines', { count: lines.length });
-    document.getElementById('bar-price').textContent = priceText(totalsFor(lines));
-    document.getElementById('checkout-button').disabled = lines.length === 0;
+    document.getElementById('cart-setup').textContent = formatMoney(totals.setup);
+    document.getElementById('cart-monthly').textContent = monthlyText(totals.monthly);
+    document.getElementById('cart-total').textContent = priceText(totals);
 }
 
 function renderOrderStep() {
-    const lines = orderLines();
-    const totals = totalsFor(lines);
-    document.getElementById('dialog-step').textContent = lines.length === 1
-        ? t('stepOrderOne')
-        : t('stepOrderMany', { count: lines.length });
-    renderLines('summary-lines', lines);
+    const totals = totalsFor(basket);
+    document.getElementById('dialog-step').textContent = t('stepCheckout');
+    renderLines('summary-lines', basket);
     document.getElementById('summary-setup').textContent = formatMoney(totals.setup);
     document.getElementById('summary-monthly').textContent = monthlyText(totals.monthly);
     document.getElementById('send-total').textContent = priceText(totals);
 
-    const hardware = needsHardware(lines);
+    const hardware = needsHardware(basket);
     const infrastructure = document.getElementById('infrastructure-check');
     infrastructure.hidden = !hardware;
     infrastructure.querySelector('input').required = hardware;
@@ -1074,6 +1095,12 @@ function renderReceipt() {
     document.getElementById('receipt-monthly').textContent = monthlyText(totals.monthly);
 }
 
+function renderDialog() {
+    if (step === 'receipt') renderReceipt();
+    else if (step === 'checkout') renderOrderStep();
+    else renderCart();
+}
+
 function update() {
     if (!PRODUCTS[product].options[option]) option = PRODUCTS[product].defaultOption;
     renderProduct();
@@ -1081,12 +1108,9 @@ function update() {
     renderBenefits();
     renderAddon();
     renderQuantity();
-    renderOrderList();
     renderBar();
-    if (dialog.open) {
-        if (receipt) renderReceipt();
-        else renderOrderStep();
-    }
+    renderHeaderCart();
+    if (dialog.open) renderDialog();
 }
 
 function applyLanguage() {
@@ -1101,17 +1125,13 @@ function applyLanguage() {
     document.querySelectorAll('[data-language-option]').forEach((button) => {
         button.setAttribute('aria-pressed', button.dataset.languageOption === language ? 'true' : 'false');
     });
-    document.getElementById('added-note').textContent = '';
     document.getElementById('form-error').hidden = true;
     update();
 }
 
 function orderText(data, lines) {
     const totals = totalsFor(lines);
-    const items = lines.map((line) => {
-        const price = priceFor(line);
-        return `- ${lineTitle(line)} (${lineSummary(line)}): ${priceText(price)}`;
-    });
+    const items = lines.map((line) => `- ${lineTitle(line)} (${lineSummary(line)}): ${priceText(priceFor(line))}`);
     const optional = [
         data.organization && `${t('company')}: ${data.organization}`,
         data.phone && `${t('phone')}: ${data.phone}`
@@ -1147,15 +1167,19 @@ function setSending(value) {
     button.querySelector('[data-i18n="send"]').textContent = value ? t('sending') : t('send');
 }
 
-function openOrder() {
-    if (!orderLines().length) return;
+function openCart() {
+    if (!basket.length) return;
     receipt = null;
-    document.getElementById('order-step').hidden = false;
-    document.getElementById('order-foot').hidden = false;
-    document.getElementById('receipt-step').hidden = true;
     document.getElementById('form-error').hidden = true;
-    renderOrderStep();
-    dialog.showModal();
+    showStep('cart');
+    if (!dialog.open) dialog.showModal();
+    document.getElementById('cart-step').scrollTop = 0;
+    document.getElementById('to-checkout').focus();
+}
+
+function openCheckout() {
+    if (!basket.length) return;
+    showStep('checkout');
     document.getElementById('order-step').scrollTop = 0;
     form.elements.email.focus({ preventScroll: true });
 }
@@ -1164,24 +1188,18 @@ function showReceipt(orderId, email, lines) {
     receipt = { ref: orderId ? String(orderId).replace(/-/g, '').slice(0, 8).toUpperCase() : '', email, lines };
     basket = [];
     saveBasket();
-    draftIncluded = true;
-    units = 1;
-    locations = 1;
     form.reset();
+    showStep('receipt');
     update();
-    renderReceipt();
-    document.getElementById('order-step').hidden = true;
-    document.getElementById('order-foot').hidden = true;
-    const step = document.getElementById('receipt-step');
-    step.hidden = false;
-    step.scrollTop = 0;
-    step.querySelector('h2').focus();
+    const receiptStep = document.getElementById('receipt-step');
+    receiptStep.scrollTop = 0;
+    receiptStep.querySelector('h2').focus();
 }
 
 async function submitOrder(event) {
     event.preventDefault();
-    const lines = orderLines().map((line) => ({ ...line }));
-    if (sending || !lines.length) return;
+    const lines = basket.map((line) => ({ ...line }));
+    if (sending || step !== 'checkout' || !lines.length) return;
     document.getElementById('form-error').hidden = true;
 
     const emailInput = form.elements.email;
@@ -1209,9 +1227,9 @@ async function submitOrder(event) {
         page: location.pathname,
         checklist: {
             decisionMaker: form.elements.decisionMaker.checked,
-            budget: form.elements.budget.checked,
             timeline: form.elements.timeline.checked,
-            infrastructure: needsHardware(lines) ? form.elements.infrastructure.checked : null
+            infrastructure: needsHardware(lines) ? form.elements.infrastructure.checked : null,
+            binding: form.elements.binding.checked
         },
         items: lines.map((line) => ({ ...line, ...priceFor(line) })),
         totals: totalsFor(lines),
@@ -1248,7 +1266,7 @@ document.querySelectorAll('[data-language-option]').forEach((button) => {
 });
 
 document.querySelectorAll('input[name="product"]').forEach((input) => {
-    input.addEventListener('change', () => changeDraft(() => {
+    input.addEventListener('change', () => change(() => {
         product = input.value;
         option = PRODUCTS[product].defaultOption;
         history.replaceState(null, '', `?product=${product}`);
@@ -1256,35 +1274,47 @@ document.querySelectorAll('input[name="product"]').forEach((input) => {
 });
 
 document.getElementById('complete-input').addEventListener('change', (event) => {
-    changeDraft(() => { complete = event.target.checked; });
-});
-document.getElementById('unit-decrease').addEventListener('click', () => {
-    changeDraft(() => { units = Math.max(locations, units - 1); });
-});
-document.getElementById('unit-increase').addEventListener('click', () => {
-    changeDraft(() => { units = Math.min(MAX_UNITS, units + 1); });
+    change(() => { complete = event.target.checked; });
 });
 document.getElementById('location-decrease').addEventListener('click', () => {
-    changeDraft(() => { locations = Math.max(1, locations - 1); });
+    change(() => { locations = Math.max(1, locations - 1); });
 });
 document.getElementById('location-increase').addEventListener('click', () => {
-    changeDraft(() => {
+    change(() => {
         locations = Math.min(MAX_LOCATIONS, locations + 1);
-        units = Math.max(units, locations);
+        extraBoxes = Math.min(extraBoxes, MAX_UNITS - locations);
     });
 });
+document.getElementById('unit-decrease').addEventListener('click', () => {
+    change(() => {
+        if (perSite(currentConfig())) extraBoxes = Math.max(0, extraBoxes - 1);
+        else cameras = Math.max(1, cameras - 1);
+    });
+});
+document.getElementById('unit-increase').addEventListener('click', () => {
+    change(() => {
+        if (perSite(currentConfig())) extraBoxes = Math.min(MAX_UNITS - locations, extraBoxes + 1);
+        else cameras = Math.min(MAX_UNITS, cameras + 1);
+    });
+});
+document.getElementById('more-boxes').addEventListener('click', () => {
+    change(() => { moreBoxesOpen = true; });
+    document.getElementById('unit-increase').focus();
+});
 document.getElementById('add-button').addEventListener('click', () => {
-    if (basket.length >= MAX_LINES - 1) return;
+    if (basket.length >= MAX_LINES) return;
     basket.push(currentLine());
     saveBasket();
-    draftIncluded = false;
-    units = 1;
-    locations = 1;
     update();
-    document.getElementById('added-note').textContent = t('added');
-    document.getElementById('order-list').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    openCart();
 });
-document.getElementById('checkout-button').addEventListener('click', openOrder);
+document.getElementById('cart-link').addEventListener('click', openCart);
+document.getElementById('to-checkout').addEventListener('click', openCheckout);
+document.getElementById('back-to-cart').addEventListener('click', () => {
+    showStep('cart');
+    document.getElementById('to-checkout').focus();
+});
+document.getElementById('shop-more').addEventListener('click', () => dialog.close());
 document.getElementById('dialog-close').addEventListener('click', () => {
     if (!sending) dialog.close();
 });
@@ -1297,6 +1327,7 @@ dialog.addEventListener('cancel', (event) => {
 dialog.addEventListener('close', () => {
     if (!receipt) return;
     receipt = null;
+    step = 'cart';
     window.scrollTo({ top: 0 });
 });
 form.addEventListener('submit', submitOrder);

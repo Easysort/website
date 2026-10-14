@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Configure and order Easysort products.">
     <title>Configure — Easysort</title>
-    <link rel="stylesheet" href="configure.css?v=20261014o">
+    <link rel="stylesheet" href="configure.css?v=20261014q">
 </head>
 <body data-order-url="https://website-workers.lucas-vilsen.workers.dev/order">
     <header>
         <a class="brand" href="./"><img src="logo.png" alt="Easysort"></a>
-        <div class="language-switch" role="group" aria-label="Language">
-            <button type="button" data-language-option="en" aria-pressed="true">EN</button>
-            <button type="button" data-language-option="da" aria-pressed="false">DA</button>
-            <button type="button" data-language-option="de" aria-pressed="false">DE</button>
+        <div class="header-actions">
+            <button type="button" class="cart-link" id="cart-link" hidden>
+                <span data-i18n="cart">Basket</span>
+                <span class="cart-count" id="cart-count">0</span>
+            </button>
+            <div class="language-switch" role="group" aria-label="Language">
+                <button type="button" data-language-option="en" aria-pressed="true">EN</button>
+                <button type="button" data-language-option="da" aria-pressed="false">DA</button>
+                <button type="button" data-language-option="de" aria-pressed="false">DE</button>
+            </div>
         </div>
     </header>
 
@@ -38,28 +44,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="panel">
-            <div class="product-toggle" role="radiogroup" data-i18n-label="chooseProduct" aria-label="Product">
-                <label>
-                    <input type="radio" name="product" value="sorting" checked>
-                    <span data-i18n="sorting">Sorting Guide</span>
-                </label>
-                <label>
-                    <input type="radio" name="product" value="monitoring">
-                    <span data-i18n="monitoring">Monitoring Box</span>
-                </label>
-            </div>
-
-            <h1 id="product-name">Sorting Guide</h1>
-            <p class="tagline" id="product-tagline"></p>
-            <dl class="facts" id="product-facts"></dl>
-
-            <section class="step">
-                <h2 data-i18n="chooseOption">Choose a version</h2>
-                <div class="options" id="option-list" role="radiogroup"></div>
-            </section>
 
             <section class="benefits" aria-labelledby="benefits-title">
                 <h3 id="benefits-title"></h3>
@@ -82,6 +66,27 @@
                     </div>
                 </details>
             </section>
+        </div>
+
+        <div class="panel">
+            <div class="product-toggle" role="radiogroup" data-i18n-label="chooseProduct" aria-label="Product">
+                <label>
+                    <input type="radio" name="product" value="sorting" checked>
+                    <span data-i18n="sorting">Sorting Guide</span>
+                </label>
+                <label>
+                    <input type="radio" name="product" value="monitoring">
+                    <span data-i18n="monitoring">Monitoring Box</span>
+                </label>
+            </div>
+
+            <h1 id="product-name">Sorting Guide</h1>
+            <p class="tagline" id="product-tagline"></p>
+
+            <section class="step">
+                <h2 data-i18n="chooseOption">Choose a version</h2>
+                <div class="options" id="option-list" role="radiogroup"></div>
+            </section>
 
             <section class="step" id="addon" hidden>
                 <h2 data-i18n="addonLabel">Add-on</h2>
@@ -98,6 +103,14 @@
             <section class="step">
                 <h2 data-i18n="quantity">Quantity</h2>
                 <div class="quantity-groups">
+                    <div class="quantity-row" id="location-group">
+                        <label data-i18n="locations">Locations</label>
+                        <div class="quantity-control">
+                            <button type="button" id="location-decrease" aria-label="−">−</button>
+                            <output id="location-output">1</output>
+                            <button type="button" id="location-increase" aria-label="+">+</button>
+                        </div>
+                    </div>
                     <div class="quantity-row" id="unit-group">
                         <label id="unit-label">Units</label>
                         <div class="quantity-control">
@@ -106,28 +119,13 @@
                             <button type="button" id="unit-increase" aria-label="+">+</button>
                         </div>
                     </div>
-                    <div class="quantity-row">
-                        <label data-i18n="locations">Locations</label>
-                        <div class="quantity-control">
-                            <button type="button" id="location-decrease" aria-label="−">−</button>
-                            <output id="location-output">1</output>
-                            <button type="button" id="location-increase" aria-label="+">+</button>
-                        </div>
-                    </div>
                 </div>
+                <p class="box-note" id="box-note">
+                    <span id="box-note-text"></span>
+                    <button type="button" class="link-button" id="more-boxes" data-i18n="moreBoxes">More boxes per location</button>
+                </p>
                 <p id="saving-note"></p>
             </section>
-
-            <section class="order-list" id="order-list" hidden>
-                <h2 data-i18n="orderListTitle">Your order</h2>
-                <ul id="order-lines"></ul>
-            </section>
-
-            <button class="add-line" id="add-button" type="button">
-                <span aria-hidden="true">+</span>
-                <span data-i18n="addAnother">Add another product</span>
-            </button>
-            <p class="added-note" id="added-note" aria-live="polite"></p>
         </div>
     </main>
 
@@ -138,7 +136,7 @@
                 <strong id="bar-price"></strong>
                 <small data-i18n="vatNote">Prices excl. VAT.</small>
             </div>
-            <button class="order-button" id="checkout-button" type="button" data-i18n="order">Order</button>
+            <button class="order-button" id="add-button" type="button" data-i18n="addToCart">Add to basket</button>
         </div>
     </div>
 
@@ -149,8 +147,29 @@
                 <button type="button" class="dialog-close" id="dialog-close" data-i18n-label="close" aria-label="Close">×</button>
             </div>
 
-            <div class="dialog-body" id="order-step">
-                <h2 id="order-title" data-i18n="checkoutTitle">Confirm your order</h2>
+            <div class="dialog-body" id="cart-step">
+                <h2 id="order-title" data-i18n="cartTitle">Your basket</h2>
+                <section class="order-summary">
+                    <ul class="cart-lines" id="cart-lines"></ul>
+                    <dl class="summary-total">
+                        <div><dt data-i18n="setup">One-time</dt><dd id="cart-setup">—</dd></div>
+                        <div><dt data-i18n="monthly">Monthly</dt><dd id="cart-monthly">—</dd></div>
+                    </dl>
+                    <p data-i18n="summaryNote">Prices excl. VAT.</p>
+                </section>
+            </div>
+
+            <div class="dialog-foot cart-foot" id="cart-foot">
+                <button type="button" class="send-button" id="to-checkout">
+                    <span data-i18n="toCheckout">Continue to checkout</span>
+                    <span id="cart-total"></span>
+                </button>
+                <button type="button" class="link-button" id="shop-more" data-i18n="shopMore">Keep shopping</button>
+            </div>
+
+            <div class="dialog-body" id="order-step" hidden>
+                <button type="button" class="link-button back-link" id="back-to-cart" data-i18n="backToCart">Back to basket</button>
+                <h2 data-i18n="checkoutTitle">Confirm your order</h2>
 
                 <section class="order-summary">
                     <ul id="summary-lines"></ul>
@@ -187,16 +206,16 @@
                         <span><strong data-i18n="checkDecision">I can approve the purchase</strong><small data-i18n="checkDecisionHint">Or the person who can is copied on the email.</small></span>
                     </label>
                     <label class="check-row">
-                        <input type="checkbox" name="budget" required>
-                        <span><strong data-i18n="checkBudget">The budget is in place</strong><small data-i18n="checkBudgetHint">For the amounts above.</small></span>
-                    </label>
-                    <label class="check-row">
                         <input type="checkbox" name="timeline" required>
                         <span><strong data-i18n="checkTimeline">We want to start within 3 months</strong><small data-i18n="checkTimelineHint">So we can plan delivery and setup.</small></span>
                     </label>
                     <label class="check-row" id="infrastructure-check">
                         <input type="checkbox" name="infrastructure">
                         <span><strong data-i18n="checkInfrastructure">There is power on site</strong><small data-i18n="checkInfrastructureHint">Where the box or camera will go.</small></span>
+                    </label>
+                    <label class="check-row">
+                        <input type="checkbox" name="binding" required>
+                        <span><strong data-i18n="checkBinding">The order is binding</strong><small data-i18n="checkBindingHint">The invoice is paid within 14 days, otherwise the order lapses.</small></span>
                     </label>
                 </fieldset>
 
@@ -209,7 +228,7 @@
                 <p class="form-error" id="form-error" role="alert" hidden></p>
             </div>
 
-            <div class="dialog-foot" id="order-foot">
+            <div class="dialog-foot" id="order-foot" hidden>
                 <button type="submit" class="send-button" id="send-button">
                     <span data-i18n="send">Send order</span>
                     <span id="send-total"></span>
@@ -253,6 +272,6 @@
         <a href="privacy.html" data-i18n="privacy">Privacy</a>
     </footer>
 
-    <script src="configure.js?v=20261014l"></script>
+    <script src="configure.js?v=20261014q"></script>
 </body>
 </html>
