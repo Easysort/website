@@ -1,32 +1,64 @@
 const STORAGE_KEY = 'easysort-language';
-const BASKET_KEY = 'easysort-basket';
+const BASKET_KEY = 'easysort-basket-v2';
 const ORDER_URL = document.body.dataset.orderUrl;
 const ORDER_TIMEOUT_MS = 15000;
 const ORDER_EMAIL = 'lucas@easysort.org';
-const INSTALLATION_PER_UNIT = 4500;
 const MAX_UNITS = 50;
 const MAX_LOCATIONS = 20;
 const MAX_LINES = 20;
 
+/* Prices from the Easysort offer of 29 September 2026 (DKK, excl. VAT).
+ * Location prices: the first location costs `first`, each further one `extra`. */
 const PRODUCTS = {
     sorting: {
         image: 'models/sorteringsguide.png',
-        defaultOption: 'managed',
-        featureKeys: ['sortingFeatureOne', 'sortingFeatureTwo', 'sortingFeatureThree'],
+        defaultOption: 'app',
         options: {
-            app: { unitSetup: 0, unitMonthly: 0, locationSetup: 5000, locationMonthly: 750, usesUnits: false },
-            hardware: { unitSetup: 28000, unitMonthly: 400, locationSetup: 2000, locationMonthly: 500, usesUnits: true, hardware: true },
-            managed: { unitSetup: 28000, unitMonthly: 2200, locationSetup: 2000, locationMonthly: 500, usesUnits: true, hardware: true }
+            app: {
+                unit: null,
+                unitSetup: 0,
+                unitMonthly: 0,
+                locationSetup: { first: 15000, extra: 9000 },
+                locationMonthly: { first: 4000, extra: 1800 },
+                setupItems: ['signsA1', 'qrLabels', 'signDesign', 'siteMap', 'easytrack', 'training', 'precision'],
+                operationItems: ['hostingRequests', 'uptimeAlerts', 'reviewGuidance', 'apiDevelopment', 'retraining', 'guideChanges', 'freeImprovements']
+            },
+            box: {
+                unit: 'box',
+                hardware: true,
+                unitSetup: 30000,
+                unitMonthly: 6000,
+                locationSetup: { first: 0, extra: 0 },
+                locationMonthly: { first: 0, extra: 0 },
+                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mounting', 'siteMap', 'easytrack', 'training', 'precision'],
+                operationItems: ['hostingRequests', 'dataConnection', 'serverModel', 'uptimeReplace', 'reviewGuidance', 'recognitionUpdates', 'retraining', 'freeModels']
+            }
         }
     },
     monitoring: {
         image: 'models/teltovervågning.png',
-        defaultOption: 'container',
-        installation: true,
-        featureKeys: ['monitoringFeatureOne', 'monitoringFeatureTwo', 'monitoringFeatureThree'],
+        defaultOption: 'reuse',
         options: {
-            container: { unitSetup: 18000, unitMonthly: 1400, locationSetup: 2000, locationMonthly: 500, usesUnits: true, hardware: true },
-            reuse: { unitSetup: 22000, unitMonthly: 1900, locationSetup: 2000, locationMonthly: 500, usesUnits: true, hardware: true }
+            reuse: {
+                unit: 'camera',
+                hardware: true,
+                unitSetup: 6000,
+                unitMonthly: 1800,
+                locationSetup: { first: 0, extra: 0 },
+                locationMonthly: { first: 1000, extra: 1000 },
+                setupItems: ['reuseCamera', 'reuseModel', 'easytrack', 'precision'],
+                operationItems: ['reuseImages', 'hostingOnly', 'serverOperation', 'uptimeReplace', 'reviewImages', 'retraining', 'freeModels']
+            },
+            container: {
+                unit: 'camera',
+                hardware: true,
+                unitSetup: 10000,
+                unitMonthly: 3500,
+                locationSetup: { first: 0, extra: 0 },
+                locationMonthly: { first: 0, extra: 0 },
+                setupItems: ['containerCamera', 'containerModel', 'easytrack', 'precision'],
+                operationItems: ['containerAnalysis', 'hostingOnly', 'serverOperation', 'uptimeReplace', 'reviewImages', 'retraining', 'freeModels']
+            }
         }
     }
 };
@@ -40,51 +72,80 @@ const copy = {
         chooseProduct: 'Product',
         chooseOption: 'Option',
         quantity: 'Quantity',
-        units: 'Units',
         locations: 'Locations',
         sorting: 'Sorting Guide',
         monitoring: 'Monitoring Box',
-        sortingDescription: 'Helps visitors sort correctly on their phone or at a fixed station.',
-        monitoringDescription: 'A camera box you can mount anywhere on site.',
-        sortingFeatureOne: 'Local sorting rules for each site',
-        sortingFeatureTwo: 'On visitors’ phones or at a fixed station',
-        sortingFeatureThree: 'Add more locations at any time',
-        monitoringFeatureOne: 'Watches a container or the reuse area',
-        monitoringFeatureTwo: 'One overview across all locations',
-        monitoringFeatureThree: 'Installation by Easysort available',
         option_app: 'App',
-        option_app_body: 'Visitors use the guide on their own phone.',
-        option_hardware: 'Our hardware, without service',
-        option_hardware_body: 'We deliver the station. You run and maintain it.',
-        option_managed: 'Our hardware, with service',
-        option_managed_body: 'We deliver, monitor, maintain, and replace it.',
-        option_container: 'Container monitoring',
-        option_container_body: 'We watch the container and flag misplaced items.',
+        option_app_body: 'Visitors scan a QR code, take a photo, and get the route to the container.',
+        option_app_price: '{setup} + {monthly} / month for the first location',
+        option_box: 'Physical box',
+        option_box_body: 'A screen on site shows where the waste goes.',
+        option_box_price: '{setup} + {monthly} / month per box',
         option_reuse: 'Reuse monitoring',
-        option_reuse_body: 'Visitor counts, objects, and weight.',
-        installation: 'Installation by Easysort',
-        installationPrice: '{price} per unit + travel costs (Denmark)',
-        installationShort: 'installation',
-        travelNote: 'Installation is charged with travel costs on top. Prices shown apply in Denmark.',
-        setup: 'One-time',
+        option_reuse_body: 'A camera on site tracks movement and items. Over 100,000 images a day.',
+        option_reuse_price: '{setup} + {monthly} / month per camera, + {location} / month per location',
+        option_container: 'Container monitoring',
+        option_container_body: 'A camera at the container analyzes complex items in depth.',
+        option_container_price: '{setup} + {monthly} / month per camera',
+        unit_box: 'Boxes',
+        unit_camera: 'Cameras',
+        count_box_one: '1 box',
+        count_box: '{count} boxes',
+        count_camera_one: '1 camera',
+        count_camera: '{count} cameras',
+        locationCountOne: '1 location',
+        locationCount: '{count} locations',
+        extraLocationNote: 'Each extra location: {setup} setup and {monthly} / month.',
+        includedSetup: 'Included in setup',
+        includedOperation: 'Included in operation',
+        signsA1: '2 A1 signs, designed and printed (worth 4,000 kr.)',
+        qrLabels: '80 A4 QR labels for containers and signs (worth 2,500 kr.)',
+        signDesign: 'Design of signs and labels. You can request changes.',
+        siteMap: 'Site map, fraction split, and special rules',
+        easytrack: 'Setup in and access to EasyTrack',
+        training: 'Model training for your fraction split',
+        precision: 'Accuracy testing',
+        boxHardware: 'Box with computer, internet, and camera',
+        outdoorScreen: 'Outdoor screen fitted in the box',
+        banners: '2 banners and 1 A1 sign',
+        bannerDesign: 'Design of banners and sign, adapted to your design guide',
+        mounting: 'We mount the box, signs, and banners on site',
+        reuseCamera: 'Camera box for monitoring, mounted on site',
+        reuseModel: 'Model deployed and tuned for movement and items',
+        containerCamera: 'Camera box mounted at the container',
+        containerModel: 'Model deployed and tuned for complex items',
+        hostingRequests: 'Unlimited hosting and requests',
+        hostingOnly: 'Unlimited hosting',
+        uptimeAlerts: 'Uptime and error monitoring',
+        uptimeReplace: 'Uptime monitoring, and replacement if it fails',
+        reviewGuidance: 'Weekly review of a sample of answers',
+        reviewImages: 'Weekly review of a sample of images',
+        apiDevelopment: 'API, support, and help with further development',
+        retraining: 'Retraining at least every month',
+        guideChanges: 'Unlimited changes to the guide',
+        freeImprovements: 'Free improvements to the experience and model',
+        dataConnection: 'Data connection for the device',
+        serverModel: 'The model runs around the clock on our servers',
+        recognitionUpdates: 'Unlimited updates to fractions and recognition',
+        freeModels: 'Free new models, API, and support',
+        reuseImages: 'Over 100,000 images a day, for movement and items',
+        serverOperation: 'Data connection and model operation on our servers',
+        containerAnalysis: 'In-depth analysis of complex items',
+        setup: 'Setup',
         monthly: 'Monthly',
-        placeholder: 'Placeholder prices, excl. VAT — not an offer.',
+        vatNote: 'Prices excl. VAT.',
         perMonth: '/ month',
         addToBasket: 'Add to basket',
         added: 'Added. Configure another line, or order below.',
-        saveMore: 'Add more units to see volume savings.',
-        saving: '{percent}% volume saving on {units} units.',
-        unitCount: '{count} units',
-        unitCountOne: '1 unit',
-        locationCount: '{count} locations',
-        locationCountOne: '1 location',
         basketTitle: 'Your basket',
         basketLead: 'Mix products, options, and locations. Add as many lines as you need.',
         remove: 'Remove',
         order: 'Order',
         lastStep: 'Last step',
         checkoutTitle: 'Confirm your order.',
-        checkoutLead: 'No payment now. We contact you to confirm the final price, delivery, and payment before anything is binding.',
+        checkoutLead: 'No payment now. We contact you to confirm delivery and payment before anything is binding.',
+        dpaTitle: 'Data processing agreement',
+        dpaBody: 'We sign it before we start. It covers every image, and faces and license plates are blurred immediately. Images are kept for at most 30 days and almost always deleted within 24 hours. Selected anonymous images are kept longer to improve accuracy.',
         email: 'Work email',
         name: 'Name (optional)',
         company: 'Organization (optional)',
@@ -92,7 +153,7 @@ const copy = {
         checkDecision: 'I can approve this purchase, or the person who can is part of this request.',
         checkBudget: 'We have budget for the amounts in the basket.',
         checkTimeline: 'We want to start within the next three months.',
-        checkInfrastructure: 'We have power and internet where the hardware will go.',
+        checkInfrastructure: 'We have power where the box or camera will go.',
         note: 'Note (optional)',
         send: 'Send order request',
         sending: 'Sending…',
@@ -102,7 +163,7 @@ const copy = {
         errorSendLink: 'Email it to us instead',
         confirmedEyebrow: 'Request received',
         confirmedTitle: 'Thank you. We have your order.',
-        confirmedBody: 'We will contact you at {email} to confirm the final price, delivery, and payment.',
+        confirmedBody: 'We will contact you at {email} to confirm delivery and payment.',
         backHome: 'Back to Easysort',
         privacy: 'Privacy',
         mailSubject: 'Easysort order request'
@@ -115,51 +176,80 @@ const copy = {
         chooseProduct: 'Produkt',
         chooseOption: 'Løsning',
         quantity: 'Antal',
-        units: 'Enheder',
-        locations: 'Lokationer',
+        locations: 'Pladser',
         sorting: 'Sorteringsguide',
         monitoring: 'Overvågningsboks',
-        sortingDescription: 'Hjælper besøgende med at sortere rigtigt på telefonen eller ved en fast station.',
-        monitoringDescription: 'En kameraboks, der kan sættes op overalt på pladsen.',
-        sortingFeatureOne: 'Lokale sorteringsregler for hver plads',
-        sortingFeatureTwo: 'På de besøgendes telefoner eller ved en fast station',
-        sortingFeatureThree: 'Tilføj flere lokationer når som helst',
-        monitoringFeatureOne: 'Overvåger en container eller genbrugsområdet',
-        monitoringFeatureTwo: 'Ét overblik på tværs af alle lokationer',
-        monitoringFeatureThree: 'Opsætning fra Easysort kan tilkøbes',
         option_app: 'App',
-        option_app_body: 'Besøgende bruger guiden på deres egen telefon.',
-        option_hardware: 'Vores hardware uden service',
-        option_hardware_body: 'Vi leverer stationen. I driver og vedligeholder den.',
-        option_managed: 'Vores hardware med service',
-        option_managed_body: 'Vi leverer, overvåger, vedligeholder og udskifter.',
-        option_container: 'Containerovervågning',
-        option_container_body: 'Vi overvåger containeren og markerer fejlsorteringer.',
+        option_app_body: 'Borgeren scanner en QR-kode, tager et billede og får ruten til containeren.',
+        option_app_price: '{setup} + {monthly} / md. for den første plads',
+        option_box: 'Fysisk boks',
+        option_box_body: 'En skærm på pladsen viser, hvor affaldet skal hen.',
+        option_box_price: '{setup} + {monthly} / md. pr. boks',
         option_reuse: 'Genbrugsovervågning',
-        option_reuse_body: 'Besøgstal, genstande og vægt.',
-        installation: 'Opsætning fra Easysort',
-        installationPrice: '{price} pr. enhed + transportomkostninger (Danmark)',
-        installationShort: 'opsætning',
-        travelNote: 'Opsætning faktureres med transportomkostninger oveni. Priserne gælder i Danmark.',
-        setup: 'Engangsbeløb',
-        monthly: 'Pr. måned',
-        placeholder: 'Midlertidige priser ekskl. moms — ikke et tilbud.',
+        option_reuse_body: 'Et kamera på pladsen følger bevægelse og emner. Over 100.000 billeder om dagen.',
+        option_reuse_price: '{setup} + {monthly} / md. pr. kamera, + {location} / md. pr. plads',
+        option_container: 'Containerovervågning',
+        option_container_body: 'Et kamera ved containeren laver en dybdegående analyse af komplekse emner.',
+        option_container_price: '{setup} + {monthly} / md. pr. kamera',
+        unit_box: 'Bokse',
+        unit_camera: 'Kameraer',
+        count_box_one: '1 boks',
+        count_box: '{count} bokse',
+        count_camera_one: '1 kamera',
+        count_camera: '{count} kameraer',
+        locationCountOne: '1 plads',
+        locationCount: '{count} pladser',
+        extraLocationNote: 'Hver ekstra plads: {setup} i opsætning og {monthly} / md.',
+        includedSetup: 'Med i opsætningen',
+        includedOperation: 'Med i driften',
+        signsA1: '2 A1-skilte med design og print, værdi 4.000 kr.',
+        qrLabels: '80 A4 QR-mærker til containere og skilte, værdi 2.500 kr.',
+        signDesign: 'Design af skilte og mærker. I kan komme med ændringer.',
+        siteMap: 'Pladskort, fraktionsdeling og særskilte regler',
+        easytrack: 'Opsætning i og adgang til EasyTrack',
+        training: 'Træning af modellen til fraktionsdeling',
+        precision: 'Test af præcision',
+        boxHardware: 'Boks med computer, internet og kamera',
+        outdoorScreen: 'Udendørs skærm, sat i boksen',
+        banners: '2 bannere og 1 A1-skilt',
+        bannerDesign: 'Design af bannere og skilt. I kan rette efter jeres designguide.',
+        mounting: 'Vi sætter boks, skilte og bannere op på pladsen',
+        reuseCamera: 'Kameraboks til overvågning, sat op på pladsen',
+        reuseModel: 'Modellen implementeres og køres ind på bevægelse og emner',
+        containerCamera: 'Kameraboks, sat op ved containeren',
+        containerModel: 'Modellen implementeres og køres ind på komplekse emner',
+        hostingRequests: 'Ubegrænset hosting og ubegrænsede forespørgsler',
+        hostingOnly: 'Ubegrænset hosting',
+        uptimeAlerts: 'Overvågning af driftstid og fejlmeldinger',
+        uptimeReplace: 'Overvågning af driftstid, og udskiftning hvis den fejler',
+        reviewGuidance: 'Gennemgang af et udvalg af hver uges vejledninger',
+        reviewImages: 'Gennemgang af et udvalg af hver uges billeder',
+        apiDevelopment: 'API, support og hjælp til videre udvikling',
+        retraining: 'Gentræning mindst hver måned',
+        guideChanges: 'Ubegrænsede ændringer til guiden',
+        freeImprovements: 'Gratis forbedring af oplevelse og model',
+        dataConnection: 'Dataforbindelse til enheden',
+        serverModel: 'Modellen kører døgnet rundt på vores servere',
+        recognitionUpdates: 'Ubegrænsede opdateringer af fraktioner og genkendelse',
+        freeModels: 'Gratis nye modeller, API og support',
+        reuseImages: 'Over 100.000 billeder om dagen, for bevægelse og emner',
+        serverOperation: 'Dataforbindelse og drift af modellen på vores servere',
+        containerAnalysis: 'Dybdegående analyse af komplekse emner',
+        setup: 'Opsætning',
+        monthly: 'Drift pr. måned',
+        vatNote: 'Priser ekskl. moms.',
         perMonth: '/ md.',
         addToBasket: 'Læg i kurv',
         added: 'Tilføjet. Sammensæt en linje mere, eller bestil nedenfor.',
-        saveMore: 'Tilføj flere enheder for at se mængderabat.',
-        saving: '{percent}% mængderabat på {units} enheder.',
-        unitCount: '{count} enheder',
-        unitCountOne: '1 enhed',
-        locationCount: '{count} lokationer',
-        locationCountOne: '1 lokation',
         basketTitle: 'Jeres kurv',
-        basketLead: 'Kombinér produkter, løsninger og lokationer. Tilføj så mange linjer, I har brug for.',
+        basketLead: 'Kombinér produkter, løsninger og pladser. Tilføj så mange linjer, I har brug for.',
         remove: 'Fjern',
         order: 'Bestil',
         lastStep: 'Sidste trin',
         checkoutTitle: 'Bekræft jeres ordre.',
-        checkoutLead: 'Ingen betaling nu. Vi kontakter jer og bekræfter endelig pris, levering og betaling, før noget er bindende.',
+        checkoutLead: 'Ingen betaling nu. Vi kontakter jer og bekræfter levering og betaling, før noget er bindende.',
+        dpaTitle: 'Databehandleraftale',
+        dpaBody: 'Vi underskriver den, før vi går i gang. Den gælder alle billeder, og ansigter og nummerplader sløres med det samme. Billeder gemmes i højst 30 dage og slettes næsten altid inden for 24 timer. Udvalgte anonyme billeder holdes længere for at øge præcisionen.',
         email: 'Arbejdsmail',
         name: 'Navn (valgfrit)',
         company: 'Organisation (valgfrit)',
@@ -167,7 +257,7 @@ const copy = {
         checkDecision: 'Jeg kan godkende købet, eller den der kan, er med på denne forespørgsel.',
         checkBudget: 'Vi har budget til beløbene i kurven.',
         checkTimeline: 'Vi vil gerne i gang inden for de næste tre måneder.',
-        checkInfrastructure: 'Vi har strøm og internet, hvor hardwaren skal stå.',
+        checkInfrastructure: 'Vi har strøm, hvor boksen eller kameraet skal sidde.',
         note: 'Note (valgfri)',
         send: 'Send ordreforespørgsel',
         sending: 'Sender…',
@@ -177,7 +267,7 @@ const copy = {
         errorSendLink: 'Send den til os på mail i stedet',
         confirmedEyebrow: 'Forespørgsel modtaget',
         confirmedTitle: 'Tak. Vi har modtaget jeres ordre.',
-        confirmedBody: 'Vi kontakter jer på {email} og bekræfter endelig pris, levering og betaling.',
+        confirmedBody: 'Vi kontakter jer på {email} og bekræfter levering og betaling.',
         backHome: 'Tilbage til Easysort',
         privacy: 'Privatliv',
         mailSubject: 'Easysort ordreforespørgsel'
@@ -190,51 +280,80 @@ const copy = {
         chooseProduct: 'Produkt',
         chooseOption: 'Lösung',
         quantity: 'Anzahl',
-        units: 'Einheiten',
         locations: 'Standorte',
         sorting: 'Sortierhilfe',
         monitoring: 'Monitoring Box',
-        sortingDescription: 'Hilft Besuchern, am Smartphone oder an einer festen Station richtig zu sortieren.',
-        monitoringDescription: 'Eine Kamerabox, die überall auf dem Gelände montiert werden kann.',
-        sortingFeatureOne: 'Lokale Sortierregeln je Standort',
-        sortingFeatureTwo: 'Auf den Smartphones der Besucher oder an einer festen Station',
-        sortingFeatureThree: 'Jederzeit weitere Standorte hinzufügen',
-        monitoringFeatureOne: 'Überwacht einen Container oder den Wiederverwendungsbereich',
-        monitoringFeatureTwo: 'Eine Übersicht über alle Standorte',
-        monitoringFeatureThree: 'Installation durch Easysort zubuchbar',
         option_app: 'App',
-        option_app_body: 'Besucher nutzen die Sortierhilfe auf dem eigenen Smartphone.',
-        option_hardware: 'Unsere Hardware ohne Service',
-        option_hardware_body: 'Wir liefern die Station. Sie betreiben und warten sie.',
-        option_managed: 'Unsere Hardware mit Service',
-        option_managed_body: 'Wir liefern, überwachen, warten und tauschen aus.',
-        option_container: 'Containerüberwachung',
-        option_container_body: 'Wir überwachen den Container und melden Fehlwürfe.',
+        option_app_body: 'Besucher scannen einen QR-Code, machen ein Foto und sehen den Weg zum Container.',
+        option_app_price: '{setup} + {monthly} / Monat für den ersten Standort',
+        option_box: 'Physische Box',
+        option_box_body: 'Ein Bildschirm vor Ort zeigt, wohin der Abfall gehört.',
+        option_box_price: '{setup} + {monthly} / Monat pro Box',
         option_reuse: 'Wiederverwendungsüberwachung',
-        option_reuse_body: 'Besucherzahlen, Gegenstände und Gewicht.',
-        installation: 'Installation durch Easysort',
-        installationPrice: '{price} pro Einheit + Reisekosten (Dänemark)',
-        installationShort: 'Installation',
-        travelNote: 'Die Installation wird zuzüglich Reisekosten berechnet. Die Preise gelten für Dänemark.',
-        setup: 'Einmalig',
-        monthly: 'Monatlich',
-        placeholder: 'Platzhalterpreise zzgl. MwSt. — kein Angebot.',
+        option_reuse_body: 'Eine Kamera vor Ort erfasst Bewegungen und Gegenstände. Über 100.000 Bilder pro Tag.',
+        option_reuse_price: '{setup} + {monthly} / Monat pro Kamera, + {location} / Monat pro Standort',
+        option_container: 'Containerüberwachung',
+        option_container_body: 'Eine Kamera am Container analysiert komplexe Gegenstände im Detail.',
+        option_container_price: '{setup} + {monthly} / Monat pro Kamera',
+        unit_box: 'Boxen',
+        unit_camera: 'Kameras',
+        count_box_one: '1 Box',
+        count_box: '{count} Boxen',
+        count_camera_one: '1 Kamera',
+        count_camera: '{count} Kameras',
+        locationCountOne: '1 Standort',
+        locationCount: '{count} Standorte',
+        extraLocationNote: 'Jeder weitere Standort: {setup} Einrichtung und {monthly} / Monat.',
+        includedSetup: 'In der Einrichtung enthalten',
+        includedOperation: 'Im Betrieb enthalten',
+        signsA1: '2 A1-Schilder mit Design und Druck (Wert 4.000 kr.)',
+        qrLabels: '80 A4-QR-Etiketten für Container und Schilder (Wert 2.500 kr.)',
+        signDesign: 'Design von Schildern und Etiketten. Änderungswünsche sind möglich.',
+        siteMap: 'Lageplan, Fraktionsaufteilung und Sonderregeln',
+        easytrack: 'Einrichtung und Zugang zu EasyTrack',
+        training: 'Training des Modells für Ihre Fraktionsaufteilung',
+        precision: 'Genauigkeitstest',
+        boxHardware: 'Box mit Computer, Internet und Kamera',
+        outdoorScreen: 'Outdoor-Bildschirm in der Box',
+        banners: '2 Banner und 1 A1-Schild',
+        bannerDesign: 'Design von Bannern und Schild nach Ihrem Designleitfaden',
+        mounting: 'Wir montieren Box, Schilder und Banner vor Ort',
+        reuseCamera: 'Kamerabox zur Überwachung, vor Ort montiert',
+        reuseModel: 'Modell eingerichtet und auf Bewegung und Gegenstände abgestimmt',
+        containerCamera: 'Kamerabox, am Container montiert',
+        containerModel: 'Modell eingerichtet und auf komplexe Gegenstände abgestimmt',
+        hostingRequests: 'Unbegrenztes Hosting und unbegrenzte Anfragen',
+        hostingOnly: 'Unbegrenztes Hosting',
+        uptimeAlerts: 'Überwachung von Verfügbarkeit und Fehlern',
+        uptimeReplace: 'Überwachung der Verfügbarkeit und Austausch bei Ausfall',
+        reviewGuidance: 'Wöchentliche Prüfung einer Auswahl von Antworten',
+        reviewImages: 'Wöchentliche Prüfung einer Auswahl von Bildern',
+        apiDevelopment: 'API, Support und Hilfe bei der Weiterentwicklung',
+        retraining: 'Nachtraining mindestens monatlich',
+        guideChanges: 'Unbegrenzte Änderungen an der Sortierhilfe',
+        freeImprovements: 'Kostenlose Verbesserungen von Nutzung und Modell',
+        dataConnection: 'Datenverbindung für das Gerät',
+        serverModel: 'Das Modell läuft rund um die Uhr auf unseren Servern',
+        recognitionUpdates: 'Unbegrenzte Updates von Fraktionen und Erkennung',
+        freeModels: 'Kostenlose neue Modelle, API und Support',
+        reuseImages: 'Über 100.000 Bilder pro Tag für Bewegung und Gegenstände',
+        serverOperation: 'Datenverbindung und Betrieb des Modells auf unseren Servern',
+        containerAnalysis: 'Detaillierte Analyse komplexer Gegenstände',
+        setup: 'Einrichtung',
+        monthly: 'Betrieb pro Monat',
+        vatNote: 'Preise zzgl. MwSt.',
         perMonth: '/ Monat',
         addToBasket: 'In den Warenkorb',
         added: 'Hinzugefügt. Weitere Position konfigurieren oder unten bestellen.',
-        saveMore: 'Mehr Einheiten hinzufügen, um Mengenrabatt zu sehen.',
-        saving: '{percent}% Mengenrabatt auf {units} Einheiten.',
-        unitCount: '{count} Einheiten',
-        unitCountOne: '1 Einheit',
-        locationCount: '{count} Standorte',
-        locationCountOne: '1 Standort',
         basketTitle: 'Ihr Warenkorb',
         basketLead: 'Produkte, Lösungen und Standorte kombinieren. Beliebig viele Positionen hinzufügen.',
         remove: 'Entfernen',
         order: 'Bestellen',
         lastStep: 'Letzter Schritt',
         checkoutTitle: 'Bestellung bestätigen.',
-        checkoutLead: 'Jetzt keine Zahlung. Wir kontaktieren Sie und bestätigen Endpreis, Lieferung und Zahlung, bevor etwas verbindlich ist.',
+        checkoutLead: 'Jetzt keine Zahlung. Wir kontaktieren Sie und bestätigen Lieferung und Zahlung, bevor etwas verbindlich ist.',
+        dpaTitle: 'Auftragsverarbeitungsvertrag',
+        dpaBody: 'Wir unterzeichnen ihn vor dem Start. Er gilt für alle Bilder, Gesichter und Kennzeichen werden sofort unkenntlich gemacht. Bilder werden höchstens 30 Tage gespeichert und fast immer innerhalb von 24 Stunden gelöscht. Ausgewählte anonyme Bilder werden länger aufbewahrt, um die Genauigkeit zu verbessern.',
         email: 'Geschäftliche E-Mail',
         name: 'Name (optional)',
         company: 'Organisation (optional)',
@@ -242,7 +361,7 @@ const copy = {
         checkDecision: 'Ich kann diesen Kauf freigeben, oder die Person, die es kann, ist an dieser Anfrage beteiligt.',
         checkBudget: 'Wir haben Budget für die Beträge im Warenkorb.',
         checkTimeline: 'Wir möchten innerhalb der nächsten drei Monate starten.',
-        checkInfrastructure: 'Am Standort der Hardware gibt es Strom und Internet.',
+        checkInfrastructure: 'Wo Box oder Kamera montiert wird, gibt es Strom.',
         note: 'Notiz (optional)',
         send: 'Bestellanfrage senden',
         sending: 'Wird gesendet…',
@@ -252,7 +371,7 @@ const copy = {
         errorSendLink: 'Stattdessen per E-Mail senden',
         confirmedEyebrow: 'Anfrage erhalten',
         confirmedTitle: 'Vielen Dank. Ihre Bestellung ist eingegangen.',
-        confirmedBody: 'Wir kontaktieren Sie unter {email}, um Endpreis, Lieferung und Zahlung zu bestätigen.',
+        confirmedBody: 'Wir kontaktieren Sie unter {email}, um Lieferung und Zahlung zu bestätigen.',
         backHome: 'Zurück zu Easysort',
         privacy: 'Datenschutz',
         mailSubject: 'Easysort Bestellanfrage'
@@ -262,7 +381,6 @@ const copy = {
 let language = preferredLanguage();
 let product = requestedProduct();
 let option = PRODUCTS[product].defaultOption;
-let installation = false;
 let units = 1;
 let locations = 1;
 let basket = loadBasket();
@@ -291,18 +409,17 @@ function formatMoney(value) {
     return `${new Intl.NumberFormat(locale).format(Math.round(value))} kr.`;
 }
 
-function discountFor(count) {
-    if (count >= 10) return 0.20;
-    if (count >= 5) return 0.15;
-    if (count >= 2) return 0.08;
-    return 0;
+function optionConfig(line) {
+    return PRODUCTS[line.product]?.options[line.option];
 }
 
 function isValidLine(line) {
-    const config = PRODUCTS[line?.product]?.options[line.option];
-    return Boolean(config)
-        && Number.isInteger(line.units) && line.units >= 0 && line.units <= MAX_UNITS
-        && Number.isInteger(line.locations) && line.locations >= 1 && line.locations <= MAX_LOCATIONS;
+    const config = optionConfig(line || {});
+    if (!config) return false;
+    const unitsOk = config.unit
+        ? Number.isInteger(line.units) && line.units >= 1 && line.units <= MAX_UNITS
+        : line.units === 0;
+    return unitsOk && Number.isInteger(line.locations) && line.locations >= 1 && line.locations <= MAX_LOCATIONS;
 }
 
 function loadBasket() {
@@ -318,37 +435,32 @@ function saveBasket() {
     localStorage.setItem(BASKET_KEY, JSON.stringify(basket));
 }
 
+function tiered(tier, count) {
+    return count > 0 ? tier.first + tier.extra * (count - 1) : 0;
+}
+
 function priceFor(line) {
-    const config = PRODUCTS[line.product].options[line.option];
-    const lineUnits = config.usesUnits ? line.units : 0;
-    const factor = 1 - discountFor(lineUnits);
-    const installationCost = line.installation ? INSTALLATION_PER_UNIT * lineUnits : 0;
+    const config = optionConfig(line);
     return {
-        setup: config.unitSetup * lineUnits * factor + config.locationSetup * line.locations + installationCost,
-        monthly: config.unitMonthly * lineUnits * factor + config.locationMonthly * line.locations
+        setup: config.unitSetup * line.units + tiered(config.locationSetup, line.locations),
+        monthly: config.unitMonthly * line.units + tiered(config.locationMonthly, line.locations)
     };
 }
 
 function currentLine() {
     const config = PRODUCTS[product].options[option];
-    return {
-        product,
-        option,
-        units: config.usesUnits ? units : 0,
-        locations,
-        installation: Boolean(PRODUCTS[product].installation && installation)
-    };
+    return { product, option, units: config.unit ? units : 0, locations };
 }
 
-function countLabel(count, one, many) {
-    return count === 1 ? t(one) : t(many, { count });
+function countLabel(count, key) {
+    return count === 1 ? t(`${key}_one`) : t(key, { count });
 }
 
 function lineSummary(line) {
+    const config = optionConfig(line);
     const parts = [];
-    if (line.units) parts.push(countLabel(line.units, 'unitCountOne', 'unitCount'));
-    parts.push(countLabel(line.locations, 'locationCountOne', 'locationCount'));
-    if (line.installation) parts.push(t('installationShort'));
+    if (config.unit) parts.push(countLabel(line.units, `count_${config.unit}`));
+    parts.push(line.locations === 1 ? t('locationCountOne') : t('locationCount', { count: line.locations }));
     return parts.join(' · ');
 }
 
@@ -364,21 +476,36 @@ function basketTotals() {
 }
 
 function basketNeedsHardware() {
-    return basket.some((line) => PRODUCTS[line.product].options[line.option].hardware);
+    return basket.some((line) => optionConfig(line).hardware);
+}
+
+function optionPriceText(key, config) {
+    const setup = config.unit ? config.unitSetup : config.locationSetup.first;
+    const monthly = config.unit ? config.unitMonthly : config.locationMonthly.first;
+    return t(`option_${key}_price`, {
+        setup: formatMoney(setup),
+        monthly: formatMoney(monthly),
+        location: formatMoney(config.locationMonthly.first)
+    });
+}
+
+function fillList(id, keys) {
+    const list = document.getElementById(id);
+    list.textContent = '';
+    keys.forEach((key) => {
+        const item = document.createElement('li');
+        item.textContent = t(key);
+        list.append(item);
+    });
 }
 
 function renderProduct() {
-    const selected = PRODUCTS[product];
-    document.getElementById('product-image').src = selected.image;
-    document.getElementById('product-title').textContent = t(product);
-    document.getElementById('product-description').textContent = t(`${product}Description`);
-    const features = document.getElementById('product-features');
-    features.textContent = '';
-    selected.featureKeys.forEach((key) => {
-        const item = document.createElement('li');
-        item.textContent = t(key);
-        features.append(item);
-    });
+    const config = PRODUCTS[product].options[option];
+    document.getElementById('product-image').src = PRODUCTS[product].image;
+    document.getElementById('product-title').textContent = `${t(product)} · ${t(`option_${option}`)}`;
+    document.getElementById('product-description').textContent = t(`option_${option}_body`);
+    fillList('included-setup', config.setupItems);
+    fillList('included-operation', config.operationItems);
     document.querySelectorAll('input[name="product"]').forEach((input) => {
         input.checked = input.value === product;
     });
@@ -402,40 +529,36 @@ function renderOptions() {
         });
 
         const body = document.createElement('span');
-        const text = document.createElement('span');
         const name = document.createElement('strong');
         name.textContent = t(`option_${key}`);
         const detail = document.createElement('small');
         detail.textContent = t(`option_${key}_body`);
-        text.append(name, detail);
-
         const price = document.createElement('em');
-        const example = priceFor({ product, option: key, units: config.usesUnits ? 1 : 0, locations: 1, installation: false });
-        price.textContent = `${formatMoney(example.setup)} + ${formatMoney(example.monthly)} ${t('perMonth')}`;
-        body.append(text, price);
+        price.textContent = optionPriceText(key, config);
+        body.append(name, detail, price);
         label.append(input, body);
         container.append(label);
     });
-
-    const addon = document.getElementById('installation-addon');
-    addon.hidden = !PRODUCTS[product].installation;
-    document.getElementById('installation-input').checked = installation;
-    document.getElementById('installation-price').textContent = t('installationPrice', { price: formatMoney(INSTALLATION_PER_UNIT) });
 }
 
 function renderQuantity() {
-    const usesUnits = PRODUCTS[product].options[option].usesUnits;
-    document.getElementById('unit-group').hidden = !usesUnits;
+    const config = PRODUCTS[product].options[option];
+    document.getElementById('unit-group').hidden = !config.unit;
+    if (config.unit) document.getElementById('unit-label').textContent = t(`unit_${config.unit}`);
     document.getElementById('unit-output').textContent = String(units);
     document.getElementById('location-output').textContent = String(locations);
     document.getElementById('unit-decrease').disabled = units <= locations;
     document.getElementById('unit-increase').disabled = units >= MAX_UNITS;
     document.getElementById('location-decrease').disabled = locations <= 1;
     document.getElementById('location-increase').disabled = locations >= MAX_LOCATIONS;
-    const discount = usesUnits ? discountFor(units) : 0;
+
     const note = document.getElementById('saving-note');
-    note.hidden = !usesUnits;
-    note.textContent = discount ? t('saving', { percent: Math.round(discount * 100), units }) : t('saveMore');
+    const extra = config.locationSetup.extra || config.locationMonthly.extra;
+    note.hidden = config.unit !== null || !extra;
+    note.textContent = t('extraLocationNote', {
+        setup: formatMoney(config.locationSetup.extra),
+        monthly: formatMoney(config.locationMonthly.extra)
+    });
 
     const price = priceFor(currentLine());
     document.getElementById('setup-price').textContent = formatMoney(price.setup);
@@ -443,10 +566,8 @@ function renderQuantity() {
 }
 
 function renderBasket() {
-    const section = document.getElementById('basket');
-    const link = document.getElementById('basket-link');
-    section.hidden = basket.length === 0;
-    link.hidden = basket.length === 0;
+    document.getElementById('basket').hidden = basket.length === 0;
+    document.getElementById('basket-link').hidden = basket.length === 0;
     document.getElementById('basket-count').textContent = String(basket.length);
     document.getElementById('add-button').disabled = basket.length >= MAX_LINES;
 
@@ -490,9 +611,7 @@ function renderBasket() {
     const totals = basketTotals();
     document.getElementById('basket-setup').textContent = formatMoney(totals.setup);
     document.getElementById('basket-monthly').textContent = `${formatMoney(totals.monthly)} ${t('perMonth')}`;
-    const notes = [t('placeholder')];
-    if (basket.some((line) => line.installation)) notes.push(t('travelNote'));
-    document.getElementById('basket-note').textContent = notes.join(' ');
+    document.getElementById('basket-note').textContent = t('vatNote');
 
     const needsHardware = basketNeedsHardware();
     const infrastructure = document.getElementById('infrastructure-check');
@@ -531,6 +650,11 @@ function orderText(data) {
         const price = priceFor(line);
         return `- ${lineTitle(line)} (${lineSummary(line)}): ${formatMoney(price.setup)} + ${formatMoney(price.monthly)} ${t('perMonth')}`;
     });
+    const optional = [
+        data.name && `${t('name')}: ${data.name}`,
+        data.organization && `${t('company')}: ${data.organization}`,
+        data.note && `${t('note')}: ${data.note}`
+    ].filter(Boolean);
     return [
         ...lines,
         '',
@@ -538,10 +662,8 @@ function orderText(data) {
         `${t('monthly')}: ${formatMoney(totals.monthly)} ${t('perMonth')}`,
         '',
         `${t('email')}: ${data.email}`,
-        data.name ? `${t('name')}: ${data.name}` : '',
-        data.organization ? `${t('company')}: ${data.organization}` : '',
-        data.note ? `${t('note')}: ${data.note}` : ''
-    ].filter((line, index, all) => line || all[index - 1]).join('\n');
+        ...optional
+    ].join('\n');
 }
 
 function showFormError(message, mailtoBody) {
@@ -575,8 +697,7 @@ async function submitOrder(event) {
         emailInput.focus();
         return;
     }
-    const checks = Array.from(form.querySelectorAll('.checklist input[required]'));
-    const missing = checks.find((input) => !input.checked);
+    const missing = Array.from(form.querySelectorAll('.checklist input[required]')).find((input) => !input.checked);
     if (missing) {
         showFormError(t('errorChecklist'));
         missing.focus();
@@ -589,7 +710,6 @@ async function submitOrder(event) {
         organization: form.elements.organization.value.trim(),
         note: form.elements.note.value.trim()
     };
-    const totals = basketTotals();
     const payload = {
         ...data,
         website: form.elements.website.value,
@@ -601,13 +721,8 @@ async function submitOrder(event) {
             timeline: form.elements.timeline.checked,
             infrastructure: basketNeedsHardware() ? form.elements.infrastructure.checked : null
         },
-        items: basket.map((line) => ({
-            ...line,
-            title: lineTitle(line),
-            summary: lineSummary(line),
-            ...priceFor(line)
-        })),
-        totals,
+        items: basket.map((line) => ({ ...line, ...priceFor(line) })),
+        totals: basketTotals(),
         currency: 'DKK'
     };
 
@@ -641,8 +756,7 @@ function showConfirmation(email) {
     document.getElementById('checkout').hidden = true;
     document.getElementById('basket-link').hidden = true;
     document.getElementById('confirmed-body').textContent = t('confirmedBody', { email });
-    const confirmation = document.getElementById('confirmation');
-    confirmation.hidden = false;
+    document.getElementById('confirmation').hidden = false;
     window.scrollTo({ top: 0 });
 }
 
@@ -663,10 +777,6 @@ document.querySelectorAll('input[name="product"]').forEach((input) => {
     });
 });
 
-document.getElementById('installation-input').addEventListener('change', (event) => {
-    installation = event.target.checked;
-    update();
-});
 document.getElementById('unit-decrease').addEventListener('click', () => {
     units = Math.max(locations, units - 1);
     update();

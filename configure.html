@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Configure and order Easysort products.">
     <title>Configure — Easysort</title>
-    <link rel="stylesheet" href="configure.css?v=20261014b">
+    <link rel="stylesheet" href="configure.css?v=20261014c">
 </head>
 <body data-order-url="https://website-workers.lucas-vilsen.workers.dev/order">
     <header>
@@ -36,7 +36,12 @@
                 </div>
                 <h2 id="product-title">Sorting Guide</h2>
                 <p id="product-description"></p>
-                <ul class="product-features" id="product-features"></ul>
+                <div class="included">
+                    <h3 data-i18n="includedSetup">Included in setup</h3>
+                    <ul id="included-setup"></ul>
+                    <h3 data-i18n="includedOperation">Included in operation</h3>
+                    <ul id="included-operation"></ul>
+                </div>
             </section>
 
             <section class="choices">
@@ -57,20 +62,13 @@
                 <fieldset>
                     <legend><span>2</span><span data-i18n="chooseOption">Option</span></legend>
                     <div class="service-options" id="option-list"></div>
-                    <label class="addon" id="installation-addon" hidden>
-                        <input type="checkbox" id="installation-input">
-                        <span>
-                            <strong data-i18n="installation">Installation by Easysort</strong>
-                            <em id="installation-price"></em>
-                        </span>
-                    </label>
                 </fieldset>
 
                 <fieldset class="quantity-field">
                     <legend><span>3</span><span data-i18n="quantity">Quantity</span></legend>
                     <div class="quantity-groups">
                         <div id="unit-group">
-                            <label data-i18n="units">Units</label>
+                            <label id="unit-label">Units</label>
                             <div class="quantity-control">
                                 <button type="button" id="unit-decrease" aria-label="Decrease units">−</button>
                                 <output id="unit-output">1</output>
@@ -98,7 +96,7 @@
                         <span data-i18n="monthly">Monthly</span>
                         <strong id="monthly-price">—</strong>
                     </div>
-                    <p data-i18n="placeholder">Placeholder prices, excl. VAT — not an offer.</p>
+                    <p data-i18n="vatNote">Prices excl. VAT.</p>
                 </section>
 
                 <button class="continue-button" id="add-button" type="button">
@@ -134,7 +132,11 @@
             <div>
                 <p class="contact-eyebrow" data-i18n="lastStep">Last step</p>
                 <h2 data-i18n="checkoutTitle">Confirm your order.</h2>
-                <p data-i18n="checkoutLead">No payment now. We contact you to confirm the final price, delivery, and payment before anything is binding.</p>
+                <p data-i18n="checkoutLead">No payment now. We contact you to confirm delivery and payment before anything is binding.</p>
+                <div class="dpa">
+                    <h3 data-i18n="dpaTitle">Data processing agreement</h3>
+                    <p data-i18n="dpaBody">We sign it before we start.</p>
+                </div>
             </div>
             <div class="contact-fields">
                 <label class="wide"><span data-i18n="email">Work email</span><input type="email" name="email" autocomplete="email" required></label>
@@ -165,9 +167,10 @@
     <footer>
         <span>Easysort</span>
         <a href="mailto:lucas@easysort.org">lucas@easysort.org</a>
+        <a href="tel:+4550205832">+45 50 20 58 32</a>
         <a href="privacy.html" data-i18n="privacy">Privacy</a>
     </footer>
 
-    <script src="configure.js?v=20261014c"></script>
+    <script src="configure.js?v=20261014d"></script>
 </body>
 </html>
