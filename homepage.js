@@ -207,7 +207,8 @@ function preferredCurrency() {
 function shownAmount(dkk) {
     const amount = Number(dkk) || 0;
     if (currency !== 'EUR') return Math.round(amount);
-    return Math.round(amount / DKK_PER_EUR);
+    const cents = Math.round((amount / DKK_PER_EUR) * 100);
+    return Math.ceil(cents / 5000) * 50;
 }
 
 function formatMoney(dkk) {

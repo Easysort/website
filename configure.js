@@ -24,7 +24,7 @@ const MAX_LINES = 20;
  * number of locations. The app's monthly price starts at 4,000 kr. for the
  * first location and falls by 300 kr. for each further location, down to a
  * floor of 2,000 kr. Euros use the ERM II central rate, 7.46038 kr. per euro,
- * rounded to the nearest euro. */
+ * rounded up to the next 50 euros. */
 const HOURLY_RATE = 950;
 const PRODUCTS = {
     sorting: {
@@ -784,7 +784,8 @@ function t(key, replacements = {}) {
 function shownAmount(dkk) {
     const amount = Number(dkk) || 0;
     if (currency !== 'EUR') return Math.round(amount);
-    return Math.round(amount / DKK_PER_EUR);
+    const cents = Math.round((amount / DKK_PER_EUR) * 100);
+    return Math.ceil(cents / 5000) * 50;
 }
 
 function formatAmount(amount) {
