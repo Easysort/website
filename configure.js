@@ -37,7 +37,6 @@ const PRODUCTS = {
             },
             box: {
                 unit: 'box',
-                family: 'box',
                 hardware: true,
                 unitSetup: 23500,
                 unitMonthly: 6000,
@@ -50,7 +49,6 @@ const PRODUCTS = {
             },
             boxSelf: {
                 unit: 'box',
-                family: 'box',
                 hardware: true,
                 unitSetup: 23500,
                 unitMonthly: 4000,
@@ -247,43 +245,51 @@ const BENEFITS = {
     }
 };
 
+/* Three short facts per product, shown under the product name. */
+const FACTS = {
+    en: {
+        sorting: [['Unlimited', 'use and changes'], ['Monthly', 'retraining'], ['Blurred', 'faces and plates']],
+        monitoring: [['Around the clock', 'on site'], ['Monthly', 'retraining'], ['Blurred', 'faces and plates']]
+    },
+    da: {
+        sorting: [['Ubegrænset', 'brug og ændringer'], ['Hver måned', 'gentræning'], ['Sløret', 'ansigter og nummerplader']],
+        monitoring: [['Døgnet rundt', 'på pladsen'], ['Hver måned', 'gentræning'], ['Sløret', 'ansigter og nummerplader']]
+    },
+    de: {
+        sorting: [['Unbegrenzt', 'Nutzung und Änderungen'], ['Monatlich', 'Nachtraining'], ['Unkenntlich', 'Gesichter und Kennzeichen']],
+        monitoring: [['Rund um die Uhr', 'vor Ort'], ['Monatlich', 'Nachtraining'], ['Unkenntlich', 'Gesichter und Kennzeichen']]
+    }
+};
+
 const copy = {
     en: {
         pageTitle: 'Configure — Easysort',
-        eyebrow: 'Configure',
-        title: 'Build your order.',
-        basket: 'Basket',
         chooseProduct: 'Product',
-        chooseOption: 'Option',
+        mockLabel: 'Fraction',
+        mockFraction: 'Cardboard',
+        mockContainer: 'Container 4',
+        optionFrom: 'From {setup} + {monthly} / month',
+        tagline_sorting: 'Visitors show their waste. The guide shows the container and the way there.',
+        tagline_monitoring: 'A camera on site that sees what happens: visitors, items, and missorted waste.',
+        addAnother: 'Add another product',
+        orderListTitle: 'Your order',
+        thisConfiguration: 'This configuration',
+        barLines: '{count} lines',
+        chooseOption: 'Choose a version',
         quantity: 'Quantity',
         locations: 'Locations',
         sorting: 'Sorting Guide',
         monitoring: 'Monitoring Box',
-        option_app: 'App',
-        option_app_body: 'Visitors scan a QR code, take a photo, and get the route to the container.',
-        option_app_price: '{setup} + {monthly} / month for the first location',
-        option_box: 'Physical box',
-        option_box_body: 'A screen on site shows where the waste goes.',
-        option_box_price: 'From {setup} per box, with or without support',
-        option_boxSelf_body: 'A screen on site shows where the waste goes. We analyze the images, you look after the box.',
-        option_reuse: 'Reuse monitoring',
+        option_app_body: 'Visitors scan a QR code, take a photo, and get the route on their phone.',
+        option_box_body: 'A screen and camera on site. We run and service it.',
+        option_boxSelf_body: 'A screen and camera on site. We analyze the images, you run the box. Fault-finding {hourly} / hour.',
         option_reuse_body: 'A camera on site tracks movement and items. Over 100,000 images a day.',
-        option_reuse_price: '{setup} + {monthly} / month per camera, + {location} / month per location',
-        option_container: 'Container monitoring',
         option_container_body: 'A camera at the container analyzes complex items in depth.',
-        option_container_price: '{setup} + {monthly} / month per camera',
         name_app: 'App',
-        name_box: 'Physical box with support',
-        name_boxSelf: 'Physical box without support',
+        name_box: 'Box with support',
+        name_boxSelf: 'Box without support',
         name_reuse: 'Reuse monitoring',
         name_container: 'Container monitoring',
-        supportLabel: 'Support',
-        withSupport: 'With support',
-        withSupportBody: 'We monitor, replace, and service the box.',
-        withoutSupport: 'Without support',
-        withoutSupportBody: 'We analyze the images, but cannot reach the box. You run it.',
-        supportWithPrice: '{setup} + {monthly} / month per box',
-        supportWithoutPrice: '{setup} + {monthly} / month per box. Fault-finding {hourly} / hour.',
         benefitsTitle: 'What you get',
         allIncluded: 'See everything included ({count})',
         includedSetup: 'Included in setup',
@@ -353,10 +359,7 @@ const copy = {
         monthly: 'Monthly',
         vatNote: 'Prices excl. VAT.',
         perMonth: '/ month',
-        addToBasket: 'Add to basket',
-        added: 'Added. Configure another line, or order below.',
-        basketTitle: 'Your basket',
-        basketLead: 'Mix products, options, and locations. Add as many lines as you need.',
+        added: 'Added to your order. Choose the next product, or order now.',
         remove: 'Remove',
         order: 'Order',
         close: 'Close',
@@ -405,40 +408,32 @@ const copy = {
     },
     da: {
         pageTitle: 'Konfigurér — Easysort',
-        eyebrow: 'Konfigurér',
-        title: 'Sammensæt jeres ordre.',
-        basket: 'Kurv',
         chooseProduct: 'Produkt',
-        chooseOption: 'Løsning',
+        mockLabel: 'Fraktion',
+        mockFraction: 'Pap og karton',
+        mockContainer: 'Container 4',
+        optionFrom: 'Fra {setup} + {monthly} / md.',
+        tagline_sorting: 'Borgeren viser affaldet. Guiden viser containeren og vejen derhen.',
+        tagline_monitoring: 'Et kamera på pladsen, der ser, hvad der sker: besøgende, emner og fejlsortering.',
+        addAnother: 'Tilføj et produkt mere',
+        orderListTitle: 'Jeres ordre',
+        thisConfiguration: 'Denne konfiguration',
+        barLines: '{count} linjer',
+        chooseOption: 'Vælg løsning',
         quantity: 'Antal',
         locations: 'Pladser',
         sorting: 'Sorteringsguide',
         monitoring: 'Overvågningsboks',
-        option_app: 'App',
-        option_app_body: 'Borgeren scanner en QR-kode, tager et billede og får ruten til containeren.',
-        option_app_price: '{setup} + {monthly} / md. for den første plads',
-        option_box: 'Fysisk boks',
-        option_box_body: 'En skærm på pladsen viser, hvor affaldet skal hen.',
-        option_box_price: 'Fra {setup} pr. boks, med eller uden support',
-        option_boxSelf_body: 'En skærm på pladsen viser, hvor affaldet skal hen. Vi analyserer billederne, I passer boksen.',
-        option_reuse: 'Genbrugsovervågning',
+        option_app_body: 'Borgeren scanner en QR-kode, tager et billede og får ruten på telefonen.',
+        option_box_body: 'Skærm og kamera på pladsen. Vi driver og servicerer den.',
+        option_boxSelf_body: 'Skærm og kamera på pladsen. Vi analyserer billederne, I driver boksen. Fejlretning {hourly} / time.',
         option_reuse_body: 'Et kamera på pladsen følger bevægelse og emner. Over 100.000 billeder om dagen.',
-        option_reuse_price: '{setup} + {monthly} / md. pr. kamera, + {location} / md. pr. plads',
-        option_container: 'Containerovervågning',
         option_container_body: 'Et kamera ved containeren laver en dybdegående analyse af komplekse emner.',
-        option_container_price: '{setup} + {monthly} / md. pr. kamera',
         name_app: 'App',
-        name_box: 'Fysisk boks med support',
-        name_boxSelf: 'Fysisk boks uden support',
+        name_box: 'Boks med support',
+        name_boxSelf: 'Boks uden support',
         name_reuse: 'Genbrugsovervågning',
         name_container: 'Containerovervågning',
-        supportLabel: 'Support',
-        withSupport: 'Med support',
-        withSupportBody: 'Vi overvåger, udskifter og servicerer boksen.',
-        withoutSupport: 'Uden support',
-        withoutSupportBody: 'Vi analyserer billederne, men har ikke adgang til boksen. I driver den.',
-        supportWithPrice: '{setup} + {monthly} / md. pr. boks',
-        supportWithoutPrice: '{setup} + {monthly} / md. pr. boks. Fejlretning {hourly} / time.',
         benefitsTitle: 'Det får I',
         allIncluded: 'Se alt, der er med ({count})',
         includedSetup: 'Med i opsætningen',
@@ -508,10 +503,7 @@ const copy = {
         monthly: 'Drift pr. måned',
         vatNote: 'Priser ekskl. moms.',
         perMonth: '/ md.',
-        addToBasket: 'Læg i kurv',
-        added: 'Tilføjet. Sammensæt en linje mere, eller bestil nedenfor.',
-        basketTitle: 'Jeres kurv',
-        basketLead: 'Kombinér produkter, løsninger og pladser. Tilføj så mange linjer, I har brug for.',
+        added: 'Lagt i ordren. Vælg det næste produkt, eller bestil nu.',
         remove: 'Fjern',
         order: 'Bestil',
         close: 'Luk',
@@ -560,40 +552,32 @@ const copy = {
     },
     de: {
         pageTitle: 'Konfigurieren — Easysort',
-        eyebrow: 'Konfigurieren',
-        title: 'Bestellung zusammenstellen.',
-        basket: 'Warenkorb',
         chooseProduct: 'Produkt',
-        chooseOption: 'Lösung',
+        mockLabel: 'Fraktion',
+        mockFraction: 'Pappe und Karton',
+        mockContainer: 'Container 4',
+        optionFrom: 'Ab {setup} + {monthly} / Monat',
+        tagline_sorting: 'Besucher zeigen ihren Abfall. Die Sortierhilfe zeigt den Container und den Weg dorthin.',
+        tagline_monitoring: 'Eine Kamera vor Ort, die sieht, was passiert: Besucher, Gegenstände und Fehlwürfe.',
+        addAnother: 'Weiteres Produkt hinzufügen',
+        orderListTitle: 'Ihre Bestellung',
+        thisConfiguration: 'Diese Konfiguration',
+        barLines: '{count} Positionen',
+        chooseOption: 'Version wählen',
         quantity: 'Anzahl',
         locations: 'Standorte',
         sorting: 'Sortierhilfe',
         monitoring: 'Monitoring Box',
-        option_app: 'App',
-        option_app_body: 'Besucher scannen einen QR-Code, machen ein Foto und sehen den Weg zum Container.',
-        option_app_price: '{setup} + {monthly} / Monat für den ersten Standort',
-        option_box: 'Physische Box',
-        option_box_body: 'Ein Bildschirm vor Ort zeigt, wohin der Abfall gehört.',
-        option_box_price: 'Ab {setup} pro Box, mit oder ohne Support',
-        option_boxSelf_body: 'Ein Bildschirm vor Ort zeigt, wohin der Abfall gehört. Wir analysieren die Bilder, Sie betreuen die Box.',
-        option_reuse: 'Wiederverwendungsüberwachung',
+        option_app_body: 'Besucher scannen einen QR-Code, machen ein Foto und sehen den Weg auf dem Handy.',
+        option_box_body: 'Bildschirm und Kamera vor Ort. Wir betreiben und warten sie.',
+        option_boxSelf_body: 'Bildschirm und Kamera vor Ort. Wir analysieren die Bilder, Sie betreiben die Box. Fehlersuche {hourly} / Stunde.',
         option_reuse_body: 'Eine Kamera vor Ort erfasst Bewegungen und Gegenstände. Über 100.000 Bilder pro Tag.',
-        option_reuse_price: '{setup} + {monthly} / Monat pro Kamera, + {location} / Monat pro Standort',
-        option_container: 'Containerüberwachung',
         option_container_body: 'Eine Kamera am Container analysiert komplexe Gegenstände im Detail.',
-        option_container_price: '{setup} + {monthly} / Monat pro Kamera',
         name_app: 'App',
-        name_box: 'Physische Box mit Support',
-        name_boxSelf: 'Physische Box ohne Support',
+        name_box: 'Box mit Support',
+        name_boxSelf: 'Box ohne Support',
         name_reuse: 'Wiederverwendungsüberwachung',
         name_container: 'Containerüberwachung',
-        supportLabel: 'Support',
-        withSupport: 'Mit Support',
-        withSupportBody: 'Wir überwachen, tauschen und warten die Box.',
-        withoutSupport: 'Ohne Support',
-        withoutSupportBody: 'Wir analysieren die Bilder, haben aber keinen Zugriff auf die Box. Sie betreiben sie.',
-        supportWithPrice: '{setup} + {monthly} / Monat pro Box',
-        supportWithoutPrice: '{setup} + {monthly} / Monat pro Box. Fehlersuche {hourly} / Stunde.',
         benefitsTitle: 'Das bekommen Sie',
         allIncluded: 'Alle Leistungen ansehen ({count})',
         includedSetup: 'In der Einrichtung enthalten',
@@ -663,10 +647,7 @@ const copy = {
         monthly: 'Betrieb pro Monat',
         vatNote: 'Preise zzgl. MwSt.',
         perMonth: '/ Monat',
-        addToBasket: 'In den Warenkorb',
-        added: 'Hinzugefügt. Weitere Position konfigurieren oder unten bestellen.',
-        basketTitle: 'Ihr Warenkorb',
-        basketLead: 'Produkte, Lösungen und Standorte kombinieren. Beliebig viele Positionen hinzufügen.',
+        added: 'Zur Bestellung hinzugefügt. Nächstes Produkt wählen oder jetzt bestellen.',
         remove: 'Entfernen',
         order: 'Bestellen',
         close: 'Schließen',
@@ -718,11 +699,13 @@ const copy = {
 let language = preferredLanguage();
 let product = requestedProduct();
 let option = PRODUCTS[product].defaultOption;
-let boxOption = 'box';
 let complete = true;
 let units = 1;
 let locations = 1;
 let basket = loadBasket();
+/* After "add another", the configurator is not part of the order until the
+ * visitor changes something, so ordering right away does not add a duplicate. */
+let draftIncluded = true;
 let sending = false;
 let receipt = null;
 
@@ -773,7 +756,7 @@ function loadBasket() {
         return saved
             .map((line) => (optionConfig(line || {})?.complete && line.complete === undefined ? { ...line, complete: true } : line))
             .filter(isValidLine)
-            .slice(0, MAX_LINES);
+            .slice(0, MAX_LINES - 1);
     } catch {
         return [];
     }
@@ -804,11 +787,19 @@ function currentConfig() {
     return PRODUCTS[product].options[option];
 }
 
-function currentLine() {
-    const config = currentConfig();
-    const line = { product, option, units: config.unit ? units : 0, locations };
+function lineFor(key, unitCount, locationCount) {
+    const config = PRODUCTS[product].options[key];
+    const line = { product, option: key, units: config.unit ? unitCount : 0, locations: locationCount };
     if (config.complete) line.complete = complete;
     return line;
+}
+
+function currentLine() {
+    return lineFor(option, units, locations);
+}
+
+function orderLines() {
+    return draftIncluded ? [...basket, currentLine()] : [...basket];
 }
 
 function setupItemsFor(config, withComplete) {
@@ -847,18 +838,12 @@ function monthlyText(value) {
     return `${formatMoney(value)} ${t('perMonth')}`;
 }
 
-function basketNeedsHardware() {
-    return basket.some((line) => optionConfig(line).hardware);
+function priceText(totals) {
+    return `${formatMoney(totals.setup)} + ${monthlyText(totals.monthly)}`;
 }
 
-function optionPriceText(key, config) {
-    const setup = config.unit ? config.unitSetup : config.locationSetup.first;
-    const monthly = config.unit ? config.unitMonthly : config.locationMonthly.first;
-    return t(`option_${key}_price`, {
-        setup: formatMoney(setup),
-        monthly: formatMoney(monthly),
-        location: formatMoney(config.locationMonthly.first)
-    });
+function needsHardware(lines) {
+    return lines.some((line) => optionConfig(line).hardware);
 }
 
 function fillList(id, keys) {
@@ -871,10 +856,31 @@ function fillList(id, keys) {
     });
 }
 
+function changeDraft(change) {
+    change();
+    draftIncluded = true;
+    document.getElementById('added-note').textContent = '';
+    update();
+}
+
 function renderProduct() {
-    document.getElementById('product-image').src = PRODUCTS[product].image;
-    document.getElementById('product-title').textContent = `${t(product)} · ${t(`name_${option}`)}`;
-    document.getElementById('product-description').textContent = t(`option_${option}_body`);
+    const image = document.getElementById('product-image');
+    image.src = PRODUCTS[product].image;
+    image.hidden = option === 'app';
+    document.getElementById('phone-mock').hidden = option !== 'app';
+    document.getElementById('product-name').textContent = t(product);
+    document.getElementById('product-tagline').textContent = t(`tagline_${product}`);
+    const facts = document.getElementById('product-facts');
+    facts.textContent = '';
+    (FACTS[language][product] || FACTS.en[product]).forEach(([value, label]) => {
+        const item = document.createElement('div');
+        const dt = document.createElement('dt');
+        dt.textContent = value;
+        const dd = document.createElement('dd');
+        dd.textContent = label;
+        item.append(dt, dd);
+        facts.append(item);
+    });
     document.querySelectorAll('input[name="product"]').forEach((input) => {
         input.checked = input.value === product;
     });
@@ -883,53 +889,31 @@ function renderProduct() {
 function renderOptions() {
     const container = document.getElementById('option-list');
     container.textContent = '';
-    const selectedCard = currentConfig().family || option;
     Object.entries(PRODUCTS[product].options).forEach(([key, config]) => {
-        if (config.family && config.family !== key) return;
-
         const label = document.createElement('label');
-        label.className = 'service-option';
+        label.className = 'option-card';
 
         const input = document.createElement('input');
         input.type = 'radio';
         input.name = 'option';
         input.value = key;
-        input.checked = key === selectedCard;
-        input.addEventListener('change', () => {
-            option = config.family ? boxOption : key;
-            update();
-        });
+        input.checked = key === option;
+        input.addEventListener('change', () => changeDraft(() => { option = key; }));
 
         const body = document.createElement('span');
+        const head = document.createElement('span');
+        head.className = 'option-head';
         const name = document.createElement('strong');
-        name.textContent = t(`option_${key}`);
-        const detail = document.createElement('small');
-        detail.textContent = t(`option_${key}_body`);
+        name.textContent = t(`name_${key}`);
         const price = document.createElement('em');
-        price.textContent = optionPriceText(key, config);
-        body.append(name, detail, price);
+        const from = priceFor(lineFor(key, 1, 1));
+        price.textContent = t('optionFrom', { setup: formatMoney(from.setup), monthly: formatMoney(from.monthly) });
+        head.append(name, price);
+        const detail = document.createElement('small');
+        detail.textContent = t(`option_${key}_body`, { hourly: formatMoney(HOURLY_RATE) });
+        body.append(head, detail);
         label.append(input, body);
         container.append(label);
-    });
-}
-
-function renderSupport() {
-    const isBox = currentConfig().family === 'box';
-    document.getElementById('support-choice').hidden = !isBox;
-    if (!isBox) return;
-    const withSupport = PRODUCTS.sorting.options.box;
-    const withoutSupport = PRODUCTS.sorting.options.boxSelf;
-    document.getElementById('support-with-price').textContent = t('supportWithPrice', {
-        setup: formatMoney(withSupport.unitSetup),
-        monthly: formatMoney(withSupport.unitMonthly)
-    });
-    document.getElementById('support-without-price').textContent = t('supportWithoutPrice', {
-        setup: formatMoney(withoutSupport.unitSetup),
-        monthly: formatMoney(withoutSupport.unitMonthly),
-        hourly: formatMoney(HOURLY_RATE)
-    });
-    document.querySelectorAll('input[name="support"]').forEach((input) => {
-        input.checked = input.value === option;
     });
 }
 
@@ -965,10 +949,10 @@ function renderBenefits() {
         count: setupItems.length + config.operationItems.length
     });
     document.getElementById('operation-heading').textContent = t('includedOperation');
-    document.getElementById('excluded-group').hidden = !config.excludedItems;
-    fillList('excluded-items', config.excludedItems || []);
     fillList('included-setup', setupItems);
     fillList('included-operation', config.operationItems);
+    document.getElementById('excluded-group').hidden = !config.excludedItems;
+    fillList('excluded-items', config.excludedItems || []);
 }
 
 function renderQuantity() {
@@ -990,13 +974,9 @@ function renderQuantity() {
         setup: formatMoney(config.locationSetup.extra + extraComplete),
         monthly: formatMoney(config.locationMonthly.extra)
     });
-
-    const price = priceFor(currentLine());
-    document.getElementById('setup-price').textContent = formatMoney(price.setup);
-    document.getElementById('monthly-price').textContent = monthlyText(price.monthly);
 }
 
-function lineItem(line, removable) {
+function lineItem(line, action) {
     const price = priceFor(line);
     const item = document.createElement('li');
 
@@ -1016,7 +996,7 @@ function lineItem(line, removable) {
     amount.append(setup, monthly);
 
     item.append(text, amount);
-    if (removable) item.append(removable);
+    if (action) item.append(action);
     return item;
 }
 
@@ -1026,13 +1006,10 @@ function renderLines(listId, lines) {
     lines.forEach((line) => list.append(lineItem(line)));
 }
 
-function renderBasket() {
-    document.getElementById('basket').hidden = basket.length === 0;
-    document.getElementById('basket-link').hidden = basket.length === 0;
-    document.getElementById('basket-count').textContent = String(basket.length);
-    document.getElementById('add-button').disabled = basket.length >= MAX_LINES;
-
-    const list = document.getElementById('basket-lines');
+function renderOrderList() {
+    document.getElementById('order-list').hidden = basket.length === 0;
+    document.getElementById('add-button').disabled = basket.length >= MAX_LINES - 1;
+    const list = document.getElementById('order-lines');
     list.textContent = '';
     basket.forEach((line, index) => {
         const remove = document.createElement('button');
@@ -1043,30 +1020,45 @@ function renderBasket() {
         remove.addEventListener('click', () => {
             basket.splice(index, 1);
             saveBasket();
+            if (!basket.length) draftIncluded = true;
             update();
         });
         list.append(lineItem(line, remove));
     });
+    if (draftIncluded && basket.length) {
+        const draft = lineItem(currentLine(), document.createElement('span'));
+        draft.className = 'draft-line';
+        const tag = document.createElement('small');
+        tag.textContent = t('thisConfiguration');
+        draft.firstChild.prepend(tag);
+        list.append(draft);
+    }
+}
 
-    const totals = totalsFor(basket);
-    document.getElementById('basket-setup').textContent = formatMoney(totals.setup);
-    document.getElementById('basket-monthly').textContent = monthlyText(totals.monthly);
+function renderBar() {
+    const lines = orderLines();
+    document.getElementById('bar-label').textContent = lines.length === 1
+        ? `${lineTitle(lines[0])} · ${lineSummary(lines[0])}`
+        : t('barLines', { count: lines.length });
+    document.getElementById('bar-price').textContent = priceText(totalsFor(lines));
+    document.getElementById('checkout-button').disabled = lines.length === 0;
 }
 
 function renderOrderStep() {
-    const totals = totalsFor(basket);
-    document.getElementById('dialog-step').textContent = basket.length === 1
+    const lines = orderLines();
+    const totals = totalsFor(lines);
+    document.getElementById('dialog-step').textContent = lines.length === 1
         ? t('stepOrderOne')
-        : t('stepOrderMany', { count: basket.length });
-    renderLines('summary-lines', basket);
+        : t('stepOrderMany', { count: lines.length });
+    renderLines('summary-lines', lines);
     document.getElementById('summary-setup').textContent = formatMoney(totals.setup);
     document.getElementById('summary-monthly').textContent = monthlyText(totals.monthly);
-    document.getElementById('send-total').textContent = `${formatMoney(totals.setup)} + ${monthlyText(totals.monthly)}`;
+    document.getElementById('send-total').textContent = priceText(totals);
 
-    const needsHardware = basketNeedsHardware();
+    const hardware = needsHardware(lines);
     const infrastructure = document.getElementById('infrastructure-check');
-    infrastructure.hidden = !needsHardware;
-    infrastructure.querySelector('input').required = needsHardware;
+    infrastructure.hidden = !hardware;
+    infrastructure.querySelector('input').required = hardware;
 }
 
 function renderReceipt() {
@@ -1084,14 +1076,13 @@ function renderReceipt() {
 
 function update() {
     if (!PRODUCTS[product].options[option]) option = PRODUCTS[product].defaultOption;
-    if (currentConfig().family === 'box') boxOption = option;
     renderProduct();
     renderOptions();
-    renderSupport();
-    renderAddon();
     renderBenefits();
+    renderAddon();
     renderQuantity();
-    renderBasket();
+    renderOrderList();
+    renderBar();
     if (dialog.open) {
         if (receipt) renderReceipt();
         else renderOrderStep();
@@ -1115,18 +1106,18 @@ function applyLanguage() {
     update();
 }
 
-function orderText(data) {
-    const totals = totalsFor(basket);
-    const lines = basket.map((line) => {
+function orderText(data, lines) {
+    const totals = totalsFor(lines);
+    const items = lines.map((line) => {
         const price = priceFor(line);
-        return `- ${lineTitle(line)} (${lineSummary(line)}): ${formatMoney(price.setup)} + ${monthlyText(price.monthly)}`;
+        return `- ${lineTitle(line)} (${lineSummary(line)}): ${priceText(price)}`;
     });
     const optional = [
         data.organization && `${t('company')}: ${data.organization}`,
         data.phone && `${t('phone')}: ${data.phone}`
     ].filter(Boolean);
     return [
-        ...lines,
+        ...items,
         '',
         `${t('setup')}: ${formatMoney(totals.setup)}`,
         `${t('monthly')}: ${monthlyText(totals.monthly)}`,
@@ -1157,7 +1148,7 @@ function setSending(value) {
 }
 
 function openOrder() {
-    if (!basket.length) return;
+    if (!orderLines().length) return;
     receipt = null;
     document.getElementById('order-step').hidden = false;
     document.getElementById('order-foot').hidden = false;
@@ -1173,6 +1164,9 @@ function showReceipt(orderId, email, lines) {
     receipt = { ref: orderId ? String(orderId).replace(/-/g, '').slice(0, 8).toUpperCase() : '', email, lines };
     basket = [];
     saveBasket();
+    draftIncluded = true;
+    units = 1;
+    locations = 1;
     form.reset();
     update();
     renderReceipt();
@@ -1186,7 +1180,8 @@ function showReceipt(orderId, email, lines) {
 
 async function submitOrder(event) {
     event.preventDefault();
-    if (sending || !basket.length) return;
+    const lines = orderLines().map((line) => ({ ...line }));
+    if (sending || !lines.length) return;
     document.getElementById('form-error').hidden = true;
 
     const emailInput = form.elements.email;
@@ -1207,7 +1202,6 @@ async function submitOrder(event) {
         organization: form.elements.organization.value.trim(),
         phone: form.elements.phone.value.trim()
     };
-    const lines = basket.map((line) => ({ ...line }));
     const payload = {
         ...data,
         website: form.elements.website.value,
@@ -1217,7 +1211,7 @@ async function submitOrder(event) {
             decisionMaker: form.elements.decisionMaker.checked,
             budget: form.elements.budget.checked,
             timeline: form.elements.timeline.checked,
-            infrastructure: basketNeedsHardware() ? form.elements.infrastructure.checked : null
+            infrastructure: needsHardware(lines) ? form.elements.infrastructure.checked : null
         },
         items: lines.map((line) => ({ ...line, ...priceFor(line) })),
         totals: totalsFor(lines),
@@ -1238,7 +1232,7 @@ async function submitOrder(event) {
         if (!response.ok || !result || result.ok !== true) throw new Error('order failed');
         showReceipt(result.orderId, data.email, lines);
     } catch {
-        showFormError(t('errorSend'), orderText(data));
+        showFormError(t('errorSend'), orderText(data, lines));
     } finally {
         clearTimeout(timer);
         setSending(false);
@@ -1254,49 +1248,41 @@ document.querySelectorAll('[data-language-option]').forEach((button) => {
 });
 
 document.querySelectorAll('input[name="product"]').forEach((input) => {
-    input.addEventListener('change', () => {
+    input.addEventListener('change', () => changeDraft(() => {
         product = input.value;
         option = PRODUCTS[product].defaultOption;
         history.replaceState(null, '', `?product=${product}`);
-        update();
-    });
-});
-
-document.querySelectorAll('input[name="support"]').forEach((input) => {
-    input.addEventListener('change', () => {
-        option = input.value;
-        update();
-    });
+    }));
 });
 
 document.getElementById('complete-input').addEventListener('change', (event) => {
-    complete = event.target.checked;
-    update();
+    changeDraft(() => { complete = event.target.checked; });
 });
-
 document.getElementById('unit-decrease').addEventListener('click', () => {
-    units = Math.max(locations, units - 1);
-    update();
+    changeDraft(() => { units = Math.max(locations, units - 1); });
 });
 document.getElementById('unit-increase').addEventListener('click', () => {
-    units = Math.min(MAX_UNITS, units + 1);
-    update();
+    changeDraft(() => { units = Math.min(MAX_UNITS, units + 1); });
 });
 document.getElementById('location-decrease').addEventListener('click', () => {
-    locations = Math.max(1, locations - 1);
-    update();
+    changeDraft(() => { locations = Math.max(1, locations - 1); });
 });
 document.getElementById('location-increase').addEventListener('click', () => {
-    locations = Math.min(MAX_LOCATIONS, locations + 1);
-    units = Math.max(units, locations);
-    update();
+    changeDraft(() => {
+        locations = Math.min(MAX_LOCATIONS, locations + 1);
+        units = Math.max(units, locations);
+    });
 });
 document.getElementById('add-button').addEventListener('click', () => {
-    if (basket.length >= MAX_LINES) return;
+    if (basket.length >= MAX_LINES - 1) return;
     basket.push(currentLine());
     saveBasket();
+    draftIncluded = false;
+    units = 1;
+    locations = 1;
     update();
     document.getElementById('added-note').textContent = t('added');
+    document.getElementById('order-list').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 });
 document.getElementById('checkout-button').addEventListener('click', openOrder);
 document.getElementById('dialog-close').addEventListener('click', () => {

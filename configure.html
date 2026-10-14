@@ -5,177 +5,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Configure and order Easysort products.">
     <title>Configure — Easysort</title>
-    <link rel="stylesheet" href="configure.css?v=20261014j">
+    <link rel="stylesheet" href="configure.css?v=20261014o">
 </head>
 <body data-order-url="https://website-workers.lucas-vilsen.workers.dev/order">
     <header>
         <a class="brand" href="./"><img src="logo.png" alt="Easysort"></a>
-        <div class="header-actions">
-            <a class="basket-link" href="#basket" id="basket-link" hidden>
-                <span data-i18n="basket">Basket</span>
-                <span class="basket-count" id="basket-count">0</span>
-            </a>
-            <div class="language-switch" role="group" aria-label="Language">
-                <button type="button" data-language-option="en" aria-pressed="true">EN</button>
-                <button type="button" data-language-option="da" aria-pressed="false">DA</button>
-                <button type="button" data-language-option="de" aria-pressed="false">DE</button>
-            </div>
+        <div class="language-switch" role="group" aria-label="Language">
+            <button type="button" data-language-option="en" aria-pressed="true">EN</button>
+            <button type="button" data-language-option="da" aria-pressed="false">DA</button>
+            <button type="button" data-language-option="de" aria-pressed="false">DE</button>
         </div>
     </header>
 
-    <main>
-        <div class="intro">
-            <p data-i18n="eyebrow">Configure</p>
-            <h1 data-i18n="title">Build your order.</h1>
+    <main class="config">
+        <div class="stage">
+            <div class="image-stage">
+                <img id="product-image" src="models/sorteringsguide.png" alt="">
+                <div class="phone" id="phone-mock" aria-hidden="true" hidden>
+                    <div class="phone-frame">
+                    <div class="phone-screen">
+                        <div class="phone-photo"><span class="phone-box"></span></div>
+                        <div class="phone-result">
+                            <small data-i18n="mockLabel">Fraction</small>
+                            <strong data-i18n="mockFraction">Cardboard</strong>
+                            <span class="phone-pill" data-i18n="mockContainer">Container 4</span>
+                        </div>
+                        <div class="phone-map">
+                            <span></span><span></span><span></span><span class="active"></span><span></span>
+                            <i></i>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="config-grid">
-            <section class="product-view">
-                <div class="image-stage">
-                    <img id="product-image" src="models/sorteringsguide.png" alt="">
-                </div>
-                <h2 id="product-title">Sorting Guide</h2>
-                <p id="product-description"></p>
+        <div class="panel">
+            <div class="product-toggle" role="radiogroup" data-i18n-label="chooseProduct" aria-label="Product">
+                <label>
+                    <input type="radio" name="product" value="sorting" checked>
+                    <span data-i18n="sorting">Sorting Guide</span>
+                </label>
+                <label>
+                    <input type="radio" name="product" value="monitoring">
+                    <span data-i18n="monitoring">Monitoring Box</span>
+                </label>
+            </div>
+
+            <h1 id="product-name">Sorting Guide</h1>
+            <p class="tagline" id="product-tagline"></p>
+            <dl class="facts" id="product-facts"></dl>
+
+            <section class="step">
+                <h2 data-i18n="chooseOption">Choose a version</h2>
+                <div class="options" id="option-list" role="radiogroup"></div>
             </section>
 
-            <section class="choices">
-                <fieldset>
-                    <legend><span>1</span><span data-i18n="chooseProduct">Product</span></legend>
-                    <div class="product-toggle">
-                        <label>
-                            <input type="radio" name="product" value="sorting" checked>
-                            <span data-i18n="sorting">Sorting Guide</span>
-                        </label>
-                        <label>
-                            <input type="radio" name="product" value="monitoring">
-                            <span data-i18n="monitoring">Monitoring Box</span>
-                        </label>
-                    </div>
-                </fieldset>
-
-                <fieldset>
-                    <legend><span>2</span><span data-i18n="chooseOption">Option</span></legend>
-                    <div class="service-options" id="option-list"></div>
-                    <div class="support-choice" id="support-choice" hidden>
-                        <p class="support-label" data-i18n="supportLabel">Support</p>
-                        <div class="support-toggle" role="radiogroup">
-                            <label>
-                                <input type="radio" name="support" value="box" checked>
-                                <span>
-                                    <strong data-i18n="withSupport">With support</strong>
-                                    <small data-i18n="withSupportBody"></small>
-                                    <em id="support-with-price"></em>
-                                </span>
-                            </label>
-                            <label>
-                                <input type="radio" name="support" value="boxSelf">
-                                <span>
-                                    <strong data-i18n="withoutSupport">Without support</strong>
-                                    <small data-i18n="withoutSupportBody"></small>
-                                    <em id="support-without-price"></em>
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="addon" id="addon" hidden>
-                        <p class="support-label" data-i18n="addonLabel">Add-on</p>
-                        <label class="addon-option">
-                            <input type="checkbox" id="complete-input" checked>
-                            <span>
-                                <strong data-i18n="complete">Complete solution</strong>
-                                <small id="complete-body"></small>
-                                <em id="complete-price"></em>
-                            </span>
-                        </label>
-                    </div>
-                </fieldset>
-
-                <section class="benefits" aria-labelledby="benefits-title">
-                    <h3 id="benefits-title"></h3>
-                    <ul class="benefit-list" id="benefit-list"></ul>
-                    <details class="all-included" id="all-included">
-                        <summary id="all-included-summary"></summary>
-                        <div class="all-included-columns">
-                            <div>
-                                <h4 data-i18n="includedSetup">Included in setup</h4>
-                                <ul id="included-setup"></ul>
-                            </div>
-                            <div>
-                                <h4 id="operation-heading"></h4>
-                                <ul id="included-operation"></ul>
-                            </div>
-                            <div class="excluded" id="excluded-group" hidden>
-                                <h4 data-i18n="excludedHeading">Not included</h4>
-                                <ul id="excluded-items"></ul>
-                            </div>
-                        </div>
-                    </details>
-                </section>
-
-                <fieldset class="quantity-field">
-                    <legend><span>3</span><span data-i18n="quantity">Quantity</span></legend>
-                    <div class="quantity-groups">
-                        <div id="unit-group">
-                            <label id="unit-label">Units</label>
-                            <div class="quantity-control">
-                                <button type="button" id="unit-decrease" aria-label="Decrease units">−</button>
-                                <output id="unit-output">1</output>
-                                <button type="button" id="unit-increase" aria-label="Increase units">+</button>
-                            </div>
+            <section class="benefits" aria-labelledby="benefits-title">
+                <h3 id="benefits-title"></h3>
+                <ul class="benefit-list" id="benefit-list"></ul>
+                <details class="all-included" id="all-included">
+                    <summary id="all-included-summary"></summary>
+                    <div class="all-included-columns">
+                        <div>
+                            <h4 data-i18n="includedSetup">Included in setup</h4>
+                            <ul id="included-setup"></ul>
                         </div>
                         <div>
-                            <label data-i18n="locations">Locations</label>
-                            <div class="quantity-control">
-                                <button type="button" id="location-decrease" aria-label="Decrease locations">−</button>
-                                <output id="location-output">1</output>
-                                <button type="button" id="location-increase" aria-label="Increase locations">+</button>
-                            </div>
+                            <h4 id="operation-heading"></h4>
+                            <ul id="included-operation"></ul>
+                        </div>
+                        <div class="excluded" id="excluded-group" hidden>
+                            <h4 data-i18n="excludedHeading">Not included</h4>
+                            <ul id="excluded-items"></ul>
                         </div>
                     </div>
-                    <p id="saving-note"></p>
-                </fieldset>
-
-                <section class="price-box">
-                    <div>
-                        <span data-i18n="setup">One-time</span>
-                        <strong id="setup-price">—</strong>
-                    </div>
-                    <div>
-                        <span data-i18n="monthly">Monthly</span>
-                        <strong id="monthly-price">—</strong>
-                    </div>
-                    <p data-i18n="vatNote">Prices excl. VAT.</p>
-                </section>
-
-                <button class="continue-button" id="add-button" type="button">
-                    <span data-i18n="addToBasket">Add to basket</span><span>+</span>
-                </button>
-                <p class="added-note" id="added-note" aria-live="polite"></p>
+                </details>
             </section>
-        </div>
 
-        <section class="basket" id="basket" hidden>
-            <div class="basket-head">
-                <h2 data-i18n="basketTitle">Your basket</h2>
-                <p data-i18n="basketLead">Mix products, options, and locations. Add as many lines as you need.</p>
-            </div>
-            <ul class="basket-lines" id="basket-lines"></ul>
-            <div class="basket-total">
-                <div>
-                    <span data-i18n="setup">One-time</span>
-                    <strong id="basket-setup">—</strong>
+            <section class="step" id="addon" hidden>
+                <h2 data-i18n="addonLabel">Add-on</h2>
+                <label class="addon-option">
+                    <input type="checkbox" id="complete-input" checked>
+                    <span>
+                        <strong data-i18n="complete">Complete solution</strong>
+                        <small id="complete-body"></small>
+                    </span>
+                    <em id="complete-price"></em>
+                </label>
+            </section>
+
+            <section class="step">
+                <h2 data-i18n="quantity">Quantity</h2>
+                <div class="quantity-groups">
+                    <div class="quantity-row" id="unit-group">
+                        <label id="unit-label">Units</label>
+                        <div class="quantity-control">
+                            <button type="button" id="unit-decrease" aria-label="−">−</button>
+                            <output id="unit-output">1</output>
+                            <button type="button" id="unit-increase" aria-label="+">+</button>
+                        </div>
+                    </div>
+                    <div class="quantity-row">
+                        <label data-i18n="locations">Locations</label>
+                        <div class="quantity-control">
+                            <button type="button" id="location-decrease" aria-label="−">−</button>
+                            <output id="location-output">1</output>
+                            <button type="button" id="location-increase" aria-label="+">+</button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <span data-i18n="monthly">Monthly</span>
-                    <strong id="basket-monthly">—</strong>
-                </div>
-            </div>
-            <p class="basket-note" data-i18n="vatNote">Prices excl. VAT.</p>
-            <button class="continue-button" id="checkout-button" type="button">
-                <span data-i18n="order">Order</span><span>→</span>
+                <p id="saving-note"></p>
+            </section>
+
+            <section class="order-list" id="order-list" hidden>
+                <h2 data-i18n="orderListTitle">Your order</h2>
+                <ul id="order-lines"></ul>
+            </section>
+
+            <button class="add-line" id="add-button" type="button">
+                <span aria-hidden="true">+</span>
+                <span data-i18n="addAnother">Add another product</span>
             </button>
-        </section>
+            <p class="added-note" id="added-note" aria-live="polite"></p>
+        </div>
     </main>
+
+    <div class="order-bar">
+        <div class="order-bar-inner">
+            <div class="order-bar-text">
+                <span id="bar-label"></span>
+                <strong id="bar-price"></strong>
+                <small data-i18n="vatNote">Prices excl. VAT.</small>
+            </div>
+            <button class="order-button" id="checkout-button" type="button" data-i18n="order">Order</button>
+        </div>
+    </div>
 
     <dialog class="order-dialog" id="order-dialog" aria-labelledby="order-title">
         <form class="order-form" id="checkout" method="dialog" novalidate>
@@ -288,6 +253,6 @@
         <a href="privacy.html" data-i18n="privacy">Privacy</a>
     </footer>
 
-    <script src="configure.js?v=20261014i"></script>
+    <script src="configure.js?v=20261014l"></script>
 </body>
 </html>
