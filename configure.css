@@ -563,6 +563,13 @@ header {
 
 .link-button:hover { color: var(--ink); }
 
+.setup-place {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
 #extra-box-note,
 #saving-note {
     margin-top: 10px;

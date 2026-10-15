@@ -65,10 +65,10 @@ const translations = {
         customAction: 'Contact us',
         partnersLabel: 'Developed with teams in the Danish waste sector',
         consultationLabel: 'Lucas',
-        consultationTitle: "Let's find where the opportunities are.",
-        consultationDescription: 'We look at your site, point out what can work better, and say honestly whether it fits. You can use that whether you order from us or not.',
+        consultationTitle: 'We write about the setup.',
+        consultationDescription: 'Setup in Denmark is included in the price. Outside Denmark we contact you with the setup price.',
         consultationCta: 'Configure your system',
-        consultationNote: 'Order online. Payment by bank transfer.'
+        consultationNote: 'Bank transfer. Pay within 14 days.'
     },
     da: {
         pageTitle: 'Easysort — Bygget til genbrugspladser og affaldsanlæg',
@@ -118,10 +118,10 @@ const translations = {
         customAction: 'Kontakt os',
         partnersLabel: 'Udviklet med teams i den danske affaldssektor',
         consultationLabel: 'Lucas',
-        consultationTitle: 'Lad os finde ud af, hvor mulighederne er.',
-        consultationDescription: 'Vi kigger på jeres plads eller anlæg, peger på det, der kan gøres bedre, og siger ærligt, om det passer. I kan bruge det, uanset om I bestiller hos os.',
+        consultationTitle: 'Vi skriver om opsætningen.',
+        consultationDescription: 'Opsætning i Danmark er med i prisen. Uden for Danmark kontakter vi jer med prisen for opsætning.',
         consultationCta: 'Konfigurér jeres system',
-        consultationNote: 'Bestil online. Betaling ved bankoverførsel.'
+        consultationNote: 'Bankoverførsel. Betal inden for 14 dage.'
     },
     de: {
         pageTitle: 'Easysort — Gebaut für Recyclinghöfe und Abfallanlagen',
@@ -171,10 +171,10 @@ const translations = {
         customAction: 'Kontakt aufnehmen',
         partnersLabel: 'Mit Teams aus der dänischen Abfallwirtschaft entwickelt',
         consultationLabel: 'Lucas',
-        consultationTitle: 'Finden wir heraus, wo die Möglichkeiten liegen.',
-        consultationDescription: 'Wir sehen uns Ihren Standort an, zeigen, was besser werden kann, und sagen ehrlich, ob es passt. Das können Sie nutzen, ob Sie bei uns bestellen oder nicht.',
+        consultationTitle: 'Wir schreiben zur Einrichtung.',
+        consultationDescription: 'Die Einrichtung in Dänemark ist im Preis enthalten. Außerhalb Dänemarks nennen wir Ihnen den Preis für die Einrichtung.',
         consultationCta: 'System konfigurieren',
-        consultationNote: 'Online bestellen. Zahlung per Banküberweisung.'
+        consultationNote: 'Banküberweisung. Zahlung innerhalb von 14 Tagen.'
     }
 };
 
