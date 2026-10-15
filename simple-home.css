@@ -670,9 +670,15 @@ p {
     transform: translateY(-1px);
 }
 
-.consultation-note {
-    color: #6b7280;
-    font-size: 0.96rem;
+.consultation-phone {
+    color: #111827;
+    font-size: 1.05rem;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.consultation-phone:hover {
+    color: #16a34a;
 }
 
 /* Footer */
@@ -829,6 +835,14 @@ p {
     .custom-systems .button,
     .consultation-button {
         width: 100%;
+    }
+
+    .consultation-phone {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 48px;
     }
 
     .consultation-section {

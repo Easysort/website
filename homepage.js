@@ -65,10 +65,8 @@ const translations = {
         customAction: 'Contact us',
         partnersLabel: 'Developed with teams in the Danish waste sector',
         consultationLabel: 'Lucas',
-        consultationTitle: 'We write about the setup.',
-        consultationDescription: 'Setup in Denmark is included in the price. Outside Denmark we contact you with the setup price.',
-        consultationCta: 'Configure your system',
-        consultationNote: 'Bank transfer. Pay within 14 days.'
+        consultationTitle: 'Write or call.',
+        consultationDescription: 'Questions about the price, the setup, or anything else.'
     },
     da: {
         pageTitle: 'Easysort — Bygget til genbrugspladser og affaldsanlæg',
@@ -118,10 +116,8 @@ const translations = {
         customAction: 'Kontakt os',
         partnersLabel: 'Udviklet med teams i den danske affaldssektor',
         consultationLabel: 'Lucas',
-        consultationTitle: 'Vi skriver om opsætningen.',
-        consultationDescription: 'Opsætning i Danmark er med i prisen. Uden for Danmark kontakter vi jer med prisen for opsætning.',
-        consultationCta: 'Konfigurér jeres system',
-        consultationNote: 'Bankoverførsel. Betal inden for 14 dage.'
+        consultationTitle: 'Skriv eller ring.',
+        consultationDescription: 'Spørgsmål til prisen, opsætningen eller noget andet.'
     },
     de: {
         pageTitle: 'Easysort — Gebaut für Recyclinghöfe und Abfallanlagen',
@@ -171,10 +167,8 @@ const translations = {
         customAction: 'Kontakt aufnehmen',
         partnersLabel: 'Mit Teams aus der dänischen Abfallwirtschaft entwickelt',
         consultationLabel: 'Lucas',
-        consultationTitle: 'Wir schreiben zur Einrichtung.',
-        consultationDescription: 'Die Einrichtung in Dänemark ist im Preis enthalten. Außerhalb Dänemarks nennen wir Ihnen den Preis für die Einrichtung.',
-        consultationCta: 'System konfigurieren',
-        consultationNote: 'Banküberweisung. Zahlung innerhalb von 14 Tagen.'
+        consultationTitle: 'Schreiben oder anrufen.',
+        consultationDescription: 'Fragen zum Preis, zur Einrichtung oder zu etwas anderem.'
     }
 };
 
