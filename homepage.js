@@ -66,7 +66,7 @@ const translations = {
         partnersLabel: 'Developed with teams in the Danish waste sector',
         consultationLabel: 'Lucas',
         consultationTitle: 'Write or call.',
-        consultationDescription: 'Questions about the price, the setup, or anything else.'
+        consultationDescription: 'Questions about the price, the setup, or anything else. Unlimited 4G is included in the price.'
     },
     da: {
         pageTitle: 'Easysort — Bygget til genbrugspladser og affaldsanlæg',
@@ -117,7 +117,7 @@ const translations = {
         partnersLabel: 'Udviklet med teams i den danske affaldssektor',
         consultationLabel: 'Lucas',
         consultationTitle: 'Skriv eller ring.',
-        consultationDescription: 'Spørgsmål til prisen, opsætningen eller noget andet.'
+        consultationDescription: 'Spørgsmål til prisen, opsætningen eller noget andet. Ubegrænset 4G er med i prisen.'
     },
     de: {
         pageTitle: 'Easysort — Gebaut für Recyclinghöfe und Abfallanlagen',
@@ -168,7 +168,7 @@ const translations = {
         partnersLabel: 'Mit Teams aus der dänischen Abfallwirtschaft entwickelt',
         consultationLabel: 'Lucas',
         consultationTitle: 'Schreiben oder anrufen.',
-        consultationDescription: 'Fragen zum Preis, zur Einrichtung oder zu etwas anderem.'
+        consultationDescription: 'Fragen zum Preis, zur Einrichtung oder zu etwas anderem. Unbegrenztes 4G ist im Preis enthalten.'
     }
 };
 

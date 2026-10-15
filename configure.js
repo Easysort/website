@@ -54,7 +54,7 @@ const PRODUCTS = {
                 locationSetup: { first: 0, extra: 0 },
                 locationMonthly: { first: 0, extra: 0 },
                 complete: { perUnit: 6500, perLocation: 0 },
-                setupItems: ['boxHardware', 'outdoorScreen', 'banners', 'bannerDesign', 'mountingBox', 'mountingSigns', 'siteMap', 'easytrack', 'training', 'precision'],
+                setupItems: ['boxHardwareData', 'outdoorScreen', 'banners', 'bannerDesign', 'mountingBox', 'mountingSigns', 'siteMap', 'easytrack', 'training', 'precision'],
                 completeItems: ['banners', 'bannerDesign', 'mountingSigns'],
                 operationItems: ['hostingRequests', 'dataConnection', 'serverModel', 'uptimeReplace', 'reviewGuidance', 'recognitionUpdates', 'retraining', 'freeModels']
             },
@@ -117,7 +117,7 @@ const BENEFITS = {
             ['Unlimited use', 'Unlimited requests and unlimited changes to the guide.']
         ],
         box: [
-            ['A complete box', 'Computer, camera, internet, and an outdoor screen.'],
+            ['A complete box', 'Computer, camera, unlimited 4G, and an outdoor screen.'],
             ['Set up by us', 'We mount the box, 2 banners, and an A1 sign on site.'],
             ['Made for your site', 'Site map, fraction split, and a model trained for you.'],
             ['Full service', 'We monitor the box, and replace it if it fails. New models are free.']
@@ -135,7 +135,7 @@ const BENEFITS = {
             ['Unlimited use', 'Unlimited requests and unlimited changes to the guide.']
         ],
         box_basic: [
-            ['A complete box', 'Computer, camera, internet, and an outdoor screen.'],
+            ['A complete box', 'Computer, camera, unlimited 4G, and an outdoor screen.'],
             ['Set up by us', 'We mount the box on site.'],
             ['Made for your site', 'Site map, fraction split, and a model trained for you.'],
             ['Full service', 'We monitor the box, and replace it if it fails. New models are free.']
@@ -150,12 +150,12 @@ const BENEFITS = {
             ['Sits over the entrance', 'To a container, a tent, or a room.'],
             ['Visitors, in and out', 'How many come, and what they bring in and out.'],
             ['And what it weighs', 'The weight of what comes in and out.'],
-            ['You see it in EasyTrack', 'In one place.']
+            ['You see it in EasyTrack', 'In one place. Unlimited 4G is included.']
         ],
         container: [
             ['Sits at one container', 'It looks at what is thrown in.'],
             ['Including the difficult items', 'A closer look at what is thrown in.'],
-            ['We keep it running', 'Hosting, uptime monitoring, and replacement if it fails.'],
+            ['We keep it running', 'Hosting, unlimited 4G, uptime monitoring, and replacement if it fails.'],
             ['Better every month', 'Retraining every month, and new models for free.']
         ]
     },
@@ -167,7 +167,7 @@ const BENEFITS = {
             ['Ubegrænset brug', 'Ubegrænsede forespørgsler og ubegrænsede ændringer til guiden.']
         ],
         box: [
-            ['Komplet boks', 'Computer, kamera, internet og udendørs skærm.'],
+            ['Komplet boks', 'Computer, kamera, ubegrænset 4G og udendørs skærm.'],
             ['Sat op af os', 'Vi sætter boks, 2 bannere og et A1-skilt op på pladsen.'],
             ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og en model trænet til jer.'],
             ['Fuld service', 'Vi overvåger boksen og skifter den ud, hvis den fejler. Nye modeller er gratis.']
@@ -185,7 +185,7 @@ const BENEFITS = {
             ['Ubegrænset brug', 'Ubegrænsede forespørgsler og ubegrænsede ændringer til guiden.']
         ],
         box_basic: [
-            ['Komplet boks', 'Computer, kamera, internet og udendørs skærm.'],
+            ['Komplet boks', 'Computer, kamera, ubegrænset 4G og udendørs skærm.'],
             ['Sat op af os', 'Vi sætter boksen op på pladsen.'],
             ['Tilpasset jeres plads', 'Pladskort, fraktionsdeling og en model trænet til jer.'],
             ['Fuld service', 'Vi overvåger boksen og skifter den ud, hvis den fejler. Nye modeller er gratis.']
@@ -200,12 +200,12 @@ const BENEFITS = {
             ['Sidder over indgangen', 'Til en container, et telt eller et rum.'],
             ['Besøgende, ind og ud', 'Hvor mange der kommer, og hvad de har med ind og ud.'],
             ['Og hvad det vejer', 'Vægten på det, der kommer ind og ud.'],
-            ['I ser det i EasyTrack', 'Samlet ét sted.']
+            ['I ser det i EasyTrack', 'Samlet ét sted. Ubegrænset 4G er med.']
         ],
         container: [
             ['Sidder ved én container', 'Den kigger på det, der bliver smidt i.'],
             ['Også de svære emner', 'Et nærmere kig på det, der bliver smidt i.'],
-            ['Vi holder den kørende', 'Hosting, overvågning af driftstid og udskiftning, hvis den fejler.'],
+            ['Vi holder den kørende', 'Hosting, ubegrænset 4G, overvågning af driftstid og udskiftning, hvis den fejler.'],
             ['Bliver bedre hver måned', 'Gentræning hver måned og gratis nye modeller.']
         ]
     },
@@ -217,7 +217,7 @@ const BENEFITS = {
             ['Unbegrenzte Nutzung', 'Unbegrenzte Anfragen und unbegrenzte Änderungen an der Sortierhilfe.']
         ],
         box: [
-            ['Komplette Box', 'Computer, Kamera, Internet und Outdoor-Bildschirm.'],
+            ['Komplette Box', 'Computer, Kamera, unbegrenztes 4G und Outdoor-Bildschirm.'],
             ['Von uns montiert', 'Wir montieren Box, 2 Banner und ein A1-Schild vor Ort.'],
             ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und ein für Sie trainiertes Modell.'],
             ['Voller Service', 'Wir überwachen die Box und tauschen sie bei Ausfall aus. Neue Modelle sind kostenlos.']
@@ -235,7 +235,7 @@ const BENEFITS = {
             ['Unbegrenzte Nutzung', 'Unbegrenzte Anfragen und unbegrenzte Änderungen an der Sortierhilfe.']
         ],
         box_basic: [
-            ['Komplette Box', 'Computer, Kamera, Internet und Outdoor-Bildschirm.'],
+            ['Komplette Box', 'Computer, Kamera, unbegrenztes 4G und Outdoor-Bildschirm.'],
             ['Von uns montiert', 'Wir montieren die Box vor Ort.'],
             ['Für Ihren Standort gemacht', 'Lageplan, Fraktionsaufteilung und ein für Sie trainiertes Modell.'],
             ['Voller Service', 'Wir überwachen die Box und tauschen sie bei Ausfall aus. Neue Modelle sind kostenlos.']
@@ -250,12 +250,12 @@ const BENEFITS = {
             ['Sitzt über dem Eingang', 'Zu einem Container, einem Zelt oder einem Raum.'],
             ['Besucher, hinein und hinaus', 'Wie viele kommen, und was sie hinein- und hinausbringen.'],
             ['Und was es wiegt', 'Das Gewicht dessen, was hinein- und hinausgeht.'],
-            ['Sie sehen es in EasyTrack', 'An einem Ort.']
+            ['Sie sehen es in EasyTrack', 'An einem Ort. Unbegrenztes 4G ist enthalten.']
         ],
         container: [
             ['Sitzt an einem Container', 'Sie schaut auf das, was hineingeworfen wird.'],
             ['Auch die schwierigen Gegenstände', 'Ein genauerer Blick auf das, was hineingeworfen wird.'],
-            ['Wir halten es am Laufen', 'Hosting, Überwachung der Verfügbarkeit und Austausch bei Ausfall.'],
+            ['Wir halten es am Laufen', 'Hosting, unbegrenztes 4G, Überwachung der Verfügbarkeit und Austausch bei Ausfall.'],
             ['Jeden Monat besser', 'Monatliches Nachtraining und kostenlose neue Modelle.']
         ]
     }
@@ -330,6 +330,7 @@ const copy = {
         training: 'Model training for your fraction split',
         precision: 'Accuracy testing',
         boxHardware: 'Box with computer, internet, and camera',
+        boxHardwareData: 'Box with computer, unlimited 4G, and camera',
         outdoorScreen: 'Outdoor screen fitted in the box',
         banners: '2 banners and 1 A1 sign',
         bannerDesign: 'Design of banners and sign, adapted to your design guide',
@@ -359,12 +360,12 @@ const copy = {
         retraining: 'Retraining at least every month',
         guideChanges: 'Unlimited changes to the guide',
         freeImprovements: 'Free improvements to the experience and model',
-        dataConnection: 'Data connection for the device',
+        dataConnection: 'Unlimited 4G for the device',
         serverModel: 'The model runs around the clock on our servers',
         recognitionUpdates: 'Unlimited updates to fractions and recognition',
         freeModels: 'Free new models, API, and support',
         reuseImages: 'Over 100,000 images a day, for movement and items',
-        serverOperation: 'Data connection and model operation on our servers',
+        serverOperation: 'Unlimited 4G and model operation on our servers',
         containerAnalysis: 'In-depth analysis of complex items',
         hostingClassifications: 'Hosting and unlimited classifications',
         siteMonitoring: 'Monitoring of the page and the API',
@@ -484,6 +485,7 @@ const copy = {
         training: 'Træning af modellen til fraktionsdeling',
         precision: 'Test af præcision',
         boxHardware: 'Boks med computer, internet og kamera',
+        boxHardwareData: 'Boks med computer, ubegrænset 4G og kamera',
         outdoorScreen: 'Udendørs skærm, sat i boksen',
         banners: '2 bannere og 1 A1-skilt',
         bannerDesign: 'Design af bannere og skilt. I kan rette efter jeres designguide.',
@@ -513,12 +515,12 @@ const copy = {
         retraining: 'Gentræning mindst hver måned',
         guideChanges: 'Ubegrænsede ændringer til guiden',
         freeImprovements: 'Gratis forbedring af oplevelse og model',
-        dataConnection: 'Dataforbindelse til enheden',
+        dataConnection: 'Ubegrænset 4G til enheden',
         serverModel: 'Modellen kører døgnet rundt på vores servere',
         recognitionUpdates: 'Ubegrænsede opdateringer af fraktioner og genkendelse',
         freeModels: 'Gratis nye modeller, API og support',
         reuseImages: 'Over 100.000 billeder om dagen, for bevægelse og emner',
-        serverOperation: 'Dataforbindelse og drift af modellen på vores servere',
+        serverOperation: 'Ubegrænset 4G og drift af modellen på vores servere',
         containerAnalysis: 'Dybdegående analyse af komplekse emner',
         hostingClassifications: 'Hosting og ubegrænsede klassificeringer',
         siteMonitoring: 'Overvågning af siden og API\'et',
@@ -638,6 +640,7 @@ const copy = {
         training: 'Training des Modells für Ihre Fraktionsaufteilung',
         precision: 'Genauigkeitstest',
         boxHardware: 'Box mit Computer, Internet und Kamera',
+        boxHardwareData: 'Box mit Computer, unbegrenztem 4G und Kamera',
         outdoorScreen: 'Outdoor-Bildschirm in der Box',
         banners: '2 Banner und 1 A1-Schild',
         bannerDesign: 'Design von Bannern und Schild nach Ihrem Designleitfaden',
@@ -667,12 +670,12 @@ const copy = {
         retraining: 'Nachtraining mindestens monatlich',
         guideChanges: 'Unbegrenzte Änderungen an der Sortierhilfe',
         freeImprovements: 'Kostenlose Verbesserungen von Nutzung und Modell',
-        dataConnection: 'Datenverbindung für das Gerät',
+        dataConnection: 'Unbegrenztes 4G für das Gerät',
         serverModel: 'Das Modell läuft rund um die Uhr auf unseren Servern',
         recognitionUpdates: 'Unbegrenzte Updates von Fraktionen und Erkennung',
         freeModels: 'Kostenlose neue Modelle, API und Support',
         reuseImages: 'Über 100.000 Bilder pro Tag für Bewegung und Gegenstände',
-        serverOperation: 'Datenverbindung und Betrieb des Modells auf unseren Servern',
+        serverOperation: 'Unbegrenztes 4G und Betrieb des Modells auf unseren Servern',
         containerAnalysis: 'Detaillierte Analyse komplexer Gegenstände',
         hostingClassifications: 'Hosting und unbegrenzte Klassifizierungen',
         siteMonitoring: 'Überwachung der Seite und der API',
